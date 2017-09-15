@@ -85,6 +85,8 @@ public class ColumnPageEncoderMeta extends ValueEncoderMeta implements Writable 
 
   private char convertType(DataType type) {
     switch (type) {
+      case BOOLEAN:
+        return CarbonCommonConstants.BOOLEAN_MEASURE;
       case BYTE:
       case SHORT:
       case SHORT_INT:
@@ -135,6 +137,11 @@ public class ColumnPageEncoderMeta extends ValueEncoderMeta implements Writable 
 
   private void writeMinMax(DataOutput out) throws IOException {
     switch (columnSpec.getSchemaDataType()) {
+      case BOOLEAN:
+        out.writeBoolean((boolean) getMaxValue());
+        out.writeBoolean((boolean) getMinValue());
+        out.writeLong(0L);
+        break;
       case BYTE:
         out.writeByte((byte) getMaxValue());
         out.writeByte((byte) getMinValue());
@@ -185,6 +192,11 @@ public class ColumnPageEncoderMeta extends ValueEncoderMeta implements Writable 
 
   private void readMinMax(DataInput in) throws IOException {
     switch (columnSpec.getSchemaDataType()) {
+      case BOOLEAN:
+        this.setMaxValue(in.readBoolean());
+        this.setMinValue(in.readBoolean());
+        in.readLong();  // for non exist value which is obsoleted, it is backward compatibility;
+        break;
       case BYTE:
         this.setMaxValue(in.readByte());
         this.setMinValue(in.readByte());

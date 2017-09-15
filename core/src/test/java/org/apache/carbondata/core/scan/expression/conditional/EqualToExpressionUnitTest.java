@@ -181,7 +181,7 @@ public class EqualToExpressionUnitTest {
     }
   }
 
-  @Test(expected = FilterUnsupportedException.class) public void testForEqualToExpressionForDefaultCase()
+  @Test public void testForEqualToExpressionForDefaultCase()
       throws FilterUnsupportedException, FilterIllegalMemberException {
     ColumnExpression right = new ColumnExpression("contact", DataType.BOOLEAN);
     right.setColIndex(0);

@@ -55,6 +55,7 @@ import org.apache.carbondata.core.datastore.columnar.UnBlockIndexer;
 import org.apache.carbondata.core.datastore.filesystem.CarbonFile;
 import org.apache.carbondata.core.datastore.impl.FileFactory;
 import org.apache.carbondata.core.indexstore.BlockletDetailInfo;
+import org.apache.carbondata.core.datastore.page.encoding.bool.BooleanConvert;
 import org.apache.carbondata.core.keygenerator.mdkey.NumberCompressor;
 import org.apache.carbondata.core.metadata.AbsoluteTableIdentifier;
 import org.apache.carbondata.core.metadata.ColumnarFormatVersion;
@@ -1461,6 +1462,11 @@ public final class CarbonUtil {
         valueEncoderMeta.setMinValue(buffer.getLong());
         valueEncoderMeta.setUniqueValue(buffer.getLong());
         break;
+      case CarbonCommonConstants.BOOLEAN_MEASURE:
+        valueEncoderMeta.setMaxValue(BooleanConvert.byte2Boolean(buffer.get()));
+        valueEncoderMeta.setMinValue(BooleanConvert.byte2Boolean(buffer.get()));
+        valueEncoderMeta.setUniqueValue(BooleanConvert.byte2Boolean(buffer.get()));
+        break;
       default:
         throw new IllegalArgumentException("invalid measure type: " + measureType);
     }
@@ -2032,6 +2038,10 @@ public final class CarbonUtil {
   public static byte[] getValueAsBytes(DataType dataType, Object value) {
     ByteBuffer b;
     switch (dataType) {
+      case BOOLEAN:
+        byte[] bytes = new byte[1];
+        bytes[0] = BooleanConvert.boolean2Byte((boolean) value);
+        return bytes;
       case BYTE:
         b = ByteBuffer.allocate(8);
         b.putLong((byte) value);

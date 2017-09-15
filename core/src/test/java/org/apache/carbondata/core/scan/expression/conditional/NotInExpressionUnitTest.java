@@ -222,7 +222,7 @@ public class NotInExpressionUnitTest {
     assertTrue(result.getBoolean());
   }
 
-  @Test(expected = FilterUnsupportedException.class) public void testDefaultCaseForNotInExpression()
+  @Test public void testDefaultCaseForNotInExpression()
       throws FilterUnsupportedException, FilterIllegalMemberException {
     ColumnExpression left = new ColumnExpression("contact", DataType.BOOLEAN);
     left.setColIndex(0);

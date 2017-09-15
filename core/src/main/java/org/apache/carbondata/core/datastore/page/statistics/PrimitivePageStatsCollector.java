@@ -20,6 +20,7 @@ package org.apache.carbondata.core.datastore.page.statistics;
 import java.math.BigDecimal;
 
 import org.apache.carbondata.core.datastore.page.encoding.ColumnPageEncoderMeta;
+import org.apache.carbondata.core.datastore.page.encoding.bool.BooleanConvert;
 import org.apache.carbondata.core.metadata.ValueEncoderMeta;
 import org.apache.carbondata.core.metadata.datatype.DataType;
 
@@ -33,6 +34,7 @@ public class PrimitivePageStatsCollector implements ColumnPageStatsCollector, Si
   private double minDouble, maxDouble;
   private BigDecimal minDecimal, maxDecimal;
   private int scale, precision;
+  private boolean minBoolean,maxBoolean;
 
   // scale of the double value, apply adaptive encoding if this is positive
   private int decimal;
@@ -55,6 +57,10 @@ public class PrimitivePageStatsCollector implements ColumnPageStatsCollector, Si
         meta.getScale(), meta.getPrecision());
     // set min max from meta
     switch (meta.getSchemaDataType()) {
+      case BOOLEAN:
+        instance.minBoolean = (boolean) meta.getMinValue();
+        instance.maxBoolean = (boolean) meta.getMaxValue();
+        break;
       case BYTE:
         instance.minByte = (byte) meta.getMinValue();
         instance.maxByte = (byte) meta.getMaxValue();
@@ -95,6 +101,10 @@ public class PrimitivePageStatsCollector implements ColumnPageStatsCollector, Si
         new PrimitivePageStatsCollector(meta.getType(), -1, -1);
     // set min max from meta
     switch (meta.getType()) {
+      case BOOLEAN:
+        instance.minBoolean = (boolean) meta.getMinValue();
+        instance.maxBoolean = (boolean) meta.getMaxValue();
+        break;
       case BYTE:
         instance.minByte = (byte) meta.getMinValue();
         instance.maxByte = (byte) meta.getMaxValue();
@@ -133,6 +143,9 @@ public class PrimitivePageStatsCollector implements ColumnPageStatsCollector, Si
   private PrimitivePageStatsCollector(DataType dataType, int scale, int precision) {
     this.dataType = dataType;
     switch (dataType) {
+      case BOOLEAN:
+        maxBoolean = Boolean.TRUE;
+        minBoolean = Boolean.FALSE;
       case BYTE:
         minByte = Byte.MAX_VALUE;
         maxByte = Byte.MIN_VALUE;
@@ -170,6 +183,8 @@ public class PrimitivePageStatsCollector implements ColumnPageStatsCollector, Si
   public void updateNull(int rowId) {
     long value = 0;
     switch (dataType) {
+      case BOOLEAN:
+        update(BooleanConvert.byte2Boolean((int) value));
       case BYTE:
         update((byte) value);
         break;
@@ -292,6 +307,16 @@ public class PrimitivePageStatsCollector implements ColumnPageStatsCollector, Si
   }
 
   @Override
+  public void update(boolean value) {
+    if (Boolean.compare(minBoolean, value) > 0) {
+      minBoolean = value;
+    }
+    if (Boolean.compare(value, maxBoolean) > 0) {
+      maxBoolean = value;
+    }
+  }
+
+  @Override
   public SimpleStatsResult getPageStats() {
     return this;
   }
@@ -299,6 +324,8 @@ public class PrimitivePageStatsCollector implements ColumnPageStatsCollector, Si
   @Override
   public String toString() {
     switch (dataType) {
+      case BOOLEAN:
+        return String.format("min: %s, max: %s ", minBoolean, maxBoolean);
       case BYTE:
         return String.format("min: %s, max: %s, decimal: %s ", minByte, maxByte, decimal);
       case SHORT:
@@ -316,6 +343,8 @@ public class PrimitivePageStatsCollector implements ColumnPageStatsCollector, Si
   @Override
   public Object getMin() {
     switch (dataType) {
+      case BOOLEAN:
+        return minBoolean;
       case BYTE:
         return minByte;
       case SHORT:
@@ -335,6 +364,8 @@ public class PrimitivePageStatsCollector implements ColumnPageStatsCollector, Si
   @Override
   public Object getMax() {
     switch (dataType) {
+      case BOOLEAN:
+        return maxBoolean;
       case BYTE:
         return maxByte;
       case SHORT:

@@ -292,6 +292,9 @@ public class SortDataRows {
           if (null != value) {
             stream.write((byte) 1);
             switch (type[mesCount]) {
+              case BOOLEAN:
+                stream.writeBoolean((boolean) value);
+                break;
               case SHORT:
                 stream.writeShort((Short) value);
                 break;

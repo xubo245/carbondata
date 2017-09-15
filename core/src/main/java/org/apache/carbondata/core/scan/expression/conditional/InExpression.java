@@ -53,6 +53,9 @@ public class InExpression extends BinaryConditionalExpression {
           val = expressionResVal;
         }
         switch (val.getDataType()) {
+          case BOOLEAN:
+            val = new ExpressionResult(val.getDataType(), expressionResVal.getBoolean());
+            break;
           case STRING:
             val = new ExpressionResult(val.getDataType(), expressionResVal.getString());
             break;

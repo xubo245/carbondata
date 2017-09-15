@@ -28,6 +28,7 @@ public interface ColumnPageStatsCollector {
   void update(double value);
   void update(BigDecimal value);
   void update(byte[] value);
+  void update(boolean value);
 
   /**
    * return the collected statistics
