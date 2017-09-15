@@ -27,6 +27,7 @@ import org.apache.carbondata.core.datastore.page.DecimalColumnPage;
 import org.apache.carbondata.core.datastore.page.encoding.adaptive.AdaptiveDeltaIntegralCodec;
 import org.apache.carbondata.core.datastore.page.encoding.adaptive.AdaptiveFloatingCodec;
 import org.apache.carbondata.core.datastore.page.encoding.adaptive.AdaptiveIntegralCodec;
+import org.apache.carbondata.core.datastore.page.encoding.bool.BooleanPageCodec;
 import org.apache.carbondata.core.datastore.page.encoding.compress.DirectCompressCodec;
 import org.apache.carbondata.core.datastore.page.encoding.dimension.legacy.ComplexDimensionIndexCodec;
 import org.apache.carbondata.core.datastore.page.encoding.dimension.legacy.DictDimensionIndexCodec;
@@ -112,6 +113,8 @@ public class DefaultEncodingFactory extends EncodingFactory {
   private ColumnPageEncoder createEncoderForMeasure(ColumnPage columnPage) {
     SimpleStatsResult stats = columnPage.getStatistics();
     switch (stats.getDataType()) {
+      case BOOLEAN:
+        return new BooleanPageCodec(columnPage.getDataType()).createEncoder(null);
       case BYTE:
       case SHORT:
       case INT:

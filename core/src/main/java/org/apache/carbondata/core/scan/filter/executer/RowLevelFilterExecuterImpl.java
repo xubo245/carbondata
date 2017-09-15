@@ -189,7 +189,7 @@ public class RowLevelFilterExecuterImpl implements FilterExecuter {
       } else {
         // specific for restructure case where default values need to be filled
         pageNumbers = blockChunkHolder.getDataBlock().numberOfPages();
-        numberOfRows = new int[] { blockChunkHolder.getDataBlock().nodeSize() };
+        numberOfRows = new int[] { blockChunkHolder.getDataBlock().nodeSize()};
       }
     }
     if (msrColEvalutorInfoList.size() > 0) {
@@ -201,7 +201,7 @@ public class RowLevelFilterExecuterImpl implements FilterExecuter {
       } else {
         // specific for restructure case where default values need to be filled
         pageNumbers = blockChunkHolder.getDataBlock().numberOfPages();
-        numberOfRows = new int[] { blockChunkHolder.getDataBlock().nodeSize() };
+        numberOfRows = new int[] { blockChunkHolder.getDataBlock().nodeSize()};
       }
     }
     BitSetGroup bitSetGroup = new BitSetGroup(pageNumbers);
@@ -314,6 +314,9 @@ public class RowLevelFilterExecuterImpl implements FilterExecuter {
     for (int i = 0; i < msrColEvalutorInfoList.size(); i++) {
       MeasureColumnResolvedFilterInfo msrColumnEvalutorInfo = msrColEvalutorInfoList.get(i);
       switch (msrColumnEvalutorInfo.getType()) {
+        case BOOLEAN:
+          msrType = DataType.BOOLEAN;
+          break;
         case SHORT:
           msrType = DataType.SHORT;
           break;
@@ -344,6 +347,9 @@ public class RowLevelFilterExecuterImpl implements FilterExecuter {
           blockChunkHolder.getMeasureRawDataChunk()[measureBlocksIndex[0]]
               .convertToColumnPage(pageIndex);
       switch (msrType) {
+        case BOOLEAN:
+          msrValue = columnPage.getBoolean(index);
+          break;
         case SHORT:
           msrValue = (short) columnPage.getLong(index);
           break;

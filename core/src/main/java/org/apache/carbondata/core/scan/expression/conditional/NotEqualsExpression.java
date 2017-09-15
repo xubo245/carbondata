@@ -62,6 +62,9 @@ public class NotEqualsExpression extends BinaryConditionalExpression {
       }
     }
     switch (val1.getDataType()) {
+      case BOOLEAN:
+        result = !val1.getBoolean().equals(val2.getBoolean());
+        break;
       case STRING:
         result = !val1.getString().equals(val2.getString());
         break;

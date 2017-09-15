@@ -34,6 +34,7 @@ import org.apache.carbondata.common.logging.LogService;
 import org.apache.carbondata.common.logging.LogServiceFactory;
 import org.apache.carbondata.core.constants.CarbonCommonConstants;
 import org.apache.carbondata.core.datastore.page.ColumnPage;
+import org.apache.carbondata.core.datastore.page.encoding.bool.BooleanConvert;
 import org.apache.carbondata.core.keygenerator.directdictionary.DirectDictionaryGenerator;
 import org.apache.carbondata.core.keygenerator.directdictionary.DirectDictionaryKeyGeneratorFactory;
 import org.apache.carbondata.core.metadata.datatype.DataType;
@@ -109,6 +110,8 @@ public final class DataTypeUtil {
         return Short.parseShort(msrValue);
       case INT:
         return Integer.parseInt(msrValue);
+      case BOOLEAN:
+        return BooleanConvert.parseBoolean(msrValue);
       case LONG:
         return Long.valueOf(msrValue);
       default:
@@ -126,6 +129,8 @@ public final class DataTypeUtil {
     }
     ByteBuffer bb = ByteBuffer.wrap(data);
     switch (dataType) {
+      case BOOLEAN:
+        return BooleanConvert.byte2Boolean(bb.get());
       case SHORT:
         return (short)bb.getLong();
       case INT:
@@ -142,6 +147,8 @@ public final class DataTypeUtil {
   public static Object getMeasureObjectBasedOnDataType(ColumnPage measurePage, int index,
       DataType dataType, CarbonMeasure carbonMeasure) {
     switch (dataType) {
+      case BOOLEAN:
+        return measurePage.getBoolean(index);
       case SHORT:
         return (short)measurePage.getLong(index);
       case INT:
@@ -241,6 +248,9 @@ public final class DataTypeUtil {
   public static DataType getDataType(String dataTypeStr) {
     DataType dataType = null;
     switch (dataTypeStr) {
+      case "BOOLEAN":
+        dataType = DataType.BOOLEAN;
+        break;
       case "DATE":
         dataType = DataType.DATE;
         break;
@@ -305,6 +315,11 @@ public final class DataTypeUtil {
     }
     try {
       switch (actualDataType) {
+        case BOOLEAN:
+          if (data.isEmpty()) {
+            return null;
+          }
+          return BooleanConvert.parseBoolean(data);
         case INT:
           if (data.isEmpty()) {
             return null;

@@ -87,6 +87,11 @@ public class KeyPageStatsCollector implements ColumnPageStatsCollector {
   }
 
   @Override
+  public void update(boolean value) {
+
+  }
+
+  @Override
   public SimpleStatsResult getPageStats() {
     return new SimpleStatsResult() {
 

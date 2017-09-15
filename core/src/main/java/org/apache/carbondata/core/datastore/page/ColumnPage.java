@@ -32,15 +32,7 @@ import org.apache.carbondata.core.memory.MemoryException;
 import org.apache.carbondata.core.metadata.datatype.DataType;
 import org.apache.carbondata.core.util.CarbonProperties;
 
-import static org.apache.carbondata.core.metadata.datatype.DataType.BYTE;
-import static org.apache.carbondata.core.metadata.datatype.DataType.BYTE_ARRAY;
-import static org.apache.carbondata.core.metadata.datatype.DataType.DECIMAL;
-import static org.apache.carbondata.core.metadata.datatype.DataType.DOUBLE;
-import static org.apache.carbondata.core.metadata.datatype.DataType.FLOAT;
-import static org.apache.carbondata.core.metadata.datatype.DataType.INT;
-import static org.apache.carbondata.core.metadata.datatype.DataType.LONG;
-import static org.apache.carbondata.core.metadata.datatype.DataType.SHORT;
-import static org.apache.carbondata.core.metadata.datatype.DataType.SHORT_INT;
+import static org.apache.carbondata.core.metadata.datatype.DataType.*;
 
 public abstract class ColumnPage {
 
@@ -187,6 +179,7 @@ public abstract class ColumnPage {
         case BYTE:
         case SHORT:
         case SHORT_INT:
+        case BOOLEAN:
         case INT:
         case LONG:
         case FLOAT:
@@ -214,6 +207,9 @@ public abstract class ColumnPage {
           break;
         case SHORT_INT:
           instance = newShortIntPage(columnSpec, new byte[pageSize * 3]);
+          break;
+        case BOOLEAN:
+          instance = newBooleanPage(columnSpec, new byte[pageSize]);
           break;
         case INT:
           instance = newIntPage(columnSpec, new int[pageSize]);
@@ -271,6 +267,18 @@ public abstract class ColumnPage {
     return columnPage;
   }
 
+  private static ColumnPage newBooleanPage(TableSpec.ColumnSpec columnSpec, byte[] booleanData) {
+    ColumnPage columnPage = createPage(columnSpec, BOOLEAN, booleanData.length);
+    columnPage.setBooleanPage(booleanData);
+    return columnPage;
+  }
+
+  private static ColumnPage newBooleanPage(TableSpec.ColumnSpec columnSpec, byte[] booleanData, int length) {
+    ColumnPage columnPage = createPage(columnSpec, BOOLEAN, length);
+    columnPage.setBooleanPage(booleanData);
+    return columnPage;
+  }
+
   private static ColumnPage newLongPage(TableSpec.ColumnSpec columnSpec, long[] longData) {
     ColumnPage columnPage = createPage(columnSpec, LONG, longData.length);
     columnPage.setLongPage(longData);
@@ -319,6 +327,11 @@ public abstract class ColumnPage {
    * Set short int values to page
    */
   public abstract void setShortIntPage(byte[] shortIntData);
+
+  /**
+   * Set boolean values to page
+   */
+  public abstract void setBooleanPage(byte[] booleanData);
 
   /**
    * Set int values to page
@@ -372,6 +385,10 @@ public abstract class ColumnPage {
       case INT:
         putInt(rowId, (int) value);
         statsCollector.update((int) value);
+        break;
+      case BOOLEAN:
+        putBoolean(rowId, (boolean) value);
+        statsCollector.update((boolean) value);
         break;
       case LONG:
         putLong(rowId, (long) value);
@@ -436,6 +453,11 @@ public abstract class ColumnPage {
   public abstract void putShortInt(int rowId, int value);
 
   /**
+   * Set boolean value at rowId
+   */
+  public abstract void putBoolean(int rowId, boolean value);
+
+  /**
    * Set byte array from offset to length at rowId
    */
   public abstract void putBytes(int rowId, byte[] bytes, int offset, int length);
@@ -446,6 +468,9 @@ public abstract class ColumnPage {
    */
   private void putNull(int rowId) {
     switch (dataType) {
+      case BOOLEAN:
+        putBoolean(rowId, false);
+        break;
       case BYTE:
         putByte(rowId, (byte) 0);
         break;
@@ -483,6 +508,11 @@ public abstract class ColumnPage {
    * Get short int value at rowId
    */
   public abstract int getShortInt(int rowId);
+
+  /**
+   * Get boolean value at rowId
+   */
+  public abstract boolean getBoolean(int rowId);
 
   /**
    * Get int value at rowId
@@ -528,6 +558,11 @@ public abstract class ColumnPage {
    * Get short int value page
    */
   public abstract byte[] getShortIntPage();
+
+  /**
+   * Get boolean value page
+   */
+  public abstract byte[] getBooleanPage();
 
   /**
    * Get int value page
@@ -576,6 +611,8 @@ public abstract class ColumnPage {
     switch (dataType) {
       case BYTE:
         return compressor.compressByte(getBytePage());
+      case BOOLEAN:
+        return compressor.compressByte(getBooleanPage());
       case SHORT:
         return compressor.compressShort(getShortPage());
       case SHORT_INT:
@@ -607,6 +644,9 @@ public abstract class ColumnPage {
     Compressor compressor = CompressorFactory.getInstance().getCompressor(meta.getCompressorName());
     TableSpec.ColumnSpec columnSpec = meta.getColumnSpec();
     switch (meta.getStoreDataType()) {
+      case BOOLEAN:
+        byte[] booleanData = compressor.unCompressByte(compressedData, offset, length);
+        return newBooleanPage(columnSpec, booleanData, length);
       case BYTE:
         byte[] byteData = compressor.unCompressByte(compressedData, offset, length);
         return newBytePage(columnSpec, byteData);

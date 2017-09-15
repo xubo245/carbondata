@@ -99,6 +99,11 @@ public class LVStringStatsCollector implements ColumnPageStatsCollector {
   }
 
   @Override
+  public void update(boolean value) {
+
+  }
+
+  @Override
   public SimpleStatsResult getPageStats() {
     return new SimpleStatsResult() {
 

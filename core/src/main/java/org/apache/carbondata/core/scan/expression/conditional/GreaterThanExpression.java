@@ -51,6 +51,9 @@ public class GreaterThanExpression extends BinaryConditionalExpression {
     }
     boolean result = false;
     switch (val1.getDataType()) {
+      case BOOLEAN:
+        result = exprLeftRes.getBoolean().compareTo(exprRightRes.getBoolean()) > 0;
+        break;
       case STRING:
         result = exprLeftRes.getString().compareTo(exprRightRes.getString()) > 0;
         break;

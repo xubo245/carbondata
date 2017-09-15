@@ -142,6 +142,8 @@ public class IncludeFilterExecuterImpl implements FilterExecuter {
 
   private DataType getMeasureDataType(MeasureColumnResolvedFilterInfo msrColumnEvaluatorInfo) {
     switch (msrColumnEvaluatorInfo.getType()) {
+      case BOOLEAN:
+        return DataType.BOOLEAN;
       case SHORT:
         return DataType.SHORT;
       case INT:

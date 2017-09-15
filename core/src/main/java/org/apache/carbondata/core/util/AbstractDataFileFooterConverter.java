@@ -348,6 +348,8 @@ public abstract class AbstractDataFileFooterConverter {
     switch (dataTypeThrift) {
       case STRING:
         return DataType.STRING;
+      case BOOLEAN:
+        return DataType.BOOLEAN;
       case SHORT:
         return DataType.SHORT;
       case INT:

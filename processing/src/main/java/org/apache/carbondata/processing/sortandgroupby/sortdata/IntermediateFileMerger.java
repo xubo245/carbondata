@@ -339,6 +339,9 @@ public class IntermediateFileMerger implements Runnable {
         if (null != NonDictionaryUtil.getMeasure(fieldIndex, row)) {
           stream.write((byte) 1);
           switch (aggType[counter]) {
+            case BOOLEAN:
+              stream.writeBoolean((boolean)NonDictionaryUtil.getMeasure(fieldIndex, row));
+              break;
             case SHORT:
               stream.writeShort((short)NonDictionaryUtil.getMeasure(fieldIndex, row));
               break;
