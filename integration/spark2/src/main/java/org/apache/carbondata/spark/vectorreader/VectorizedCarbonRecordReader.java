@@ -205,6 +205,7 @@ class VectorizedCarbonRecordReader extends AbstractRecordReader<Object> {
     for (int i = 0; i < queryMeasures.size(); i++) {
       QueryMeasure msr = queryMeasures.get(i);
       switch (msr.getMeasure().getDataType()) {
+        case BOOLEAN:
         case SHORT:
         case INT:
         case LONG:

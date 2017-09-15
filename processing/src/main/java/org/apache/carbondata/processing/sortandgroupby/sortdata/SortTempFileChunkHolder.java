@@ -341,6 +341,9 @@ public class SortTempFileChunkHolder implements Comparable<SortTempFileChunkHold
       for (int i = 0; i < this.measureCount; i++) {
         if (stream.readByte() == 1) {
           switch (aggType[i]) {
+            case BOOLEAN:
+              measures[index++] = stream.readBoolean();
+              break;
             case SHORT:
               measures[index++] = stream.readShort();
               break;

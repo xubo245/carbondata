@@ -127,6 +127,8 @@ public class ThriftWrapperSchemaConverterImpl implements SchemaConverter {
       return null;
     }
     switch (dataType) {
+      case BOOLEAN:
+        return org.apache.carbondata.format.DataType.BOOLEAN;
       case STRING:
         return org.apache.carbondata.format.DataType.STRING;
       case INT:
@@ -365,6 +367,8 @@ public class ThriftWrapperSchemaConverterImpl implements SchemaConverter {
         return DataType.STRING;
       case INT:
         return DataType.INT;
+      case BOOLEAN:
+        return DataType.BOOLEAN;
       case SHORT:
         return DataType.SHORT;
       case LONG:

@@ -29,6 +29,8 @@ import org.apache.carbondata.core.datastore.page.ColumnPage;
 import org.apache.carbondata.core.datastore.page.encoding.adaptive.AdaptiveDeltaIntegralCodec;
 import org.apache.carbondata.core.datastore.page.encoding.adaptive.AdaptiveFloatingCodec;
 import org.apache.carbondata.core.datastore.page.encoding.adaptive.AdaptiveIntegralCodec;
+import org.apache.carbondata.core.datastore.page.encoding.bool.BooleanEncoderMeta;
+import org.apache.carbondata.core.datastore.page.encoding.bool.BooleanPageCodec;
 import org.apache.carbondata.core.datastore.page.encoding.compress.DirectCompressCodec;
 import org.apache.carbondata.core.datastore.page.encoding.rle.RLECodec;
 import org.apache.carbondata.core.datastore.page.encoding.rle.RLEEncoderMeta;
@@ -38,11 +40,7 @@ import org.apache.carbondata.core.metadata.ValueEncoderMeta;
 import org.apache.carbondata.core.util.CarbonUtil;
 import org.apache.carbondata.format.Encoding;
 
-import static org.apache.carbondata.format.Encoding.ADAPTIVE_DELTA_INTEGRAL;
-import static org.apache.carbondata.format.Encoding.ADAPTIVE_FLOATING;
-import static org.apache.carbondata.format.Encoding.ADAPTIVE_INTEGRAL;
-import static org.apache.carbondata.format.Encoding.DIRECT_COMPRESS;
-import static org.apache.carbondata.format.Encoding.RLE_INTEGRAL;
+import static org.apache.carbondata.format.Encoding.*;
 
 /**
  * Base class for encoding factory implementation.
@@ -92,6 +90,10 @@ public abstract class EncodingFactory {
       RLEEncoderMeta metadata = new RLEEncoderMeta();
       metadata.readFields(in);
       return new RLECodec().createDecoder(metadata);
+    } else if (encoding == BOOL_BYTE) {
+      BooleanEncoderMeta metadata=new BooleanEncoderMeta();
+      metadata.readFields(in);
+      return new BooleanPageCodec(metadata.getSchemaDataType()).createDecoder(metadata);
     } else {
       // for backward compatibility
       ValueEncoderMeta metadata = CarbonUtil.deserializeEncoderMetaV3(encoderMeta);
@@ -152,6 +154,10 @@ public abstract class EncodingFactory {
         // no dictionary dimension
         return new DirectCompressCodec(stats.getDataType()).createDecoder(
             new ColumnPageEncoderMeta(spec, stats.getDataType(), stats, compressor));
+      case BOOLEAN:
+        codec = new BooleanPageCodec();
+        BooleanEncoderMeta meta = new BooleanEncoderMeta(spec, stats.getDataType(), stats, compressor);
+        return codec.createDecoder(meta);
       default:
         throw new RuntimeException("unsupported data type: " + stats.getDataType());
     }

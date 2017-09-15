@@ -30,6 +30,7 @@ import org.apache.carbondata.core.metadata.datatype.DataType;
 import org.apache.carbondata.core.util.ByteUtil;
 import org.apache.carbondata.core.util.ThreadLocalTaskInfo;
 
+import static org.apache.carbondata.core.metadata.datatype.DataType.BOOLEAN;
 import static org.apache.carbondata.core.metadata.datatype.DataType.BYTE;
 
 // This extension uses unsafe memory to store page data, for fix length data type only (byte,
@@ -56,28 +57,27 @@ public class UnsafeFixLengthColumnPage extends ColumnPage {
   UnsafeFixLengthColumnPage(TableSpec.ColumnSpec columnSpec, DataType dataType, int pageSize)
       throws MemoryException {
     super(columnSpec, dataType, pageSize);
+    int size = 0;
     switch (dataType) {
       case BYTE:
+      case BOOLEAN:
       case SHORT:
       case INT:
       case LONG:
       case FLOAT:
       case DOUBLE:
-        int size = pageSize << dataType.getSizeBits();
-        memoryBlock = UnsafeMemoryManager.allocateMemoryWithRetry(taskId, size);
-        baseAddress = memoryBlock.getBaseObject();
-        baseOffset = memoryBlock.getBaseOffset();
+        size = pageSize << dataType.getSizeBits();
         break;
       case SHORT_INT:
         size = pageSize * 3;
-        memoryBlock = UnsafeMemoryManager.allocateMemoryWithRetry(taskId, size);
-        baseAddress = memoryBlock.getBaseObject();
-        baseOffset = memoryBlock.getBaseOffset();
         break;
       case DECIMAL:
       case STRING:
         throw new UnsupportedOperationException("invalid data type: " + dataType);
     }
+    memoryBlock = UnsafeMemoryManager.allocateMemoryWithRetry(taskId, size);
+    baseAddress = memoryBlock.getBaseObject();
+    baseOffset = memoryBlock.getBaseOffset();
   }
 
   @Override
@@ -99,6 +99,12 @@ public class UnsafeFixLengthColumnPage extends ColumnPage {
     CarbonUnsafe.getUnsafe().putByte(baseAddress, baseOffset + offset, data[0]);
     CarbonUnsafe.getUnsafe().putByte(baseAddress, baseOffset + offset + 1, data[1]);
     CarbonUnsafe.getUnsafe().putByte(baseAddress, baseOffset + offset + 2, data[2]);
+  }
+
+  @Override
+  public void putBoolean(int rowId, boolean value) {
+    long offset = rowId;
+    CarbonUnsafe.getUnsafe().putBoolean(baseAddress, baseOffset + offset, value);
   }
 
   @Override
@@ -153,6 +159,12 @@ public class UnsafeFixLengthColumnPage extends ColumnPage {
     data[1] = CarbonUnsafe.getUnsafe().getByte(baseAddress, baseOffset + offset + 1);
     data[2] = CarbonUnsafe.getUnsafe().getByte(baseAddress, baseOffset + offset + 2);
     return ByteUtil.valueOf3Bytes(data, 0);
+  }
+
+  @Override
+  public boolean getBoolean(int rowId) {
+    long offset = rowId;
+    return CarbonUnsafe.getUnsafe().getBoolean(baseAddress, baseOffset + offset);
   }
 
   @Override
@@ -222,6 +234,11 @@ public class UnsafeFixLengthColumnPage extends ColumnPage {
   }
 
   @Override
+  public byte[] getBooleanPage() {
+    return getBytePage();
+  }
+
+  @Override
   public int[] getIntPage() {
     int[] data = new int[getPageSize()];
     for (int i = 0; i < data.length; i++) {
@@ -287,6 +304,12 @@ public class UnsafeFixLengthColumnPage extends ColumnPage {
   public void setShortIntPage(byte[] shortIntData) {
     CarbonUnsafe.getUnsafe().copyMemory(shortIntData, CarbonUnsafe.BYTE_ARRAY_OFFSET,
         baseAddress, baseOffset, shortIntData.length);
+  }
+
+  @Override
+  public void setBooleanPage(byte[] booleanData) {
+    CarbonUnsafe.getUnsafe().copyMemory(booleanData, CarbonUnsafe.BYTE_ARRAY_OFFSET,
+            baseAddress, baseOffset, booleanData.length);
   }
 
   @Override

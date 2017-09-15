@@ -28,6 +28,7 @@ object DataTypeConverterUtil {
     dataType.toLowerCase match {
       case "string" => DataType.STRING
       case "int" => DataType.INT
+      case "boolean" => DataType.BOOLEAN
       case "integer" => DataType.INT
       case "tinyint" => DataType.SHORT
       case "smallint" => DataType.SHORT
@@ -50,6 +51,7 @@ object DataTypeConverterUtil {
     dataType.toLowerCase match {
       case "stringtype" => DataType.STRING
       case "inttype" => DataType.INT
+      case "booleantype" => DataType.BOOLEAN
       case "integertype" => DataType.INT
       case "tinyinttype" => DataType.SHORT
       case "shorttype" => DataType.SHORT
@@ -82,6 +84,7 @@ object DataTypeConverterUtil {
       case DataType.STRING => "string"
       case DataType.SHORT => "smallint"
       case DataType.INT => "int"
+      case DataType.BOOLEAN => "boolean"
       case DataType.LONG => "bigint"
       case DataType.DOUBLE => "double"
       case DataType.FLOAT => "double"
@@ -106,6 +109,7 @@ object DataTypeConverterUtil {
     dataType match {
       case "string" => ThriftDataType.STRING
       case "int" => ThriftDataType.INT
+      case "boolean" => ThriftDataType.BOOLEAN
       case "short" => ThriftDataType.SHORT
       case "long" | "bigint" => ThriftDataType.LONG
       case "double" => ThriftDataType.DOUBLE

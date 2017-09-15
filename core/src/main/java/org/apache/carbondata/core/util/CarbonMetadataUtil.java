@@ -344,6 +344,8 @@ public class CarbonMetadataUtil {
     ByteBuffer firstBuffer = null;
     ByteBuffer secondBuffer = null;
     switch (dataType) {
+      case BOOLEAN:
+        return first[0] - second[0];
       case DOUBLE:
         firstBuffer = ByteBuffer.allocate(8);
         firstBuffer.put(first);

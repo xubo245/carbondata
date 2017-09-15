@@ -26,6 +26,8 @@ public final class Comparator {
 
   public static SerializableComparator getComparator(DataType dataType) {
     switch (dataType) {
+      case BOOLEAN:
+        return new BooleanSerializableComparator();
       case INT:
         return new IntSerializableComparator();
       case SHORT:
@@ -51,6 +53,8 @@ public final class Comparator {
    */
   public static SerializableComparator getComparatorByDataTypeForMeasure(DataType dataType) {
     switch (dataType) {
+      case BOOLEAN:
+        return new BooleanSerializableComparator();
       case INT:
         return new IntSerializableComparator();
       case SHORT:
@@ -70,6 +74,26 @@ public final class Comparator {
 class ByteArraySerializableComparator implements SerializableComparator {
   @Override public int compare(Object key1, Object key2) {
     return ByteUtil.compare((byte[]) key1, (byte[]) key2);
+  }
+}
+
+class BooleanSerializableComparator implements SerializableComparator {
+  @Override
+  public int compare(Object key1, Object key2) {
+    if (key1 == null && key2 == null) {
+      return 0;
+    } else if (key1 == null) {
+      return -1;
+    } else if (key2 == null) {
+      return 1;
+    }
+    if (Boolean.compare((boolean) key1, (boolean) key2) < 0) {
+      return -1;
+    } else if (Boolean.compare((boolean) key1, (boolean) key2) > 0) {
+      return 1;
+    } else {
+      return 0;
+    }
   }
 }
 

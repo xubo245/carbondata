@@ -87,6 +87,8 @@ public class ValueEncoderMeta implements Serializable {
     switch (type) {
       case CarbonCommonConstants.BIG_INT_MEASURE:
         return DataType.LONG;
+      case CarbonCommonConstants.BOOLEAN_MEASURE:
+        return DataType.BOOLEAN;
       case CarbonCommonConstants.DOUBLE_MEASURE:
         return DataType.DOUBLE;
       case CarbonCommonConstants.BIG_DECIMAL_MEASURE:
