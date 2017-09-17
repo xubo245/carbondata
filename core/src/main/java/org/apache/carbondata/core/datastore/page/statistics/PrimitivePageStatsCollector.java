@@ -146,6 +146,7 @@ public class PrimitivePageStatsCollector implements ColumnPageStatsCollector, Si
       case BOOLEAN:
         maxBoolean = Boolean.TRUE;
         minBoolean = Boolean.FALSE;
+        break;
       case BYTE:
         minByte = Byte.MAX_VALUE;
         maxByte = Byte.MIN_VALUE;
@@ -185,6 +186,7 @@ public class PrimitivePageStatsCollector implements ColumnPageStatsCollector, Si
     switch (dataType) {
       case BOOLEAN:
         update(BooleanConvert.byte2Boolean((int) value));
+        break;
       case BYTE:
         update((byte) value);
         break;
