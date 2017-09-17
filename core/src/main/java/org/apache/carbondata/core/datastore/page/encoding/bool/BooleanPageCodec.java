@@ -62,7 +62,6 @@ public class BooleanPageCodec implements ColumnPageCodec {
   @Override
   public ColumnPageDecoder createDecoder(ColumnPageEncoderMeta meta) {
     assert meta instanceof BooleanEncoderMeta;
-    BooleanEncoderMeta codecMeta = (BooleanEncoderMeta) meta;
     return new BooleanPageCodec.BooleanDecompressor(meta);
 
   }
@@ -97,15 +96,6 @@ public class BooleanPageCodec implements ColumnPageCodec {
 
   private class BooleanDecompressor implements ColumnPageDecoder {
 
-    private Compressor compressor;
-    private int scale;
-    private int precision;
-
-    BooleanDecompressor(String compressorName, int scale, int precision) {
-      this.compressor = CompressorFactory.getInstance().getCompressor(compressorName);
-      this.scale = scale;
-      this.precision = precision;
-    }
     private ColumnPageEncoderMeta meta;
 
     BooleanDecompressor(ColumnPageEncoderMeta meta) {
