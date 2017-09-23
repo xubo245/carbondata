@@ -90,6 +90,8 @@ public abstract class AbstractScannedResultCollector implements ScannedResultCol
       CarbonMeasure carbonMeasure) {
     if (!dataChunk.getNullBits().get(index)) {
       switch (carbonMeasure.getDataType()) {
+        case BOOLEAN:
+          return dataChunk.getBoolean(index);
         case SHORT:
           return (short)dataChunk.getLong(index);
         case INT:
