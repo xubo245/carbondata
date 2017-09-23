@@ -118,7 +118,8 @@ public class MeasureDataVectorProcessor {
     }
 
     @Override
-    public void fillMeasureVectorForFilter(int[] rowMapping, ColumnPage dataChunk, ColumnVectorInfo info) {
+    public void fillMeasureVectorForFilter(int[] rowMapping,
+        ColumnPage dataChunk, ColumnVectorInfo info) {
       int offset = info.offset;
       int len = offset + info.size;
       int vectorOffset = info.vectorOffset;

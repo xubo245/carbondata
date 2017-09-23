@@ -273,7 +273,8 @@ public abstract class ColumnPage {
     return columnPage;
   }
 
-  private static ColumnPage newBooleanPage(TableSpec.ColumnSpec columnSpec, byte[] booleanData, int length) {
+  private static ColumnPage newBooleanPage(TableSpec.ColumnSpec columnSpec,
+      byte[] booleanData, int length) {
     ColumnPage columnPage = createPage(columnSpec, BOOLEAN, length);
     columnPage.setBooleanPage(booleanData);
     return columnPage;

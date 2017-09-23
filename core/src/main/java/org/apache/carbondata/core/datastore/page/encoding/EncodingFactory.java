@@ -91,7 +91,7 @@ public abstract class EncodingFactory {
       metadata.readFields(in);
       return new RLECodec().createDecoder(metadata);
     } else if (encoding == BOOL_BYTE) {
-      BooleanEncoderMeta metadata=new BooleanEncoderMeta();
+      BooleanEncoderMeta metadata = new BooleanEncoderMeta();
       metadata.readFields(in);
       return new BooleanPageCodec(metadata.getSchemaDataType()).createDecoder(metadata);
     } else {
@@ -156,7 +156,8 @@ public abstract class EncodingFactory {
             new ColumnPageEncoderMeta(spec, stats.getDataType(), stats, compressor));
       case BOOLEAN:
         codec = new BooleanPageCodec();
-        BooleanEncoderMeta meta = new BooleanEncoderMeta(spec, stats.getDataType(), stats, compressor);
+        BooleanEncoderMeta meta = new BooleanEncoderMeta(spec,
+                stats.getDataType(), stats, compressor);
         return codec.createDecoder(meta);
       default:
         throw new RuntimeException("unsupported data type: " + stats.getDataType());
