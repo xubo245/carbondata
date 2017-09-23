@@ -1,3 +1,19 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.apache.carbondata.spark.testsuite.booleantype
 
 import java.io.File
@@ -30,16 +46,18 @@ class BooleanDataTypesFilterTest extends QueryTest with BeforeAndAfterEach with 
     sql(
       s"""
          | CREATE TABLE boolean_table(
-         |    shortField short,
-         |    booleanField boolean,
-         |    intField int,
-         |    bigintField bigint,
-         |    doubleField double,
-         |    stringField string,
-         |    timestampField timestamp,
-         |    decimalField decimal(18,2),
-         |    dateField date,
-         |    charField char
+         | shortField SHORT,
+         | booleanField BOOLEAN,
+         | intField INT,
+         | bigintField LONG,
+         | doubleField DOUBLE,
+         | stringField STRING,
+         | timestampField TIMESTAMP,
+         | decimalField DECIMAL(18,2),
+         | dateField DATE,
+         | charField CHAR(5),
+         | floatField FLOAT,
+         | complexData ARRAY<STRING>
          | )
          | STORED BY 'carbondata'
          | TBLPROPERTIES('sort_columns'='','DICTIONARY_INCLUDE'='dateField, charField')
@@ -48,7 +66,7 @@ class BooleanDataTypesFilterTest extends QueryTest with BeforeAndAfterEach with 
       s"""
          | LOAD DATA LOCAL INPATH '${booleanLocation}'
          | INTO TABLE boolean_table
-         | options('FILEHEADER'='shortField,booleanField,intField,bigintField,doubleField,stringField,timestampField,decimalField,dateField,charField')
+         | options('FILEHEADER'='shortField,booleanField,intField,bigintField,doubleField,stringField,timestampField,decimalField,dateField,charField,floatField,complexData')
        """.stripMargin)
   }
 
@@ -242,7 +260,6 @@ class BooleanDataTypesFilterTest extends QueryTest with BeforeAndAfterEach with 
       Seq(Row(null), Row(null), Row(null)))
   }
 
-
   test("Filtering table: support boolean and other data type, and") {
     checkAnswer(sql("select count(*) from boolean_table where booleanField = false and shortField = 1"),
       Row(3))
@@ -259,6 +276,56 @@ class BooleanDataTypesFilterTest extends QueryTest with BeforeAndAfterEach with 
       Row(6))
   }
 
+  test("Filtering table: support boolean, like") {
+    checkAnswer(sql("select * from carbon_table where booleanField like 't%'"),
+      Seq(Row(true), Row(true), Row(true), Row(true)))
+
+    checkAnswer(sql("select * from carbon_table where booleanField like 'tru%'"),
+      Seq(Row(true), Row(true), Row(true), Row(true)))
+
+    checkAnswer(sql("select * from carbon_table where booleanField like '%ue'"),
+      Seq(Row(true), Row(true), Row(true), Row(true)))
+
+    checkAnswer(sql("select count(*) from carbon_table where booleanField like 't%'"),
+      Row(4))
+
+    checkAnswer(sql("select count(*) from carbon_table where booleanField like 'T%'"),
+      Row(0))
+
+    checkAnswer(sql("select * from carbon_table where booleanField like 'f%'"),
+      Seq(Row(false), Row(false), Row(false), Row(false)))
+
+    checkAnswer(sql("select count(*) from carbon_table where booleanField like 'f%'"),
+      Row(4))
+
+    checkAnswer(sql("select count(*) from carbon_table where booleanField like 'F%'"),
+      Row(0))
+
+    checkAnswer(sql("select count(*) from carbon_table where booleanField like 'n%'"),
+      Row(0))
+
+    checkAnswer(sql("select count(*) from carbon_table where booleanField like 'f%' or booleanField like 't%'"),
+      Row(8))
+
+    checkAnswer(sql("select count(*) from carbon_table where booleanField like '%e'"),
+      Row(8))
+
+    checkAnswer(sql("select count(*) from carbon_table where booleanField like '%a%'"),
+      Row(4))
+
+    checkAnswer(sql("select count(*) from carbon_table where booleanField like '%z%'"),
+      Row(0))
+
+    checkAnswer(sql("select count(*) from carbon_table where booleanField like '%e'"),
+      Row(8))
+
+    checkAnswer(sql("select count(*) from carbon_table where booleanField like '_rue'"),
+      Row(4))
+
+    checkAnswer(sql("select count(*) from carbon_table where booleanField like 'f___e'"),
+      Row(4))
+  }
+
   test("Filtering table: support boolean and other data type, two boolean column") {
     sql("drop table if exists boolean_table2")
     val rootPath = new File(this.getClass.getResource("/").getPath
@@ -267,17 +334,19 @@ class BooleanDataTypesFilterTest extends QueryTest with BeforeAndAfterEach with 
     sql(
       s"""
          | CREATE TABLE boolean_table2(
-         |    shortField short,
-         |    booleanField boolean,
-         |    intField int,
-         |    bigintField bigint,
-         |    doubleField double,
-         |    stringField string,
-         |    timestampField timestamp,
-         |    decimalField decimal(18,2),
-         |    dateField date,
-         |    charField char(5),
-         |    booleanField2 boolean
+         | shortField SHORT,
+         | booleanField BOOLEAN,
+         | intField INT,
+         | bigintField LONG,
+         | doubleField DOUBLE,
+         | stringField STRING,
+         | timestampField TIMESTAMP,
+         | decimalField DECIMAL(18,2),
+         | dateField DATE,
+         | charField CHAR(5),
+         | floatField FLOAT,
+         | complexData ARRAY<STRING>,
+         | booleanField2 BOOLEAN
          | )
          | STORED BY 'carbondata'
          | TBLPROPERTIES('sort_columns'='','DICTIONARY_INCLUDE'='dateField, charField')
@@ -307,17 +376,19 @@ class BooleanDataTypesFilterTest extends QueryTest with BeforeAndAfterEach with 
     sql(
       s"""
          | CREATE TABLE boolean_table2(
-         |    shortField short,
-         |    booleanField boolean,
-         |    intField int,
-         |    bigintField bigint,
-         |    doubleField double,
-         |    stringField string,
-         |    timestampField timestamp,
-         |    decimalField decimal(18,2),
-         |    dateField date,
-         |    charField char(5),
-         |    booleanField2 boolean
+         | shortField SHORT,
+         | booleanField BOOLEAN,
+         | intField INT,
+         | bigintField LONG,
+         | doubleField DOUBLE,
+         | stringField STRING,
+         | timestampField TIMESTAMP,
+         | decimalField DECIMAL(18,2),
+         | dateField DATE,
+         | charField CHAR(5),
+         | floatField FLOAT,
+         | complexData ARRAY<STRING>,
+         | booleanField2 BOOLEAN
          | )
          | STORED BY 'carbondata'
          | TBLPROPERTIES('sort_columns'='','DICTIONARY_INCLUDE'='dateField, charField')
@@ -344,4 +415,5 @@ class BooleanDataTypesFilterTest extends QueryTest with BeforeAndAfterEach with 
       Row(2))
     sql("drop table if exists boolean_table2")
   }
+
 }
