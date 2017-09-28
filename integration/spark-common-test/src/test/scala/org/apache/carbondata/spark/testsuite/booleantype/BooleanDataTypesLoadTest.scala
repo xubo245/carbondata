@@ -228,7 +228,7 @@ class BooleanDataTypesLoadTest extends QueryTest with BeforeAndAfterEach with Be
     )
   }
 
-  test("Loading table: DICTIONARY_EXCLUDE,support boolean and other data type") {
+  test("Loading table: create with DICTIONARY_EXCLUDE, TABLE_BLOCKSIZE, NO_INVERTED_INDEX, SORT_SCOPE") {
     sql(
       s"""
          | CREATE TABLE boolean_table(
@@ -247,7 +247,7 @@ class BooleanDataTypesLoadTest extends QueryTest with BeforeAndAfterEach with Be
          | booleanField2 BOOLEAN
          | )
          | STORED BY 'carbondata'
-         | TBLPROPERTIES('sort_columns'='','DICTIONARY_EXCLUDE'='charField','TABLE_BLOCKSIZE'='512','NO_INVERTED_INDEX'='charField')
+         | TBLPROPERTIES('sort_columns'='','DICTIONARY_EXCLUDE'='charField','TABLE_BLOCKSIZE'='512','NO_INVERTED_INDEX'='charField', 'SORT_SCOPE'='GLOBAL_SORT')
        """.stripMargin)
 
     val storeLocation = s"$rootPath/integration/spark-common-test/src/test/resources/bool/supportBoolean.csv"
@@ -264,7 +264,146 @@ class BooleanDataTypesLoadTest extends QueryTest with BeforeAndAfterEach with Be
         Row(true, 10), Row(true, 10), Row(true, 14),
         Row(false, 10), Row(false, 10), Row(false, 16), Row(false, 10))
     )
+
+    checkAnswer(sql("select booleanField from boolean_table where booleanField = true"),
+      Seq(Row(true), Row(true), Row(true), Row(true)))
+
+    checkAnswer(sql("select count(*) from boolean_table where booleanField = true"),
+      Row(4))
+
+    checkAnswer(sql("select count(*) from boolean_table where booleanField = 'true'"),
+      Row(0))
+
+    checkAnswer(sql(
+      s"""
+         |select count(*)
+         |from boolean_table where booleanField = \"true\"
+         |""".stripMargin),
+      Row(0))
+
+    checkAnswer(sql("select booleanField from boolean_table where booleanField = false"),
+      Seq(Row(false), Row(false), Row(false), Row(false), Row(false), Row(false)))
+
+    checkAnswer(sql("select count(*) from boolean_table where booleanField = false"),
+      Row(6))
+
+    checkAnswer(sql("select count(*) from boolean_table where booleanField = 'false'"),
+      Row(0))
+
+    checkAnswer(sql("select count(*) from boolean_table where booleanField = null"),
+      Row(0))
+
+    checkAnswer(sql("select count(*) from boolean_table where booleanField = false or booleanField = true"),
+      Row(10))
   }
+
+  test("Loading table: load with DELIMITER, QUOTECHAR, COMMENTCHAR, MULTILINE, ESCAPECHAR, COMPLEX_DELIMITER_LEVEL_1, SINGLE_PASS") {
+    sql(
+      s"""
+         | CREATE TABLE boolean_table(
+         | shortField SHORT,
+         | booleanField BOOLEAN,
+         | intField INT,
+         | bigintField LONG,
+         | doubleField DOUBLE,
+         | stringField STRING,
+         | timestampField TIMESTAMP,
+         | decimalField DECIMAL(18,2),
+         | dateField DATE,
+         | charField CHAR(5),
+         | floatField FLOAT,
+         | complexData ARRAY<STRING>
+         | )
+         | STORED BY 'carbondata'
+         | TBLPROPERTIES('sort_columns'='','DICTIONARY_EXCLUDE'='charField','TABLE_BLOCKSIZE'='512','NO_INVERTED_INDEX'='charField', 'SORT_SCOPE'='GLOBAL_SORT')
+       """.stripMargin)
+
+    val storeLocation = s"$rootPath/integration/spark-common-test/src/test/resources/bool/supportBooleanWithFileHeader.csv"
+    sql(
+      s"""
+         | LOAD DATA LOCAL INPATH '${storeLocation}'
+         | INTO TABLE boolean_table
+         | options('DELIMITER'=',','QUOTECHAR'='"','COMMENTCHAR'='#','MULTILINE'='true','ESCAPECHAR'='\','COMPLEX_DELIMITER_LEVEL_1'='#','COMPLEX_DELIMITER_LEVEL_2'=':','SINGLE_PASS'='TRUE')
+           """.stripMargin)
+
+    checkAnswer(
+      sql("select booleanField,intField from boolean_table"),
+      Seq(Row(true, 10), Row(false, 17), Row(false, 11),
+        Row(true, 10), Row(true, 10), Row(true, 14),
+        Row(false, 10), Row(false, 10), Row(false, 16), Row(false, 10))
+    )
+
+    checkAnswer(sql("select booleanField from boolean_table where booleanField = true"),
+      Seq(Row(true), Row(true), Row(true), Row(true)))
+
+    checkAnswer(sql("select count(*) from boolean_table where booleanField = true"),
+      Row(4))
+
+    checkAnswer(sql("select count(*) from boolean_table where booleanField = 'true'"),
+      Row(0))
+
+    checkAnswer(sql(
+      s"""
+         |select count(*)
+         |from boolean_table where booleanField = \"true\"
+         |""".stripMargin),
+      Row(0))
+
+    checkAnswer(sql("select booleanField from boolean_table where booleanField = false"),
+      Seq(Row(false), Row(false), Row(false), Row(false), Row(false), Row(false)))
+
+    checkAnswer(sql("select count(*) from boolean_table where booleanField = false"),
+      Row(6))
+
+    checkAnswer(sql("select count(*) from boolean_table where booleanField = 'false'"),
+      Row(0))
+
+    checkAnswer(sql("select count(*) from boolean_table where booleanField = null"),
+      Row(0))
+
+    checkAnswer(sql("select count(*) from boolean_table where booleanField = false or booleanField = true"),
+      Row(10))
+  }
+
+  test("Loading table: bad_records_action is FORCE") {
+    val fileLocation = s"$rootPath/integration/spark-common-test/src/test/resources/bool/supportBooleanDifferentFormat.csv"
+    sql(
+      s"""
+         | LOAD DATA LOCAL INPATH '$fileLocation'
+         | INTO TABLE carbon_table
+         | OPTIONS('FILEHEADER' = 'booleanField','bad_records_logger_enable'='true','bad_records_action'='FORCE')
+       """.stripMargin)
+
+    checkAnswer(sql("select * from carbon_table where booleanField = true"),
+      Seq(Row(true), Row(true), Row(true), Row(true)))
+
+    checkAnswer(sql("select * from carbon_table"),
+      Seq(Row(true), Row(true), Row(true), Row(true),
+        Row(false), Row(false), Row(false), Row(false),
+        Row(null), Row(null), Row(null), Row(null), Row(null), Row(null),
+        Row(null), Row(null), Row(null), Row(null), Row(null), Row(null)))
+  }
+
+  ignore("Loading table: bad_records_action is FAIL") {
+    val fileLocation = s"$rootPath/integration/spark-common-test/src/test/resources/bool/supportBooleanDifferentFormat.csv"
+    sql(
+      s"""
+         | LOAD DATA LOCAL INPATH '$fileLocation'
+         | INTO TABLE carbon_table
+         | OPTIONS('FILEHEADER' = 'booleanField','bad_records_logger_enable'='true','bad_records_action'='IGNORE')
+       """.stripMargin)
+
+    sql("select * from carbon_table").show()
+    checkAnswer(sql("select * from carbon_table where booleanField = true"),
+      Seq(Row(true), Row(true), Row(true), Row(true)))
+
+    checkAnswer(sql("select * from carbon_table"),
+      Seq(Row(true), Row(true), Row(true), Row(true),
+        Row(false), Row(false), Row(false), Row(false),
+        Row(null), Row(null), Row(null), Row(null), Row(null), Row(null),
+        Row(null), Row(null), Row(null), Row(null), Row(null), Row(null)))
+  }
+
 
   test("Loading overwrite: into and then overwrite table with another table: support boolean data type and other format") {
     sql(
