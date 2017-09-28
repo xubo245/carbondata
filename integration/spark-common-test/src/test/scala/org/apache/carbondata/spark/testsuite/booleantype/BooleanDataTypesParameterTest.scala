@@ -46,6 +46,12 @@ class BooleanDataTypesParameterTest extends QueryTest with BeforeAndAfterEach wi
   val rootPath = new File(this.getClass.getResource("/").getPath
     + "../../../..").getCanonicalPath
 
+  override def beforeAll(): Unit = {
+    CarbonProperties.getInstance().
+      addProperty(CarbonCommonConstants.COMPACTION_SEGMENT_LEVEL_THRESHOLD,
+        CarbonCommonConstants.DEFAULT_SEGMENT_LEVEL_THRESHOLD)
+  }
+
   override def afterAll(): Unit = {
     sql("drop table if exists boolean_one_column")
     sql("drop table if exists boolean_table")
@@ -139,30 +145,14 @@ class BooleanDataTypesParameterTest extends QueryTest with BeforeAndAfterEach wi
        """.stripMargin)
 
     val storeLocation = s"$rootPath/integration/spark-common-test/src/test/resources/bool/supportBoolean.csv"
-    sql(
-      s"""
-         | LOAD DATA LOCAL INPATH '${storeLocation}'
-         | INTO TABLE boolean_table
-         | options('FILEHEADER'='shortField,booleanField,intField,bigintField,doubleField,stringField,timestampField,decimalField,dateField,charField,floatField,complexData,booleanField2')
+    for (i <- 0 until 4) {
+      sql(
+        s"""
+           | LOAD DATA LOCAL INPATH '${storeLocation}'
+           | INTO TABLE boolean_table
+           | options('FILEHEADER'='shortField,booleanField,intField,bigintField,doubleField,stringField,timestampField,decimalField,dateField,charField,floatField,complexData,booleanField2')
            """.stripMargin)
-    sql(
-      s"""
-         | LOAD DATA LOCAL INPATH '${storeLocation}'
-         | INTO TABLE boolean_table
-         | options('FILEHEADER'='shortField,booleanField,intField,bigintField,doubleField,stringField,timestampField,decimalField,dateField,charField,floatField,complexData,booleanField2')
-           """.stripMargin)
-    sql(
-      s"""
-         | LOAD DATA LOCAL INPATH '${storeLocation}'
-         | INTO TABLE boolean_table
-         | options('FILEHEADER'='shortField,booleanField,intField,bigintField,doubleField,stringField,timestampField,decimalField,dateField,charField,floatField,complexData,booleanField2')
-           """.stripMargin)
-    sql(
-      s"""
-         | LOAD DATA LOCAL INPATH '${storeLocation}'
-         | INTO TABLE boolean_table
-         | options('FILEHEADER'='shortField,booleanField,intField,bigintField,doubleField,stringField,timestampField,decimalField,dateField,charField,floatField,complexData,booleanField2')
-           """.stripMargin)
+    }
 
     checkAnswer(
       sql("select count(*) from boolean_table"),
@@ -176,7 +166,7 @@ class BooleanDataTypesParameterTest extends QueryTest with BeforeAndAfterEach wi
       CarbonCommonConstants.DEFAULT_ENABLE_AUTO_LOAD_MERGE)
   }
 
-  ignore("ENABLE_AUTO_LOAD_MERGE: true, and Loading table: support boolean and other data type") {
+  test("ENABLE_AUTO_LOAD_MERGE: true, and Loading table: support boolean and other data type") {
     //unfinish
     CarbonProperties.getInstance().addProperty(CarbonCommonConstants.ENABLE_AUTO_LOAD_MERGE, "true")
     sql(
@@ -193,38 +183,21 @@ class BooleanDataTypesParameterTest extends QueryTest with BeforeAndAfterEach wi
          | dateField DATE,
          | charField CHAR(5),
          | floatField FLOAT,
-         | complexData ARRAY<STRING>,
          | booleanField2 BOOLEAN
          | )
          | STORED BY 'carbondata'
          | TBLPROPERTIES('sort_columns'='','DICTIONARY_INCLUDE'='dateField, charField')
        """.stripMargin)
 
-    val storeLocation = s"$rootPath/integration/spark-common-test/src/test/resources/bool/supportBoolean.csv"
-    sql(
-      s"""
-         | LOAD DATA LOCAL INPATH '${storeLocation}'
-         | INTO TABLE boolean_table
-         | options('FILEHEADER'='shortField,booleanField,intField,bigintField,doubleField,stringField,timestampField,decimalField,dateField,charField,floatField,complexData,booleanField2')
+    val storeLocation = s"$rootPath/integration/spark-common-test/src/test/resources/bool/supportBooleanTwoBooleanColumns.csv"
+    for (i <- 0 until 4) {
+      sql(
+        s"""
+           | LOAD DATA LOCAL INPATH '${storeLocation}'
+           | INTO TABLE boolean_table
+           | options('FILEHEADER'='shortField,booleanField,intField,bigintField,doubleField,stringField,timestampField,decimalField,dateField,charField,floatField,complexData,booleanField2')
            """.stripMargin)
-    sql(
-      s"""
-         | LOAD DATA LOCAL INPATH '${storeLocation}'
-         | INTO TABLE boolean_table
-         | options('FILEHEADER'='shortField,booleanField,intField,bigintField,doubleField,stringField,timestampField,decimalField,dateField,charField,floatField,complexData,booleanField2')
-           """.stripMargin)
-    sql(
-      s"""
-         | LOAD DATA LOCAL INPATH '${storeLocation}'
-         | INTO TABLE boolean_table
-         | options('FILEHEADER'='shortField,booleanField,intField,bigintField,doubleField,stringField,timestampField,decimalField,dateField,charField,floatField,complexData,booleanField2')
-           """.stripMargin)
-    sql(
-      s"""
-         | LOAD DATA LOCAL INPATH '${storeLocation}'
-         | INTO TABLE boolean_table
-         | options('FILEHEADER'='shortField,booleanField,intField,bigintField,doubleField,stringField,timestampField,decimalField,dateField,charField,floatField,complexData,booleanField2')
-           """.stripMargin)
+    }
 
     checkAnswer(
       sql("select count(*) from boolean_table"),
@@ -232,13 +205,13 @@ class BooleanDataTypesParameterTest extends QueryTest with BeforeAndAfterEach wi
     )
     val segments = sql("SHOW SEGMENTS FOR TABLE boolean_table")
     val SegmentSequenceIds = segments.collect().map { each => (each.toSeq) (0) }
-    assert(!SegmentSequenceIds.contains("0.1"))
-    assert(SegmentSequenceIds.length == 4)
+    assert(SegmentSequenceIds.contains("0.1"))
+    assert(SegmentSequenceIds.length == 5)
     CarbonProperties.getInstance().addProperty(CarbonCommonConstants.ENABLE_AUTO_LOAD_MERGE,
       CarbonCommonConstants.DEFAULT_ENABLE_AUTO_LOAD_MERGE)
   }
 
-  ignore("ENABLE_AUTO_LOAD_MERGE: false, and sort column") {
+  test("ENABLE_AUTO_LOAD_MERGE: false, and sort_columns is boolean") {
     sql("drop table if exists boolean_one_column")
     sql(
       s"""CREATE TABLE if not exists boolean_one_column(
@@ -277,4 +250,42 @@ class BooleanDataTypesParameterTest extends QueryTest with BeforeAndAfterEach wi
       CarbonCommonConstants.DEFAULT_ENABLE_AUTO_LOAD_MERGE)
   }
 
+  test("ENABLE_AUTO_LOAD_MERGE: true, and sort_columns is boolean") {
+    sql("drop table if exists boolean_one_column")
+    sql(
+      s"""CREATE TABLE if not exists boolean_one_column(
+         |booleanField BOOLEAN)
+         |STORED BY 'carbondata'
+         |TBLPROPERTIES('sort_columns'='booleanField','SORT_SCOPE'='GLOBAL_SORT')
+         |""".stripMargin)
+    CarbonProperties.getInstance().addProperty(CarbonCommonConstants.ENABLE_AUTO_LOAD_MERGE, "true")
+    sql("insert into boolean_one_column values(true)")
+    sql("insert into boolean_one_column values(True)")
+    sql("insert into boolean_one_column values(TRUE)")
+    sql("insert into boolean_one_column values('true')")
+    sql("insert into boolean_one_column values(False)")
+    sql("insert into boolean_one_column values(false)")
+    sql("insert into boolean_one_column values(FALSE)")
+    sql("insert into boolean_one_column values('false')")
+    sql("insert into boolean_one_column values('tr')")
+    sql("insert into boolean_one_column values(null)")
+    sql("insert into boolean_one_column values('truEe')")
+    sql("insert into boolean_one_column values('falsEe')")
+    sql("insert into boolean_one_column values('t')")
+    sql("insert into boolean_one_column values('f')")
+
+    checkAnswer(
+      sql("select * from boolean_one_column"),
+      Seq(Row(true), Row(true), Row(true), Row(true),
+        Row(false), Row(false), Row(false), Row(false),
+        Row(null), Row(null), Row(null), Row(null), Row(null), Row(null))
+    )
+
+    val segments = sql("SHOW SEGMENTS FOR TABLE boolean_one_column")
+    val SegmentSequenceIds = segments.collect().map { each => (each.toSeq) (0) }
+    assert(SegmentSequenceIds.contains("0.1"))
+    assert(SegmentSequenceIds.length == 18)
+    CarbonProperties.getInstance().addProperty(CarbonCommonConstants.ENABLE_AUTO_LOAD_MERGE,
+      CarbonCommonConstants.DEFAULT_ENABLE_AUTO_LOAD_MERGE)
+  }
 }

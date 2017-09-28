@@ -390,7 +390,7 @@ public final class DataTypeUtil {
       case STRING:
         return ByteUtil.toBytes(dimensionValue);
       case BOOLEAN:
-        return ByteUtil.toBytes(Boolean.parseBoolean(dimensionValue));
+        return ByteUtil.toBytes(BooleanConvert.parseBoolean(dimensionValue));
       case SHORT:
         return ByteUtil.toBytes(Short.parseShort(dimensionValue));
       case INT:

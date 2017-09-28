@@ -23,10 +23,6 @@ import org.apache.carbondata.core.util.CarbonProperty;
 
 public final class CarbonCommonConstants {
   /**
-   * Boolean size in bytes
-   */
-  public static final int BOOLEAN_SIZE_IN_BYTE = 1;
-  /**
    * integer size in bytes
    */
   public static final int INT_SIZE_IN_BYTE = 4;

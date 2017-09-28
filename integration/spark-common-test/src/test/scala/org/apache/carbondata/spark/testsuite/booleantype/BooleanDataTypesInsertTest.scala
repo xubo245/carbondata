@@ -243,6 +243,198 @@ class BooleanDataTypesInsertTest extends QueryTest with BeforeAndAfterEach with 
     )
   }
 
+  test("Inserting with the order of data type in source and target table columns being different") {
+    sql(
+      s"""
+         | CREATE TABLE boolean_table(
+         | shortField SHORT,
+         | booleanField BOOLEAN,
+         | intField INT,
+         | bigintField LONG,
+         | doubleField DOUBLE,
+         | stringField STRING,
+         | timestampField TIMESTAMP,
+         | decimalField DECIMAL(18,2),
+         | dateField DATE,
+         | charField CHAR(5),
+         | floatField FLOAT,
+         | complexData ARRAY<STRING>,
+         | booleanField2 BOOLEAN
+         | )
+         | STORED BY 'carbondata'
+         | TBLPROPERTIES('sort_columns'='','DICTIONARY_INCLUDE'='dateField, charField')
+       """.stripMargin)
+
+    sql(
+      s"""
+         | CREATE TABLE boolean_table2(
+         | booleanField BOOLEAN,
+         | shortField SHORT,
+         | intField INT,
+         | bigintField LONG,
+         | doubleField DOUBLE,
+         | stringField STRING,
+         | timestampField TIMESTAMP,
+         | decimalField DECIMAL(18,2),
+         | dateField DATE,
+         | charField CHAR(5),
+         | floatField FLOAT,
+         | complexData ARRAY<STRING>,
+         | booleanField2 BOOLEAN
+         | )
+         | STORED BY 'carbondata'
+         | TBLPROPERTIES('sort_columns'='','DICTIONARY_INCLUDE'='dateField, charField')
+       """.stripMargin)
+
+    val rootPath = new File(this.getClass.getResource("/").getPath
+      + "../../../..").getCanonicalPath
+    val storeLocation = s"$rootPath/integration/spark-common-test/src/test/resources/bool/supportBooleanTwoBooleanColumns.csv"
+
+    sql(
+      s"""
+         | LOAD DATA LOCAL INPATH '${storeLocation}'
+         | INTO TABLE boolean_table
+         | options('FILEHEADER'='shortField,booleanField,intField,bigintField,doubleField,stringField,timestampField,decimalField,dateField,charField,floatField,complexData,booleanField2')
+           """.stripMargin)
+
+    sql("insert into boolean_table2 select * from boolean_table")
+
+    checkAnswer(
+      sql("select booleanField,intField from boolean_table2"),
+      Seq(Row(null, 10), Row(null, 17), Row(null, 11),
+        Row(null, 10), Row(null, 10), Row(null, 14),
+        Row(null, 10), Row(null, 10), Row(null, 16), Row(null, 10))
+    )
+
+    checkAnswer(
+      sql("select booleanField,intField,booleanField2 from boolean_table2"),
+      Seq(Row(null, 10, true), Row(null, 17, true), Row(null, 11, true),
+        Row(null, 10, true), Row(null, 10, true), Row(null, 14, false),
+        Row(null, 10, false), Row(null, 10, false), Row(null, 16, false), Row(null, 10, false))
+    )
+  }
+
+  test("Inserting with the number of data type in source and target table columns being different, source more than target") {
+    sql(
+      s"""
+         | CREATE TABLE boolean_table(
+         | shortField SHORT,
+         | booleanField BOOLEAN,
+         | intField INT,
+         | bigintField LONG,
+         | doubleField DOUBLE,
+         | stringField STRING,
+         | timestampField TIMESTAMP,
+         | decimalField DECIMAL(18,2),
+         | dateField DATE,
+         | charField CHAR(5),
+         | floatField FLOAT,
+         | complexData ARRAY<STRING>,
+         | booleanField2 BOOLEAN
+         | )
+         | STORED BY 'carbondata'
+         | TBLPROPERTIES('sort_columns'='','DICTIONARY_INCLUDE'='dateField, charField')
+       """.stripMargin)
+
+    sql(
+      s"""
+         | CREATE TABLE boolean_table2(
+         | shortField SHORT,
+         | booleanField BOOLEAN,
+         | intField INT,
+         | bigintField LONG,
+         | doubleField DOUBLE,
+         | stringField STRING,
+         | timestampField TIMESTAMP,
+         | decimalField DECIMAL(18,2),
+         | dateField DATE,
+         | charField CHAR(5),
+         | floatField FLOAT,
+         | booleanField2 BOOLEAN
+         | )
+         | STORED BY 'carbondata'
+         | TBLPROPERTIES('sort_columns'='','DICTIONARY_INCLUDE'='dateField, charField')
+       """.stripMargin)
+
+    val rootPath = new File(this.getClass.getResource("/").getPath
+      + "../../../..").getCanonicalPath
+    val storeLocation = s"$rootPath/integration/spark-common-test/src/test/resources/bool/supportBooleanTwoBooleanColumns.csv"
+
+    sql(
+      s"""
+         | LOAD DATA LOCAL INPATH '${storeLocation}'
+         | INTO TABLE boolean_table
+         | options('FILEHEADER'='shortField,booleanField,intField,bigintField,doubleField,stringField,timestampField,decimalField,dateField,charField,floatField,complexData,booleanField2')
+           """.stripMargin)
+
+    sql("insert into boolean_table2 select * from boolean_table")
+    sql("select * from boolean_table2").show()
+    checkAnswer(
+      sql("select booleanField,intField,booleanField2 from boolean_table2"),
+      Seq(Row(true, 10, null), Row(false, 17, null), Row(false, 11, null),
+        Row(true, 10, null), Row(true, 10, null), Row(true, 14, null),
+        Row(false, 10, null), Row(false, 10, null), Row(false, 16, null), Row(false, 10, null))
+    )
+  }
+
+  test("Inserting with the number of data type in source and target table columns being different, source less than target") {
+    val exception_insert: Exception =intercept[Exception] {
+      sql(
+        s"""
+           | CREATE TABLE boolean_table(
+           | shortField SHORT,
+           | booleanField BOOLEAN,
+           | intField INT,
+           | bigintField LONG,
+           | doubleField DOUBLE,
+           | stringField STRING,
+           | timestampField TIMESTAMP,
+           | decimalField DECIMAL(18,2),
+           | dateField DATE,
+           | charField CHAR(5),
+           | floatField FLOAT,
+           | complexData ARRAY<STRING>
+           | )
+           | STORED BY 'carbondata'
+           | TBLPROPERTIES('sort_columns'='','DICTIONARY_INCLUDE'='dateField, charField')
+       """.stripMargin)
+
+      sql(
+        s"""
+           | CREATE TABLE boolean_table2(
+           | shortField SHORT,
+           | booleanField BOOLEAN,
+           | intField INT,
+           | bigintField LONG,
+           | doubleField DOUBLE,
+           | stringField STRING,
+           | timestampField TIMESTAMP,
+           | decimalField DECIMAL(18,2),
+           | dateField DATE,
+           | charField CHAR(5),
+           | floatField FLOAT,
+           | complexData ARRAY<STRING>,
+           | booleanField2 BOOLEAN
+           | )
+           | STORED BY 'carbondata'
+           | TBLPROPERTIES('sort_columns'='','DICTIONARY_INCLUDE'='dateField, charField')
+       """.stripMargin)
+
+      val rootPath = new File(this.getClass.getResource("/").getPath
+        + "../../../..").getCanonicalPath
+      val storeLocation = s"$rootPath/integration/spark-common-test/src/test/resources/bool/supportBooleanTwoBooleanColumns.csv"
+
+      sql(
+        s"""
+           | LOAD DATA LOCAL INPATH '${storeLocation}'
+           | INTO TABLE boolean_table
+           | options('FILEHEADER'='shortField,booleanField,intField,bigintField,doubleField,stringField,timestampField,decimalField,dateField,charField,floatField,complexData,booleanField2')
+           """.stripMargin)
+      sql("insert into boolean_table2 select * from boolean_table")
+    }
+    assert(exception_insert.getMessage.contains("Cannot insert into target table because column number are different"))
+  }
+
   test("Inserting into Hive table from carbon table: support boolean data type and other format") {
     sql(
       s"""

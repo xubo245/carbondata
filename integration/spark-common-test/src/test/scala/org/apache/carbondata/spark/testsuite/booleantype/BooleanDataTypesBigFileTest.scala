@@ -48,7 +48,7 @@ class BooleanDataTypesBigFileTest extends QueryTest with BeforeAndAfterEach with
 
   val pathOfManyDataType = s"$rootPath/integration/spark-common-test/src/test/resources/bool/supportBooleanBigFile.csv"
   val pathOfOnlyBoolean = s"$rootPath/integration/spark-common-test/src/test/resources/bool/supportBooleanBigFileOnlyBoolean.csv"
-  val trueNum = 10000000
+  val trueNum = 10000
 
   override def beforeAll(): Unit = {
     assert(BooleanFile.createBooleanFileWithOtherDataType(pathOfManyDataType, trueNum))
