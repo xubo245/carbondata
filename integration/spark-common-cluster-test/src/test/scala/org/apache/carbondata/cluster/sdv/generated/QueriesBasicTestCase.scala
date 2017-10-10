@@ -4248,12 +4248,33 @@ class QueriesBasicTestCase extends QueryTest with BeforeAndAfterAll {
 
   //PushUP_FILTER_uniqdata_TC076
   test("PushUP_FILTER_uniqdata_TC076", Include) {
+    initTable
+    //    sql("select * from uniqdata").show()
+    //    sql("select * from uniqdata_hive").show()
+    sql("select count(*) from uniqdata").show()
+    sql("select count(*) from uniqdata_hive").show()
+    sql(s"""select covar_samp(1,2) from uniqdata where upper(CUST_NAME)=15 or upper(CUST_NAME) is NULL or upper(CUST_NAME) is NOT NULL""").show()
+    sql(s"""select covar_samp(1,2) from uniqdata_hive where upper(CUST_NAME)=15 or upper(CUST_NAME) is NULL or upper(CUST_NAME) is NOT NULL""").show()
+    //    sql(s"""select * from uniqdata where upper(CUST_NAME)=15 or upper(CUST_NAME) is NULL or upper(CUST_NAME) is NOT NULL""").show(10)
+    //    sql(s"""select * from uniqdata_hive where upper(CUST_NAME)=15 or upper(CUST_NAME) is NULL or upper(CUST_NAME) is NOT NULL""").show(10)
+    //    sql(s"""select count(*) from uniqdata where upper(CUST_NAME)=15 or upper(CUST_NAME) is NULL or upper(CUST_NAME) is NOT NULL""").show()
+    //    sql(s"""select count(*) from uniqdata_hive where upper(CUST_NAME)=15 or upper(CUST_NAME) is NULL or upper(CUST_NAME) is NOT NULL""").show()
 
-    checkAnswer(s"""select covar_samp(1,2) from uniqdata where upper(CUST_NAME)=15 or upper(CUST_NAME) is NULL or upper(CUST_NAME) is NOT NULL""",
+    checkAnswer(
+      s"""select covar_samp(1,2) from uniqdata where upper(CUST_NAME)=15 or upper(CUST_NAME) is NULL or upper(CUST_NAME) is NOT NULL""",
       s"""select covar_samp(1,2) from uniqdata_hive where upper(CUST_NAME)=15 or upper(CUST_NAME) is NULL or upper(CUST_NAME) is NOT NULL""", "QueriesBasicTestCase_PushUP_FILTER_uniqdata_TC076")
 
   }
-
+  test("PushUP_FILTER_uniqdata_TC076 covar_samp", Include) {
+    sql(s"""drop table if exists covar_samp_table""").collect
+    sql(s"""CREATE TABLE covar_samp_table (col1 int, col2 int, col3 int) STORED BY 'org.apache.carbondata.format'""").collect
+    sql("insert into covar_samp_table values(1,2,3) ")
+    sql("insert into covar_samp_table values(5,5,3) ")
+    sql("insert into covar_samp_table values(3,51,13) ")
+    sql("select * from covar_samp_table").show()
+    sql("select covar_samp(1,2) from covar_samp_table").show()
+    sql("select covar_samp(col1,col2) from covar_samp_table").show()
+  }
 
   //PushUP_FILTER_uniqdata_TC077
   test("PushUP_FILTER_uniqdata_TC077", Include) {
@@ -13872,5 +13893,26 @@ class QueriesBasicTestCase extends QueryTest with BeforeAndAfterAll {
     sql("drop table if exists Carbon_automation111111_hive")
     sql("drop table if exists uniqdata_1024mb")
     sql("drop table if exists uniqdata_1024mb_hive")
+  }
+
+
+  def initTable() {
+    sql(s"""drop table if exists uniqdata""").collect
+    sql(s"""drop table if exists uniqdata_hive""").collect
+    sql(s"""CREATE TABLE uniqdata (CUST_ID int,CUST_NAME String,ACTIVE_EMUI_VERSION string, DOB timestamp, DOJ timestamp, BIGINT_COLUMN1 bigint,BIGINT_COLUMN2 bigint,DECIMAL_COLUMN1 decimal(30,10), DECIMAL_COLUMN2 decimal(36,10),Double_COLUMN1 double, Double_COLUMN2 double,INTEGER_COLUMN1 int) STORED BY 'org.apache.carbondata.format' TBLPROPERTIES('DICTIONARY_INCLUDE'='DOB,DOJ')""").collect
+    sql(s"""CREATE TABLE uniqdata_hive (CUST_ID int,CUST_NAME String,ACTIVE_EMUI_VERSION string, DOB timestamp, DOJ timestamp, BIGINT_COLUMN1 bigint,BIGINT_COLUMN2 bigint,DECIMAL_COLUMN1 decimal(30,10), DECIMAL_COLUMN2 decimal(36,10),Double_COLUMN1 double, Double_COLUMN2 double,INTEGER_COLUMN1 int) ROW FORMAT DELIMITED FIELDS TERMINATED BY ','""").collect
+    sql(s"""LOAD DATA INPATH '$resourcesPath/Data/uniqdata/2000_UniqData.csv' into table uniqdata OPTIONS('DELIMITER'=',' , 'QUOTECHAR'='"', 'BAD_RECORDS_ACTION'='FORCE','FILEHEADER'='CUST_ID,CUST_NAME,ACTIVE_EMUI_VERSION,DOB,DOJ,BIGINT_COLUMN1,BIGINT_COLUMN2,DECIMAL_COLUMN1,DECIMAL_COLUMN2,Double_COLUMN1,Double_COLUMN2,INTEGER_COLUMN1')""").collect
+    sql(s"""LOAD DATA INPATH '$resourcesPath/Data/uniqdata/2000_UniqData.csv' into table uniqdata_hive """).collect
+    sql(s"""LOAD DATA INPATH '$resourcesPath/Data/uniqdata/3000_UniqData.csv' into table uniqdata OPTIONS('DELIMITER'=',' , 'QUOTECHAR'='"', 'BAD_RECORDS_ACTION'='FORCE','FILEHEADER'='CUST_ID,CUST_NAME,ACTIVE_EMUI_VERSION,DOB,DOJ,BIGINT_COLUMN1,BIGINT_COLUMN2,DECIMAL_COLUMN1,DECIMAL_COLUMN2,Double_COLUMN1,Double_COLUMN2,INTEGER_COLUMN1')""").collect
+    sql(s"""LOAD DATA INPATH '$resourcesPath/Data/uniqdata/4000_UniqData.csv' into table uniqdata OPTIONS('DELIMITER'=',' , 'QUOTECHAR'='"', 'BAD_RECORDS_ACTION'='FORCE','FILEHEADER'='CUST_ID,CUST_NAME,ACTIVE_EMUI_VERSION,DOB,DOJ,BIGINT_COLUMN1,BIGINT_COLUMN2,DECIMAL_COLUMN1,DECIMAL_COLUMN2,Double_COLUMN1,Double_COLUMN2,INTEGER_COLUMN1')""").collect
+    sql(s"""LOAD DATA INPATH '$resourcesPath/Data/uniqdata/4000_UniqData.csv' into table uniqdata_hive """).collect
+    sql(s"""LOAD DATA INPATH '$resourcesPath/Data/uniqdata/5000_UniqData.csv' into table uniqdata OPTIONS('DELIMITER'=',' , 'QUOTECHAR'='"', 'BAD_RECORDS_ACTION'='FORCE','FILEHEADER'='CUST_ID,CUST_NAME,ACTIVE_EMUI_VERSION,DOB,DOJ,BIGINT_COLUMN1,BIGINT_COLUMN2,DECIMAL_COLUMN1,DECIMAL_COLUMN2,Double_COLUMN1,Double_COLUMN2,INTEGER_COLUMN1')""").collect
+    sql(s"""LOAD DATA INPATH '$resourcesPath/Data/uniqdata/6000_UniqData.csv' into table uniqdata OPTIONS('DELIMITER'=',' , 'QUOTECHAR'='"', 'BAD_RECORDS_ACTION'='FORCE','FILEHEADER'='CUST_ID,CUST_NAME,ACTIVE_EMUI_VERSION,DOB,DOJ,BIGINT_COLUMN1,BIGINT_COLUMN2,DECIMAL_COLUMN1,DECIMAL_COLUMN2,Double_COLUMN1,Double_COLUMN2,INTEGER_COLUMN1')""").collect
+    sql(s"""LOAD DATA INPATH '$resourcesPath/Data/uniqdata/6000_UniqData.csv' into table uniqdata_hive """).collect
+    sql(s"""LOAD DATA INPATH '$resourcesPath/Data/uniqdata/7000_UniqData.csv' into table uniqdata OPTIONS('DELIMITER'=',' , 'QUOTECHAR'='"', 'BAD_RECORDS_ACTION'='FORCE','FILEHEADER'='CUST_ID,CUST_NAME,ACTIVE_EMUI_VERSION,DOB,DOJ,BIGINT_COLUMN1,BIGINT_COLUMN2,DECIMAL_COLUMN1,DECIMAL_COLUMN2,Double_COLUMN1,Double_COLUMN2,INTEGER_COLUMN1')""").collect
+    sql(s"""LOAD DATA INPATH '$resourcesPath/Data/uniqdata/7000_UniqData.csv' into table uniqdata_hive """).collect
+    sql(s"""LOAD DATA INPATH '$resourcesPath/Data/uniqdata/3000_1_UniqData.csv' into table uniqdata OPTIONS('DELIMITER'=',' , 'QUOTECHAR'='"', 'BAD_RECORDS_ACTION'='FORCE','FILEHEADER'='CUST_ID,CUST_NAME,ACTIVE_EMUI_VERSION,DOB,DOJ,BIGINT_COLUMN1,BIGINT_COLUMN2,DECIMAL_COLUMN1,DECIMAL_COLUMN2,Double_COLUMN1,Double_COLUMN2,INTEGER_COLUMN1')""").collect
+    sql(s"""LOAD DATA INPATH '$resourcesPath/Data/uniqdata/3000_1_UniqData.csv' into table uniqdata_hive """).collect
+    sql(s"""delete from table uniqdata where segment.id in (1,3)""").collect
   }
 }
