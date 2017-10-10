@@ -4248,7 +4248,7 @@ class QueriesBasicTestCase extends QueryTest with BeforeAndAfterAll {
 
   //PushUP_FILTER_uniqdata_TC076
   test("PushUP_FILTER_uniqdata_TC076", Include) {
-    initTable
+    //    initTable
     //    sql("select * from uniqdata").show()
     //    sql("select * from uniqdata_hive").show()
     sql("select count(*) from uniqdata").show()
