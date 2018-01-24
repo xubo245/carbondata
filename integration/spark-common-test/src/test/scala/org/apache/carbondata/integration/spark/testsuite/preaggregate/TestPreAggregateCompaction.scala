@@ -58,6 +58,8 @@ class TestPreAggregateCompaction extends QueryTest with BeforeAndAfterEach with 
     val segmentNamesAvg = sql("show segments for table maintable_preagg_avg").collect().map(_.get(0).toString)
     segmentNamesAvg should equal (Array("3", "2", "1", "0.1", "0"))
     checkAnswer(sql("select * from maintable_preagg_avg"), avgResult)
+    sql("show tables").show()
+    sql("select * from maintable_preagg_avg").show()
   }
 
   test("test if pre-agg table is compacted with parent table major compaction") {

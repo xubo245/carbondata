@@ -31,7 +31,9 @@ class TestPreAggregateExpressions extends QueryTest with BeforeAndAfterAll {
     sql("CREATE TABLE mainTable(id int, name string, city string, age string) STORED BY 'org.apache.carbondata.format'")
     sql(s"LOAD DATA LOCAL INPATH '$resourcesPath/measureinsertintotest.csv' into table mainTable")
   }
+
   test("test pre agg create table with expression 1") {
+    sql("select * from mainTable").show()
     sql(
       s"""
          | CREATE DATAMAP agg0 ON TABLE mainTable USING 'preaggregate' AS
@@ -39,6 +41,9 @@ class TestPreAggregateExpressions extends QueryTest with BeforeAndAfterAll {
          | count(age)
          | FROM mainTable GROUP BY name
          | """.stripMargin)
+    sql("DESCRIBE FORMATTED mainTable").show()
+    sql("DESCRIBE FORMATTED mainTable_agg0").show()
+    sql("show datamap on table mainTable").show()
     checkExistence(sql("DESCRIBE FORMATTED mainTable_agg0"), true, "maintable_age_count")
   }
 
@@ -99,11 +104,11 @@ class TestPreAggregateExpressions extends QueryTest with BeforeAndAfterAll {
          | """.stripMargin)
     checkExistence(sql("DESCRIBE FORMATTED mainTable_agg5"), true, "maintable_column_0_count")
   }
+
   test("test pre agg table selection with expression 1") {
     val df = sql("select name as NewName, count(age) as sum from mainTable group by name order by name")
     preAggTableValidator(df.queryExecution.analyzed, "maintable_agg0")
   }
-
 
   test("test pre agg table selection with expression 2") {
     val df = sql("select name as NewName, sum(case when age=35 then id else 0 end) as sum from mainTable group by name order by name")
@@ -112,6 +117,7 @@ class TestPreAggregateExpressions extends QueryTest with BeforeAndAfterAll {
 
   test("test pre agg table selection with expression 3") {
     val df = sql("select sum(case when age=35 then id else 0 end) from maintable")
+//    preAggTableValidator(df.queryExecution.analyzed, "maintable_agg2")
     checkAnswer(df, Seq(Row(6.0)))
   }
 
@@ -129,10 +135,9 @@ class TestPreAggregateExpressions extends QueryTest with BeforeAndAfterAll {
 
   /**
    * Below method will be used to validate the table name is present in the plan or not
-   * @param plan
-   * query plan
-   * @param actualTableName
-   * table name to be validated
+   *
+   * @param plan            query plan
+   * @param actualTableName table name to be validated
    */
   def preAggTableValidator(plan: LogicalPlan, actualTableName: String) : Unit ={
     var isValidPlan = false
@@ -164,7 +169,9 @@ class TestPreAggregateExpressions extends QueryTest with BeforeAndAfterAll {
   }
 
   override def afterAll: Unit = {
+    sql("show tables").show()
     sql("DROP TABLE IF EXISTS mainTable")
+    sql("show tables").show()
   }
 
 }
