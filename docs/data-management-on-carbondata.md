@@ -88,9 +88,9 @@ This tutorial is going to introduce all commands and data operations on CarbonDa
  
    - **Table Block Size Configuration**
 
-     This command is for setting block size of this table, the default value is 1024 MB and supports a range of 1 MB to 2048 MB.
-
-     ```
+     This command is for setting block size of this table, the default value is 1024 MB and supports a range of 1 MB to 2048 MB.
+test
+     ```
      TBLPROPERTIES ('TABLE_BLOCKSIZE'='512')
      ```
      NOTE: 512 or 512M both are accepted.
