@@ -106,6 +106,11 @@
       <artifactId>jets3t</artifactId>
       <version>0.9.0</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>4.2</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -205,7 +210,7 @@
     <profile>
       <id>build-all</id>
       <properties>
-        <spark.version>2.2.1</spark.version>
+        <spark.version>2.2.0</spark.version>
         <scala.binary.version>2.11</scala.binary.version>
         <scala.version>2.11.8</scala.version>
       </properties>
@@ -262,7 +267,7 @@
       <activeByDefault>true</activeByDefault>
     </activation>
     <properties>
-      <spark.version>2.2.1</spark.version>
+      <spark.version>2.2.0</spark.version>
       <scala.binary.version>2.11</scala.binary.version>
       <scala.version>2.11.8</scala.version>
     </properties>

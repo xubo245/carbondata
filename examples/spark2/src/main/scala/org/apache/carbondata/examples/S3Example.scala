@@ -131,7 +131,7 @@ object S3Example {
          | FROM carbon_table
       """.stripMargin).show()
 
-    spark.sql("Drop table if exists carbon_table")
+//    spark.sql("Drop table if exists carbon_table")
 
     spark.stop()
   }

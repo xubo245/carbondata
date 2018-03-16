@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.carbondata.spark.thriftserver
+package org.apache.carbondata.examples
 
 import java.io.File
 
@@ -51,11 +51,11 @@ object CarbonThriftServer {
       .builder()
       .config(sparkConf)
       .appName("Carbon Thrift Server(uses CarbonSession)")
-      .master(getSparkMaster(args))
       .config(accessKey, args(1))
       .config(secretKey, args(2))
       .config(endpoint, getS3EndPoint(args))
       .enableHiveSupport()
+      .master(getSparkMaster(args))
 
     if (!sparkConf.contains("carbon.properties.filepath")) {
       val sparkHome = System.getenv.get("SPARK_HOME")
@@ -84,10 +84,10 @@ object CarbonThriftServer {
         Thread.sleep(5000)
     }
 
-    val rootPath = new File(this.getClass.getResource("/").getPath
-      + "../../../..").getCanonicalPath
-    val path = s"$rootPath/examples/spark2/src/main/resources/data1.csv"
-    operation(spark,args,path = path)
+//    val rootPath = new File(this.getClass.getResource("/").getPath
+//      + "../../../..").getCanonicalPath
+//    val path = s"$rootPath/examples/spark2/src/main/resources/data1.csv"
+//    operation(spark,args,path = path)
     HiveThriftServer2.startWithContext(spark.sqlContext)
   }
 
@@ -135,7 +135,7 @@ object CarbonThriftServer {
          | floatField FLOAT
          | )
          | STORED BY 'carbondata'
-         | LOCATION '${ args(2) }'
+         | LOCATION '${ args(0) }'
          | TBLPROPERTIES('SORT_COLUMNS'='', 'DICTIONARY_INCLUDE'='dateField, charField')
        """.stripMargin)
 
@@ -158,6 +158,12 @@ object CarbonThriftServer {
          | INTO TABLE carbon_table
          | OPTIONS('HEADER'='true')
        """.stripMargin)
+
+    spark.sql(
+      s"""
+         | SELECT *
+         | FROM carbon_table
+      """.stripMargin).show()
 
   }
 }
