@@ -19,13 +19,13 @@ package org.apache.spark.rpc
 
 import java.io.IOException
 import java.net.InetAddress
-import java.util.{Objects, Random, UUID, List => JList, Map => JMap, Set => JSet}
+import java.util.{List => JList, Map => JMap, Objects, Random, Set => JSet, UUID}
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
-import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 import scala.concurrent.duration.Duration
 import scala.util.{Failure, Success, Try}
 
@@ -35,6 +35,7 @@ import org.apache.hadoop.mapreduce.Job
 import org.apache.spark.{SecurityManager, SerializableWritable, SparkConf}
 import org.apache.spark.rpc.netty.NettyRpcEnvFactory
 import org.apache.spark.search._
+import org.apache.spark.util.ThreadUtils
 
 import org.apache.carbondata.common.annotations.InterfaceAudience
 import org.apache.carbondata.common.logging.LogServiceFactory
@@ -56,7 +57,7 @@ import org.apache.carbondata.store.worker.Status
 class Master(sparkConf: SparkConf, port: Int) {
   private val LOG = LogServiceFactory.getLogService(this.getClass.getCanonicalName)
 
-  //worker hostname map to EndpointRef
+  // worker hostname map to EndpointRef
   private val workers = mutable.Map[String, RpcEndpointRef]()
 
   private val random = new Random
@@ -94,11 +95,11 @@ class Master(sparkConf: SparkConf, port: Int) {
       ref.ask[ShutdownResponse](ShutdownRequest("user"))
     }
     futures.foreach { case (hostname, future) =>
-     future.onComplete {
+      ThreadUtils.awaitResult(future, Duration.apply("10s"))
+      future.onComplete {
         case Success(response) => workers.remove(hostname)
         case Failure(throwable) => throw new IOException(throwable.getMessage)
       }
-      Await.result(future, Duration.apply("10s"))
     }
   }
 
@@ -158,16 +159,18 @@ class Master(sparkConf: SparkConf, port: Int) {
     // get all results from RPC response and return to caller
     val output = new ArrayBuffer[CarbonRow]
     futures.foreach { future: Future[SearchResult] =>
-      Await.result(future, Duration.apply("10s"))
+      ThreadUtils.awaitResult(future, Duration.apply("10s"))
       future.value match {
         case Some(response: Try[SearchResult]) =>
           response match {
             case Success(result) =>
-              if (result.queryId != queryId)
+              if (result.queryId != queryId) {
                 throw new IOException(
-                  s"queryId in response does not match request: ${result.queryId} != $queryId")
-              if (result.status != Status.SUCCESS.ordinal())
-                throw new IOException(s"failure in worker: ${result.message}")
+                  s"queryId in response does not match request: ${ result.queryId } != $queryId")
+              }
+              if (result.status != Status.SUCCESS.ordinal()) {
+                throw new IOException(s"failure in worker: ${ result.message }")
+              }
 
               val itor = result.rows.iterator
               while (itor.hasNext) {
@@ -214,4 +217,5 @@ object Master {
   val DEFAULT_PORT = 10020
 }
 
+// Exception if execution timed out in search mode
 class ExecutionTimeoutException extends RuntimeException
