@@ -73,7 +73,7 @@ class Master(sparkConf: SparkConf, port: Int) {
     if (rpcEnv == null) {
       new Thread(new Runnable {
         override def run(): Unit = {
-          val hostname = InetAddress.getLocalHost.getHostName
+          val hostname = InetAddress.getLocalHost.getHostAddress
           val config = new RpcEnvConfig(
             sparkConf, "registry-service", hostname, "", Master.DEFAULT_PORT,
             new SecurityManager(sparkConf), false)

@@ -32,7 +32,7 @@ object Worker {
   private val DEFAULT_PORT = 10021
 
   def init(masterHostname: String, masterPort: Int): Unit = {
-    LOG.info(s"initializing worker ${InetAddress.getLocalHost.getHostName}:$DEFAULT_PORT")
+    LOG.info(s"initializing worker ${InetAddress.getLocalHost.getHostAddress}:$DEFAULT_PORT")
     LOG.info("starting service...")
     startService()
     LOG.info(s"registering to master $masterHostname:$masterPort")
@@ -43,7 +43,7 @@ object Worker {
   private def startService(): Unit = {
     new Thread(new Runnable {
       override def run(): Unit = {
-        val hostname = InetAddress.getLocalHost.getHostName
+        val hostname = InetAddress.getLocalHost.getHostAddress
         val conf = new SparkConf()
         val config = RpcEnvConfig(
           conf, s"worker-$hostname", hostname, "", DEFAULT_PORT,
@@ -68,7 +68,7 @@ object Worker {
       RpcAddress(masterHostname, masterPort), "registry-service")
     val cores = Runtime.getRuntime.availableProcessors()
 
-    val hostname = InetAddress.getLocalHost.getHostName
+    val hostname = InetAddress.getLocalHost.getHostAddress
     val request = RegisterWorkerRequest(hostname, DEFAULT_PORT, cores)
     val response = endPointRef.askSync[RegisterWorkerResponse](request)
     LOG.info("worker registered")
