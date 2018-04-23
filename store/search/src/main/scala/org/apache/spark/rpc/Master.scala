@@ -97,12 +97,12 @@ class Master(sparkConf: SparkConf, port: Int) {
     val futures = workers.mapValues { ref =>
       ref.ask[ShutdownResponse](ShutdownRequest("user"))
     }
-    futures.foreach { case (hostname, future) =>
+    futures.foreach { case (hostAddress, future) =>
       ThreadUtils.awaitResult(future, Duration.apply("10s"))
       future.value match {
         case Some(result) =>
           result match {
-            case Success(response) => workers.remove(hostname)
+            case Success(response) => workers.remove(hostAddress)
             case Failure(throwable) => throw new IOException(throwable.getMessage)
           }
         case None => throw new ExecutionTimeoutException
@@ -159,17 +159,17 @@ class Master(sparkConf: SparkConf, port: Int) {
     }
 
     val queryId = random.nextInt
-    // prune data and get a mapping of worker hostname to list of blocks,
+    // prune data and get a mapping of worker host address to list of blocks,
     // then add these blocks to the SearchRequest and fire the RPC call
     val nodeBlockMapping: JMap[String, JList[Distributable]] = pruneBlock(table, columns, filter)
-    val futures = nodeBlockMapping.asScala.map { case (hostname, blocks) =>
+    val futures = nodeBlockMapping.asScala.map { case (hostAddress, blocks) =>
       // Build a SearchRequest
       val split = new SerializableWritable[CarbonMultiBlockSplit](
-        new CarbonMultiBlockSplit(blocks, hostname))
+        new CarbonMultiBlockSplit(blocks, hostAddress))
       val request = SearchRequest(queryId, split, table.getTableInfo, columns, filter, localLimit)
 
       // fire RPC to worker asynchronously
-      getEndpoint(hostname).ask[SearchResult](request)
+      getEndpoint(hostAddress).ask[SearchResult](request)
     }
     // get all results from RPC response and return to caller
     var rowCount = 0
@@ -213,7 +213,7 @@ class Master(sparkConf: SparkConf, port: Int) {
 
   /**
    * Prune data by using CarbonInputFormat.getSplit
-   * Return a mapping of hostname to list of block
+   * Return a mapping of host address to list of block
    */
   private def pruneBlock(
       table: CarbonTable,
@@ -234,7 +234,7 @@ class Master(sparkConf: SparkConf, port: Int) {
       CarbonLoaderUtil.BlockAssignmentStrategy.BLOCK_NUM_FIRST)
   }
 
-  /** return hostname of all workers */
+  /** return host address of all workers */
   def getWorkers: JSet[String] = workers.keySet.asJava
 }
 
