@@ -13,18 +13,24 @@ These SDK writer output contains just a carbondata and carbonindex files. No met
  
  import org.apache.carbondata.common.exceptions.sql.InvalidLoadOptionException;
  import org.apache.carbondata.core.metadata.datatype.DataTypes;
+ import org.apache.carbondata.core.util.CarbonProperties;
  import org.apache.carbondata.sdk.file.CarbonWriter;
  import org.apache.carbondata.sdk.file.CarbonWriterBuilder;
  import org.apache.carbondata.sdk.file.Field;
  import org.apache.carbondata.sdk.file.Schema;
  
  public class TestSdk {
- 
+
+   // pass true or false while executing the main to use offheap memory or not
    public static void main(String[] args) throws IOException, InvalidLoadOptionException {
-     testSdkWriter();
+     if(args[0] != null) {
+       testSdkWriter(args[0]);
+     } else {
+       testSdkWriter("true");
+     }
    }
  
-   public static void testSdkWriter() throws IOException, InvalidLoadOptionException {
+   public static void testSdkWriter(String enableOffheap) throws IOException, InvalidLoadOptionException {
      String path = "/home/root1/Documents/ab/temp";
  
      Field[] fields = new Field[2];
@@ -32,6 +38,8 @@ These SDK writer output contains just a carbondata and carbonindex files. No met
      fields[1] = new Field("age", DataTypes.INT);
  
      Schema schema = new Schema(fields);
+
+     CarbonProperties.getInstance().addProperty("enable.offheap.sort", enableOffheap);
  
      CarbonWriterBuilder builder = CarbonWriter.builder().outputPath(path);
  
@@ -333,6 +341,39 @@ public Schema(Field[] fields);
 */
 public static Schema parseJson(String json);
 ```
+
+### Class org.apache.carbondata.core.util.CarbonProperties
+
+```
+/**
+* This method will be responsible to get the instance of CarbonProperties class
+*
+* @return carbon properties instance
+*/
+public static CarbonProperties getInstance();
+```
+
+```
+/**
+* This method will be used to add a new property
+*
+* @param key
+* @return CarbonProperties object
+*/
+public CarbonProperties addProperty(String key, String value);
+```
+
+```
+/**
+* This method will be used to get the property value. If property is not
+* present, then it will return the default value.
+*
+* @param key
+* @return properties value
+*/
+public String getProperty(String key, String defaultValue);
+```
+Reference : [list of carbon properties](http://carbondata.apache.org/configuration-parameters.html)
 
 ### Class org.apache.carbondata.sdk.file.AvroCarbonWriter
 ```
