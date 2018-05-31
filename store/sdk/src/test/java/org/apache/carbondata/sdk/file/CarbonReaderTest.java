@@ -648,7 +648,6 @@ public class CarbonReaderTest extends TestCase {
     carbonProperties.addProperty(CarbonCommonConstants.CARBON_BADRECORDS_LOC,
         badRecordLoc);
   }
-
   @Test
   public void testReadUserSchema() throws IOException, InterruptedException {
     String timestampFormat = carbonProperties.getProperty(CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
@@ -686,7 +685,7 @@ public class CarbonReaderTest extends TestCase {
 
       CarbonWriter writer = builder.buildWriterForCSVInput(new Schema(fields));
 
-      for (int i = 0; i < 100; i++) {
+      for (int i = 0; i < 200; i++) {
         String[] row2 = new String[]{
             "robot" + (i % 10),
             String.valueOf(i),
@@ -741,8 +740,12 @@ public class CarbonReaderTest extends TestCase {
       Assert.assertEquals("2019-03-02", new Date((day * ((int) row[6]))).toString());
       Assert.assertEquals("2019-02-12 03:03:34.0", new Timestamp((long) row[7] / 1000).toString());
       i++;
+      if(i==98){
+        System.out.println(i);
+      }
+      System.out.println(i);
     }
-    Assert.assertEquals(i, 100);
+    Assert.assertEquals(i, 200);
 
     reader.close();
     FileUtils.deleteDirectory(new File(path));
@@ -753,6 +756,7 @@ public class CarbonReaderTest extends TestCase {
     carbonProperties.addProperty(CarbonCommonConstants.CARBON_BADRECORDS_LOC,
         badRecordLoc);
   }
+
 
   @Test
   public void testReadFilesWithProjectAllColumns() throws IOException, InterruptedException {
