@@ -47,7 +47,7 @@ object CarbonDataFrameExample {
     spark.sql(""" SELECT * FROM carbon_df_table """).show()
 
     spark.sql("SHOW PARTITIONS carbon_df_table").show()
-
+spark.sparkContext.hadoopConfiguration.addResource("")
     // Specify schema
     import org.apache.spark.sql.types.{StructType, StructField, StringType, IntegerType}
     val customSchema = StructType(Array(

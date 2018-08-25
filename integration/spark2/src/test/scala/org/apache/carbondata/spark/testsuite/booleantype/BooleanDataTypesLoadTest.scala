@@ -25,6 +25,8 @@ import org.apache.spark.sql.test.Spark2TestQueryExecutor
 import org.apache.spark.sql.test.util.QueryTest
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 
+import scala.collection.mutable
+
 class BooleanDataTypesLoadTest extends QueryTest with BeforeAndAfterEach with BeforeAndAfterAll {
   val rootPath = new File(this.getClass.getResource("/").getPath
     + "../../../..").getCanonicalPath
@@ -86,68 +88,146 @@ class BooleanDataTypesLoadTest extends QueryTest with BeforeAndAfterEach with Be
     sql("drop table if exists badRecords")
   }
 
-  test("test"){
+  test("test load carbon") {
     sqlContext.sparkContext.setLogLevel("error")
     sql("drop table if exists pageviews_table")
     sql(
-      """CREATE TABLE  pageviews_table(year int,month int,day int,hour int,domain_code STRING, page_title STRING,count_views int, unknown int)
+      """CREATE TABLE  pageviews_table(id int, year int,month int,day int,hour int,domain_code STRING, page_title STRING,count_views int, unknown int)
         |STORED AS carbondata
-        |TBLPROPERTIES('sort_columns'='year,month,day,hour')
+        |TBLPROPERTIES('sort_columns'='id,year,month,day,hour,domain_code,page_title')
         |""".stripMargin)
     sql("show tables");
     println("start load:")
-        sql("LOAD DATA INPATH '/root/xubo/data/pageviews-20150505' INTO TABLE pageviews_table OPTIONS('header'='false','DELIMITER'='\t','bad_records_action'='ignore')")
-//    for (i <- 0 to 9) {
-//      val path = s"/root/xubo/data/wiki/pageviews-20150505-0" + i + "0000WithTime"
-//      println(i + ":" + path)
-//      sql(s"""LOAD DATA INPATH '$path' INTO TABLE pageviews_table OPTIONS('header'='false','DELIMITER'='\t','bad_records_action'='ignore')""")
-//      sql("select count(*) from pageviews_table").show()
-//    }
-//    for (i <- 10 to 23) {
-//      val path = s"/root/xubo/data/wiki/pageviews-20150505-" + i + "0000WithTime"
-//      println(i + ":" + path)
-//      sql(s"""LOAD DATA INPATH '$path' INTO TABLE pageviews_table OPTIONS('header'='false','DELIMITER'='\t','bad_records_action'='ignore')""")
-//      sql("select count(*) from pageviews_table").show()
-//    }
+    sql("LOAD DATA INPATH '/root/xubo/data/pageviews-20150505key' INTO TABLE pageviews_table OPTIONS('header'='false','DELIMITER'='\t','bad_records_action'='ignore')")
+    //    for (i <- 0 to 9) {
+    //      val path = s"/root/xubo/data/wiki/pageviews-20150505-0" + i + "0000WithTime"
+    //      println(i + ":" + path)
+    //      sql(s"""LOAD DATA INPATH '$path' INTO TABLE pageviews_table OPTIONS('header'='false','DELIMITER'='\t','bad_records_action'='ignore')""")
+    //      sql("select count(*) from pageviews_table").show()
+    //    }
+    //    for (i <- 10 to 23) {
+    //      val path = s"/root/xubo/data/wiki/pageviews-20150505-" + i + "0000WithTime"
+    //      println(i + ":" + path)
+    //      sql(s"""LOAD DATA INPATH '$path' INTO TABLE pageviews_table OPTIONS('header'='false','DELIMITER'='\t','bad_records_action'='ignore')""")
+    //      sql("select count(*) from pageviews_table").show()
+    //    }
     println("finish load:")
     sql("select * from pageviews_table limit 10").show()
     sql("select count(*) from pageviews_table").show()
     sql("SHOW SEGMENTS FOR TABLE pageviews_table").show()
   }
 
-  test("test  query carbon"){
-    sql("select * from pageviews_table limit 10").show()
-    sql("select count(*) from pageviews_table limit 10").show()
+
+  test("test load carbon 2 with tid") {
+    sqlContext.sparkContext.setLogLevel("error")
+    sql("drop table if exists wiki")
+    sql(
+      """CREATE TABLE  wiki(
+        |id int, year int,month int,day int,hour int,country STRING,type STRING, title STRING,tid int, view int, size int)
+        |STORED AS carbondata
+        |TBLPROPERTIES('sort_columns'='id,year,month,day,hour,country')
+        |""".stripMargin)
+    sql("show tables");
+    println("start load:")
+    sql("LOAD DATA INPATH '/root/xubo/data/pageviews-20150505tid' INTO TABLE wiki OPTIONS('header'='false','DELIMITER'='\t','bad_records_action'='ignore')")
+    //    for (i <- 0 to 9) {
+    //      val path = s"/root/xubo/data/wiki/pageviews-20150505-0" + i + "0000WithTime"
+    //      println(i + ":" + path)
+    //      sql(s"""LOAD DATA INPATH '$path' INTO TABLE pageviews_table OPTIONS('header'='false','DELIMITER'='\t','bad_records_action'='ignore')""")
+    //      sql("select count(*) from pageviews_table").show()
+    //    }
+    //    for (i <- 10 to 23) {
+    //      val path = s"/root/xubo/data/wiki/pageviews-20150505-" + i + "0000WithTime"
+    //      println(i + ":" + path)
+    //      sql(s"""LOAD DATA INPATH '$path' INTO TABLE pageviews_table OPTIONS('header'='false','DELIMITER'='\t','bad_records_action'='ignore')""")
+    //      sql("select count(*) from pageviews_table").show()
+    //    }
+    println("finish load:")
+    sql("select * from wiki limit 10").show()
+    sql("select count(*) from wiki").show()
+    sql("SHOW SEGMENTS FOR TABLE wiki").show()
+  }
+
+
+  test("test  query carbon") {
+//    sql("select * from pageviews_table limit 10").show()
+//    sql("select count(*) from pageviews_table limit 10").show()
+
+    val df = sql("select distinct(domain_code) from pageviews_table")
+    val results = df.collect()
+    var length1=0
+    var length2=0
+    var lengthBig = 0
+    var set = new mutable.HashSet[String]
+    results.foreach { each =>
+      val value = each.get(0)
+      val domain = value.toString.split('.')
+//      println(domain(0))
+      if (domain.length < 2) {
+        //        println(each)
+        length1 = length1 + 1
+      } else if (domain.length > 2) {
+        lengthBig = lengthBig + 1
+      } else {
+//        println(domain(1))
+        set.add(domain(1))
+        length2 = length2 + 1
+      }
+    }
+    set.foreach(println)
+
+    println("length1:"+length1)
+    println("length2:"+length2)
+    println("lengthBig:"+lengthBig)
+    sql("select count(*) from (select distinct(domain_code) from pageviews_table) ").show(1000000)
     sql("select sum(unknown) from pageviews_table limit 10").show()
   }
 
 
-  test("test parquet"){
+  test("test parquet") {
     sqlContext.sparkContext.setLogLevel("error")
+    sql("drop table if exists pageviews_table_parquet")
     sql("drop table if exists pageviews_table")
     sql(
-      """CREATE TABLE  pageviews_table(year int,month int,day int,hour int,domain_code STRING, page_title STRING,count_views int, unknown int)
+      """CREATE TABLE  pageviews_table(id int,year int,month int,day int,hour int,domain_code STRING, page_title STRING,count_views int, unknown int)
+        |STORED AS carbondata
+        |TBLPROPERTIES('sort_columns'='id,year,month,day,hour,domain_code,page_title')
+        |""".stripMargin)
+    sql("show tables").show();
+
+    sql(
+      """CREATE TABLE  pageviews_table_parquet(id int,year int,month int,day int,hour int,domain_code STRING, page_title STRING,count_views int, unknown int)
         |STORED AS parquet
         |""".stripMargin)
-//    |TBLPROPERTIES('sort_columns'='year,month,day,hour')
+    //        |ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t'
+    //    |TBLPROPERTIES('sort_columns'='year,month,day,hour')
     sql("show tables");
     println("start load:")
-        sql("LOAD DATA INPATH '/root/xubo/data/wiki/pageviews-20150505-50000000native' INTO TABLE pageviews_table")
-//    for (i <- 0 to 9) {
-//      val path = s"/root/xubo/data/pageviews-20150505-0" + i + "0000WithTime"
-//      println(i + ":" + path)
-//      sql(s"""LOAD DATA INPATH '$path' INTO TABLE pageviews_table OPTIONS('header'='false','DELIMITER'='\t','bad_records_action'='ignore')""")
-//      sql("select count(*) from pageviews_table").show()
-//    }
-//    for (i <- 10 to 23) {
-//      val path = s"/root/xubo/data/wiki/pageviews-20150505-" + i + "0000WithTime"
-//      println(i + ":" + path)
-//      sql(s"""LOAD DATA INPATH '$path' INTO TABLE pageviews_table OPTIONS('header'='false','DELIMITER'='\t','bad_records_action'='ignore')""")
-//    }
+    //        sql("LOAD DATA INPATH '/root/xubo/data/wiki/pageviews-20150505-50000000native' INTO TABLE pageviews_table")
+    for (i <- 0 to 0) {
+      //      val path = s"/root/xubo/data/wiki/pageviews-20150505-0" + i + "0000WithTime"
+      val path = "/root/xubo/data/pageviews-20150505key"
+      println(i + ":" + path)
+      sql(s"LOAD DATA INPATH '$path' INTO TABLE pageviews_table OPTIONS('header'='false','DELIMITER'='\t','bad_records_action'='ignore')")
+
+      sql("select count(*) from pageviews_table").show()
+
+      println("start insert:")
+      sql("insert into pageviews_table_parquet select * from pageviews_table")
+
+      //      sql(s"""LOAD DATA local INPATH '$path' INTO TABLE pageviews_table_parquet """)
+      //      OPTIONS('header'='false','DELIMITER'='\t','bad_records_action'='ignore')
+      sql("select count(*) from pageviews_table_parquet").show()
+    }
+    //    for (i <- 10 to 23) {
+    //      val path = s"/root/xubo/data/wiki/pageviews-20150505-" + i + "0000WithTime"
+    //      println(i + ":" + path)
+    //      sql(s"""LOAD DATA INPATH '$path' INTO TABLE pageviews_table OPTIONS('header'='false','DELIMITER'='\t','bad_records_action'='ignore')""")
+    //    }
     println("finish load:")
-    sql("select * from pageviews_table limit 10").show()
-    sql("select count(*) from pageviews_table").show()
-    sql("SHOW SEGMENTS FOR TABLE pageviews_table").show()
+    //    sql("select * from pageviews_table_parquet limit 10").show()
+    //    sql("select count(*) from pageviews_table_parquet").show()
+    //    sql("SHOW SEGMENTS FOR TABLE pageviews_table_parquet").show()
   }
 
   test("Loading table: support boolean data type format") {
