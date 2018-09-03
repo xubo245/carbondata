@@ -24,6 +24,7 @@ class TestAvgForBigInt extends QueryTest with BeforeAndAfterAll {
 
   override def beforeAll {
     sql("drop table if exists carbonTable")
+    sql("drop table if exists carbonTable_csv")
     val csvFilePath = s"$resourcesPath/bigIntData.csv"
 
     sql(
@@ -32,18 +33,31 @@ class TestAvgForBigInt extends QueryTest with BeforeAndAfterAll {
       name String, phonetype String, serialname String, salary bigint)
       STORED BY 'org.apache.carbondata.format'
       """
-    )
+      )
 
     sql(
-      "LOAD DATA LOCAL INPATH '" + csvFilePath + "' into table carbonTable"
+      s"""
+      CREATE TABLE IF NOT EXISTS carbonTable_csv (ID Int, date Timestamp, country String,
+      name String, phonetype String, serialname String, salary bigint)
+      using csv options( path "$csvFilePath", header "true")
+      """
     )
+
+//    sql(
+//      "LOAD DATA LOCAL INPATH '" + csvFilePath + "' into table carbonTable"
+//    )
   }
 
   test("test avg function on big int column") {
-    checkAnswer(
-      sql("select avg(salary) from carbonTable"),
-      sql("select sum(salary)/count(salary) from carbonTable")
-    )
+//    checkAnswer(
+//      sql("select avg(salary) from carbonTable"),
+//      sql("select sum(salary)/count(salary) from carbonTable")
+//    )
+//    sql("select * from carbonTable_csv limit 100").show()
+
+    sql("from carbonTable_csv insert into carbonTable select * where id<5 insert into carbonTable select * where id>8")
+
+    sql("select * from carbonTable limit 100").show()
   }
 
   override def afterAll {

@@ -45,6 +45,53 @@ class InsertIntoCarbonTableTestCase extends QueryTest with BeforeAndAfterAll {
     sql("drop table if exists OverwriteTable_t2")
   }
 
+  test("two insert into") {
+    sql("drop table if exists carbon_1")
+    sql("drop table if exists carbon_2")
+    sql("create table carbon_1(name String,age int)")
+    sql("create table carbon_2(name String,age int)")
+    sql("insert into carbon_1 values('Bob',27)")
+    sql("insert into carbon_1 values('Jack',37)")
+    sql("from carbon_1 insert into carbon_2 select * where age<30 insert into carbon_2 select * where age>35")
+    //    sql("from carbon_1 insert into carbon_2 select * where age<30 ")
+    sql("select * from carbon_1").show()
+    println("carbon_2:")
+    sql("select * from carbon_2").show()
+  }
+
+  test("two insert into,csv") {
+    sql("drop table if exists carbon_1")
+    sql("drop table if exists carbon_2")
+    sql("create table carbon_1(name String,age int)")
+    sql("create table carbon_2(name String,age int) stored by 'carbondata'")
+    sql("insert into carbon_1 values('Bob',27)")
+    sql("insert into carbon_1 values('Jack',37)")
+    sql("from carbon_1 insert into carbon_2 select * where age<30 insert into carbon_2 select * where age>35")
+    //    sql("from carbon_1 insert into carbon_2 select * where age<30 ")
+    sql("select * from carbon_1").show()
+    println("carbon_2:")
+    sql("select * from carbon_2").show()
+  }
+
+  private def testFile(fileName: String): String = {
+    Thread.currentThread().getContextClassLoader.getResource(fileName).toString
+  }
+  private val carsTsvFile = "cars.csv"
+  test("DDL test parsing decimal type") {
+    sql(
+      s"""
+         |CREATE TEMPORARY VIEW carsTable
+         |(yearMade double, makeName string, modelName string, priceTag decimal,
+         | comments string, grp string)
+         |USING csv
+         |OPTIONS (path "${testFile(carsTsvFile)}", header "true", delimiter "\t")
+         """.stripMargin.replaceAll("\n", " "))
+
+    assert(
+      sql("SELECT makeName FROM carsTable where priceTag > 60000").collect().size === 1)
+    sql("SELECT * FROM carsTable where priceTag > 0").show()
+  }
+
   test("insert from hive") {
      sql("drop table if exists TCarbon")
      sql("create table TCarbon (imei string,deviceInformationId int,MAC string,deviceColor string,device_backColor string,modelId string,marketName string,AMSize string,ROMSize string,CUPAudit string,CPIClocked string,series string,productionDate timestamp,bomCode string,internalModels string, deliveryTime string, channelsId string, channelsName string , deliveryAreaId string, deliveryCountry string, deliveryProvince string, deliveryCity string,deliveryDistrict string, deliveryStreet string, oxSingleNumber string, ActiveCheckTime string, ActiveAreaId string, ActiveCountry string, ActiveProvince string, Activecity string, ActiveDistrict string, ActiveStreet string, ActiveOperatorId string, Active_releaseId string, Active_EMUIVersion string, Active_operaSysVersion string, Active_BacVerNumber string, Active_BacFlashVer string, Active_webUIVersion string, Active_webUITypeCarrVer string,Active_webTypeDataVerNumber string, Active_operatorsVersion string, Active_phonePADPartitionedVersions string, Latest_YEAR int, Latest_MONTH int, Latest_DAY Decimal(30,10), Latest_HOUR string, Latest_areaId string, Latest_country string, Latest_province string, Latest_city string, Latest_district string, Latest_street string, Latest_releaseId string, Latest_EMUIVersion string, Latest_operaSysVersion string, Latest_BacVerNumber string, Latest_BacFlashVer string, Latest_webUIVersion string, Latest_webUITypeCarrVer string, Latest_webTypeDataVerNumber string, Latest_operatorsVersion string, Latest_phonePADPartitionedVersions string, Latest_operatorId string, gamePointDescription string,gamePointId double,contractNumber BigInt) STORED BY 'org.apache.carbondata.format'")
