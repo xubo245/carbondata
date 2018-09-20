@@ -27,10 +27,15 @@ import org.apache.carbondata.sdk.file.*;
 
 import org.apache.hadoop.conf.Configuration;
 
+import static org.apache.hadoop.fs.s3a.Constants.ACCESS_KEY;
+import static org.apache.hadoop.fs.s3a.Constants.ENDPOINT;
+import static org.apache.hadoop.fs.s3a.Constants.SECRET_KEY;
+
 /**
  * Example for testing CarbonWriter on S3
  */
 public class SDKS3Example {
+
     public static void main(String[] args) throws Exception {
         LogService logger = LogServiceFactory.getLogService(SDKS3Example.class.getName());
         if (args == null || args.length < 3) {
@@ -49,6 +54,12 @@ public class SDKS3Example {
             num = Integer.parseInt(args[4]);
         }
 
+
+        Configuration conf = new Configuration();
+        conf.set(ACCESS_KEY,args[0]);
+        conf.set(SECRET_KEY,args[1]);
+        conf.set(ENDPOINT,args[2]);
+
         Field[] fields = new Field[2];
         fields[0] = new Field("name", DataTypes.STRING);
         fields[1] = new Field("age", DataTypes.INT);
@@ -58,7 +69,7 @@ public class SDKS3Example {
                 .setEndPoint(args[2])
                 .outputPath(path);
 
-        CarbonWriter writer = builder.buildWriterForCSVInput(new Schema(fields), new Configuration(false));
+        CarbonWriter writer = builder.buildWriterForCSVInput(new Schema(fields), conf);
 
         for (int i = 0; i < num; i++) {
             writer.write(new String[]{"robot" + (i % 10), String.valueOf(i)});
@@ -77,7 +88,7 @@ public class SDKS3Example {
             .setAccessKey(args[0])
             .setSecretKey(args[1])
             .setEndPoint(args[2])
-            .build(new Configuration(false));
+            .build(conf);
 
         System.out.println("\nData:");
         int i = 0;
