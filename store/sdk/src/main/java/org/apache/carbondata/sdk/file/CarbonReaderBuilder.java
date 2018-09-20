@@ -101,6 +101,45 @@ public class CarbonReaderBuilder {
     return this;
   }
 
+
+  /**
+   * configure hadoop configuration by string array
+   * it support multiple parameter
+   * like: key=value
+   * for example: fs.s3a.access.key=XXXX, XXXX is user's access key value
+   *
+   * @param args parameter string, key=value
+   * @return this object
+   */
+  public CarbonReaderBuilder withHadoopConf(String[] args) {
+    Configuration configuration = new Configuration();
+    for (int i = 0; i < args.length; i++) {
+      String[] data = args[i].replace("\"", "").split("=");
+      if (data.length != 2) {
+        throw new RuntimeException("Please input key=value for configuration!");
+      }
+      configuration.set(data[0].trim(), data[1].trim());
+    }
+    this.hadoopConf = configuration;
+    return this;
+  }
+
+  /**
+   * configure hadoop configuration with key value
+   *
+   * @param key   key word
+   * @param value value
+   * @return this object
+   */
+  public CarbonReaderBuilder config(String key, String value) {
+    if (this.hadoopConf == null) {
+      this.hadoopConf = new Configuration();
+
+    }
+    this.hadoopConf.set(key, value);
+    return this;
+  }
+
   /**
    * Build CarbonReader
    *
