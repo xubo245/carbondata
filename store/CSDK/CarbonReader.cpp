@@ -18,27 +18,38 @@
 #include "CarbonReader.h"
 #include <jni.h>
 
-jobject CarbonReader::builder(JNIEnv *env, char* path, char* tableName) {
+jobject CarbonReader::builder(JNIEnv *env, char *path, char *tableName) {
 
-
+    jniEnv = env;
     jclass carbonReaderClass = env->FindClass("org/apache/carbondata/sdk/file/CarbonReader");
     jmethodID carbonReaderBuilderID = env->GetStaticMethodID(carbonReaderClass, "builder",
-        "(Ljava/lang/String;Ljava/lang/String;)Lorg/apache/carbondata/sdk/file/CarbonReaderBuilder;");
-
+                                                             "(Ljava/lang/String;Ljava/lang/String;)Lorg/apache/carbondata/sdk/file/CarbonReaderBuilder;");
     jstring jpath = env->NewStringUTF(path);
     jstring jtableName = env->NewStringUTF(tableName);
     jvalue args[2];
     args[0].l = jpath;
     args[1].l = jtableName;
-
     carbonReaderBuilderObject = env->CallStaticObjectMethodA(carbonReaderClass, carbonReaderBuilderID, args);
-    jniEnv=env;
-    return  carbonReaderBuilderObject;
+    return carbonReaderBuilderObject;
+}
+
+jobject CarbonReader::build(char *ak, char *sk, char *endpoint) {
+    jclass carbonReaderBuilderClass = jniEnv->GetObjectClass(carbonReaderBuilderObject);
+    jmethodID buildID = jniEnv->GetMethodID(carbonReaderBuilderClass, "build",
+        "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lorg/apache/carbondata/sdk/file/CarbonReader;");
+
+    jvalue args[3];
+    args[0].l = jniEnv->NewStringUTF(ak);
+    args[1].l = jniEnv->NewStringUTF(sk);
+    args[2].l = jniEnv->NewStringUTF(endpoint);
+    carbonReaderObject = jniEnv->CallObjectMethodA(carbonReaderBuilderObject, buildID, args);
+    return carbonReaderObject;
 }
 
 jobject CarbonReader::build() {
     jclass carbonReaderBuilderClass = jniEnv->GetObjectClass(carbonReaderBuilderObject);
-    jmethodID buildID = jniEnv->GetMethodID(carbonReaderBuilderClass, "build", "()Lorg/apache/carbondata/sdk/file/CarbonReader;");
+    jmethodID buildID = jniEnv->GetMethodID(carbonReaderBuilderClass, "build",
+                                            "()Lorg/apache/carbondata/sdk/file/CarbonReader;");
     carbonReaderObject = jniEnv->CallObjectMethod(carbonReaderBuilderObject, buildID);
     return carbonReaderObject;
 }
@@ -61,5 +72,4 @@ jboolean CarbonReader::close() {
     jclass carbonReader = jniEnv->GetObjectClass(carbonReaderObject);
     jmethodID closeID = jniEnv->GetMethodID(carbonReader, "close", "()V");
     jniEnv->CallBooleanMethod(carbonReaderObject, closeID);
-
 }

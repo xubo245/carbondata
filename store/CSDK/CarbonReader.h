@@ -20,18 +20,34 @@
 
 
 #include <jni.h>
-
+#include <string>
 
 #endif //TM_SCALA_CARBONREADER_H
 
 class CarbonReader {
 public:
     JNIEnv *jniEnv;
-    jobject builder(JNIEnv *env, char *path, char *tableName);
     jobject carbonReaderBuilderObject;
     jobject carbonReaderObject;
+
+    /**
+     * create a CarbonReaderBuilder object for building carbonReader,
+     * CarbonReaderBuilder object  can configure different parameter
+     *
+     * @param env JNIEnv
+     * @param path data store path
+     * @param tableName table name
+     * @return CarbonReaderBuilder object
+     */
+    jobject builder(JNIEnv *env, char *path, char *tableName);
+
     jobject build();
+
+    jobject build(char *ak, char *sk, char *endpoint);
+
     jboolean hasNext();
+
     jobjectArray readNextRow();
+
     jboolean close();
 };

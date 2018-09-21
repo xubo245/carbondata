@@ -21,6 +21,7 @@
 #include <iostream>
 #include <unistd.h>
 #include "CarbonReader.h"
+
 using namespace std;
 
 JavaVM *jvm;
@@ -50,19 +51,14 @@ JNIEnv *initJVM() {
     return env;
 }
 
-
-int main() {
-    // init jvm
-    JNIEnv *env;
-    env = initJVM();
+bool readFromLocal(JNIEnv *env) {
 
     CarbonReader carbonReaderClass;
-    carbonReaderClass.builder(env,"/Users/xubo/Desktop/xubo/git/carbondata2/testWriteFiles","test");
-
-
+    carbonReaderClass.builder(env, "/Users/xubo/Desktop/xubo/git/carbondata3/store/CSDK/resources/carbondata", "test");
     carbonReaderClass.build();
 
-    printf("\n");
+    printf("\nRead data from local:\n");
+
     while (carbonReaderClass.hasNext()) {
         jobjectArray row = carbonReaderClass.readNextRow();
         jsize length = env->GetArrayLength(row);
@@ -77,7 +73,45 @@ int main() {
     }
 
     carbonReaderClass.close();
+}
 
+bool readFromS3(JNIEnv *env) {
+    CarbonReader carbonReaderClass;
+
+    char *args[3];
+    args[0] = "your access key";
+    args[1] = "your secret key";
+    args[2] = "obs.cn-north-1.myhwclouds.com";
+
+
+    carbonReaderClass.builder(env, "s3a://sdk/WriterOutput/xubo", "test");
+    carbonReaderClass.build(args[0], args[1], args[2]);
+
+    printf("\nRead data from S3:\n");
+    while (carbonReaderClass.hasNext()) {
+        jobjectArray row = carbonReaderClass.readNextRow();
+        jsize length = env->GetArrayLength(row);
+
+        int j = 0;
+        for (j = 0; j < length; j++) {
+            jobject element = env->GetObjectArrayElement(row, j);
+            char *str = (char *) env->GetStringUTFChars((jstring) element, JNI_FALSE);
+            printf("%s\t", str);
+        }
+        printf("\n");
+    }
+
+    carbonReaderClass.close();
+}
+
+int main() {
+    // init jvm
+    JNIEnv *env;
+    env = initJVM();
+
+    readFromLocal(env);
+
+    readFromS3(env);
     cout << "destory jvm\n\n";
     (jvm)->DestroyJavaVM();
 
