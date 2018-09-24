@@ -34,9 +34,8 @@ JNIEnv *initJVM() {
     JavaVMOption options[parNum];
 
     options[0].optionString = "-Djava.compiler=NONE";
-    options[1].optionString = "-Djava.class.path=/Users/xubo/Desktop/xubo/git/c/test/jar/carbondata-sdk.jar";
+    options[1].optionString = "-Djava.class.path=../../sdk/target/carbondata-sdk.jar";
     options[2].optionString = "-verbose:jni";
-
     vm_args.version = JNI_VERSION_1_8;
     vm_args.nOptions = parNum;
     vm_args.options = options;
@@ -54,7 +53,7 @@ JNIEnv *initJVM() {
 bool readFromLocal(JNIEnv *env) {
 
     CarbonReader carbonReaderClass;
-    carbonReaderClass.builder(env, "/Users/xubo/Desktop/xubo/git/carbondata3/store/CSDK/resources/carbondata", "test");
+    carbonReaderClass.builder(env, "../resources/carbondata", "test");
     carbonReaderClass.build();
 
     printf("\nRead data from local:\n");
@@ -111,7 +110,7 @@ int main() {
 
     readFromLocal(env);
 
-    readFromS3(env);
+//    readFromS3(env);
     cout << "destory jvm\n\n";
     (jvm)->DestroyJavaVM();
 
