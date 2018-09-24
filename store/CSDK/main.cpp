@@ -83,7 +83,7 @@ bool readFromS3(JNIEnv *env) {
     args[2] = "obs.cn-north-1.myhwclouds.com";
 
 
-    carbonReaderClass.builder(env, "s3a://sdk/WriterOutput/xubo", "test");
+    carbonReaderClass.builder(env, "s3a://sdk/WriterOutput", "test");
     carbonReaderClass.build(args[0], args[1], args[2]);
 
     printf("\nRead data from S3:\n");
@@ -110,7 +110,7 @@ int main() {
 
     readFromLocal(env);
 
-//    readFromS3(env);
+    readFromS3(env);
     cout << "destory jvm\n\n";
     (jvm)->DestroyJavaVM();
 
