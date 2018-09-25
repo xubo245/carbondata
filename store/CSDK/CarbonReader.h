@@ -54,6 +54,15 @@ public:
     jobject builder(JNIEnv *env, char *path, char *tableName);
 
     /**
+     * Configure the projection column names of carbon reader
+     *
+     * @param argc argument counter
+     * @param argv argument vector
+     * @return CarbonReaderBuilder object
+     */
+    jobject projection(int argc, char *argv[]);
+
+    /**
      * build carbonReader object for reading data
      * it support read data from load disk
      *

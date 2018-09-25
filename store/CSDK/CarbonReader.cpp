@@ -33,6 +33,23 @@ jobject CarbonReader::builder(JNIEnv *env, char *path, char *tableName) {
     return carbonReaderBuilderObject;
 }
 
+jobject CarbonReader::projection(int argc, char *argv[]) {
+    jclass carbonReaderBuilderClass = jniEnv->GetObjectClass(carbonReaderBuilderObject);
+    jmethodID buildID = jniEnv->GetMethodID(carbonReaderBuilderClass, "projection",
+        "([Ljava/lang/String;)Lorg/apache/carbondata/sdk/file/CarbonReaderBuilder;");
+    jclass objectArrayClass = jniEnv->FindClass("Ljava/lang/String;");
+    jobjectArray array = jniEnv->NewObjectArray(argc, objectArrayClass, NULL);
+    for (int i = 0; i < argc; ++i) {
+        jstring value = jniEnv->NewStringUTF(argv[i]);
+        jniEnv->SetObjectArrayElement(array, i, value);
+    }
+
+    jvalue args[1];
+    args[0].l = array;
+    carbonReaderBuilderObject = jniEnv->CallObjectMethodA(carbonReaderBuilderObject, buildID, args);
+    return carbonReaderBuilderObject;
+}
+
 jobject CarbonReader::build(char *ak, char *sk, char *endpoint) {
     jclass carbonReaderBuilderClass = jniEnv->GetObjectClass(carbonReaderBuilderObject);
     jmethodID buildID = jniEnv->GetMethodID(carbonReaderBuilderClass, "build",

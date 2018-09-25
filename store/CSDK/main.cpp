@@ -56,6 +56,36 @@ JNIEnv *initJVM() {
 }
 
 /**
+ * test read data from local disk, without projection
+ *
+ * @param env  jni env
+ * @return
+ */
+bool readFromLocalWithoutProjection(JNIEnv *env) {
+
+    CarbonReader carbonReaderClass;
+    carbonReaderClass.builder(env, "../resources/carbondata", "test");
+    carbonReaderClass.build();
+
+    printf("\nRead data from local  without projection:\n");
+
+    while (carbonReaderClass.hasNext()) {
+        jobjectArray row = carbonReaderClass.readNextRow();
+        jsize length = env->GetArrayLength(row);
+
+        int j = 0;
+        for (j = 0; j < length; j++) {
+            jobject element = env->GetObjectArrayElement(row, j);
+            char *str = (char *) env->GetStringUTFChars((jstring) element, JNI_FALSE);
+            printf("%s\t", str);
+        }
+        printf("\n");
+    }
+
+    carbonReaderClass.close();
+}
+
+/**
  * test read data from local disk
  *
  * @param env  jni env
@@ -65,6 +95,21 @@ bool readFromLocal(JNIEnv *env) {
 
     CarbonReader carbonReaderClass;
     carbonReaderClass.builder(env, "../resources/carbondata", "test");
+
+    char *argv[11];
+    argv[0] = "stringField";
+    argv[1] = "shortField";
+    argv[2] = "intField";
+    argv[3] = "longField";
+    argv[4] = "doubleField";
+    argv[5] = "boolField";
+    argv[6] = "dateField";
+    argv[7] = "timeField";
+    argv[8] = "decimalField";
+    argv[9] = "varcharField";
+    argv[10] = "arrayField";
+    carbonReaderClass.projection(11, argv);
+
     carbonReaderClass.build();
 
     printf("\nRead data from local:\n");
@@ -84,6 +129,7 @@ bool readFromLocal(JNIEnv *env) {
 
     carbonReaderClass.close();
 }
+
 
 /**
  * read data from S3
@@ -181,6 +227,7 @@ int main(int argc, char *argv[]) {
         readFromS3(env, argv);
     } else {
         readFromLocal(env);
+        readFromLocalWithoutProjection(env);
     }
     cout << "destory jvm\n\n";
     (jvm)->DestroyJavaVM();
