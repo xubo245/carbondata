@@ -26,6 +26,11 @@ using namespace std;
 
 JavaVM *jvm;
 
+/**
+ * init jvm
+ *
+ * @return
+ */
 JNIEnv *initJVM() {
     JNIEnv *env;
     JavaVMInitArgs vm_args;
@@ -50,6 +55,12 @@ JNIEnv *initJVM() {
     return env;
 }
 
+/**
+ * test read data from local disk
+ *
+ * @param env  jni env
+ * @return
+ */
 bool readFromLocal(JNIEnv *env) {
 
     CarbonReader carbonReaderClass;
@@ -74,14 +85,24 @@ bool readFromLocal(JNIEnv *env) {
     carbonReaderClass.close();
 }
 
-bool readFromS3(JNIEnv *env) {
+/**
+ * read data from S3
+ * parameter is ak sk endpoint
+ *
+ * @param env jni env
+ * @param argv argument vector
+ * @return
+ */
+bool readFromS3_2(JNIEnv *env, char *argv[]) {
     CarbonReader carbonReaderClass;
 
     char *args[3];
-    args[0] = "your access key";
-    args[1] = "your secret key";
-    args[2] = "obs.cn-north-1.myhwclouds.com";
-
+    // "your access key"
+    args[0] = argv[1];
+    // "your secret key"
+    args[1] = argv[2];
+    // "your endPoint"
+    args[2] = argv[3];
 
     carbonReaderClass.builder(env, "s3a://sdk/WriterOutput", "test");
     carbonReaderClass.build(args[0], args[1], args[2]);
@@ -103,14 +124,64 @@ bool readFromS3(JNIEnv *env) {
     carbonReaderClass.close();
 }
 
-int main() {
+/**
+ * read data from S3
+ * parameter is ak sk endpoint
+ *
+ * @param env jni env
+ * @param argv argument vector
+ * @return
+ */
+bool readFromS3(JNIEnv *env, char *argv[]) {
+    CarbonReader carbonReaderClass;
+
+    char *args[3];
+    // "your access key"
+    args[0] = argv[1];
+    // "your secret key"
+    args[1] = argv[2];
+    // "your endPoint"
+    args[2] = argv[3];
+
+    carbonReaderClass.builder(env, "s3a://sdk/WriterOutput", "test");
+    carbonReaderClass.build(3, args);
+
+    printf("\nRead data from S3:\n");
+    while (carbonReaderClass.hasNext()) {
+        jobjectArray row = carbonReaderClass.readNextRow();
+        jsize length = env->GetArrayLength(row);
+
+        int j = 0;
+        for (j = 0; j < length; j++) {
+            jobject element = env->GetObjectArrayElement(row, j);
+            char *str = (char *) env->GetStringUTFChars((jstring) element, JNI_FALSE);
+            printf("%s\t", str);
+        }
+        printf("\n");
+    }
+
+    carbonReaderClass.close();
+}
+
+
+/**
+ * This a example for C++ interface to read carbon file
+ * If you want to test read data fromS3, please input the parameter: ak sk endpoint
+ *
+ * @param argc argument counter
+ * @param argv argument vector
+ * @return
+ */
+int main(int argc, char *argv[]) {
     // init jvm
     JNIEnv *env;
     env = initJVM();
 
-    readFromLocal(env);
-
-    readFromS3(env);
+    if (argc > 3) {
+        readFromS3(env, argv);
+    } else {
+        readFromLocal(env);
+    }
     cout << "destory jvm\n\n";
     (jvm)->DestroyJavaVM();
 

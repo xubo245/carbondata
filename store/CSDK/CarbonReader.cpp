@@ -23,7 +23,7 @@ jobject CarbonReader::builder(JNIEnv *env, char *path, char *tableName) {
     jniEnv = env;
     jclass carbonReaderClass = env->FindClass("org/apache/carbondata/sdk/file/CarbonReader");
     jmethodID carbonReaderBuilderID = env->GetStaticMethodID(carbonReaderClass, "builder",
-                                                             "(Ljava/lang/String;Ljava/lang/String;)Lorg/apache/carbondata/sdk/file/CarbonReaderBuilder;");
+        "(Ljava/lang/String;Ljava/lang/String;)Lorg/apache/carbondata/sdk/file/CarbonReaderBuilder;");
     jstring jpath = env->NewStringUTF(path);
     jstring jtableName = env->NewStringUTF(tableName);
     jvalue args[2];
@@ -42,6 +42,24 @@ jobject CarbonReader::build(char *ak, char *sk, char *endpoint) {
     args[0].l = jniEnv->NewStringUTF(ak);
     args[1].l = jniEnv->NewStringUTF(sk);
     args[2].l = jniEnv->NewStringUTF(endpoint);
+    carbonReaderObject = jniEnv->CallObjectMethodA(carbonReaderBuilderObject, buildID, args);
+    return carbonReaderObject;
+}
+
+jobject CarbonReader::build(int argc, char *argv[]) {
+    jclass carbonReaderBuilderClass = jniEnv->GetObjectClass(carbonReaderBuilderObject);
+    jmethodID buildID = jniEnv->GetMethodID(carbonReaderBuilderClass, "build",
+        "([Ljava/lang/String;)Lorg/apache/carbondata/sdk/file/CarbonReader;");
+
+    jclass objectArrayClass = jniEnv->FindClass("Ljava/lang/String;");
+    jobjectArray array = jniEnv->NewObjectArray(argc, objectArrayClass, NULL);
+    for (int i = 0; i < argc; ++i) {
+        jstring value = jniEnv->NewStringUTF(argv[i]);
+        jniEnv->SetObjectArrayElement(array, i, value);
+    }
+
+    jvalue args[1];
+    args[0].l = array;
     carbonReaderObject = jniEnv->CallObjectMethodA(carbonReaderBuilderObject, buildID, args);
     return carbonReaderObject;
 }
