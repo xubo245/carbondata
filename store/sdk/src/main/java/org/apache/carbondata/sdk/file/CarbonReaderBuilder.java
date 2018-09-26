@@ -161,6 +161,20 @@ public class CarbonReaderBuilder {
     return this;
   }
 
+
+  public CarbonReaderBuilder withHadoopConf(String[] args) {
+    Configuration configuration = new Configuration();
+    for (int i = 0; i < args.length; i++) {
+      String[] data = args[i].replace("\"", "").split("=");
+      if (data.length != 2) {
+        throw new RuntimeException("Please input key=value for configuration!");
+      }
+      configuration.set(data[0].trim(), data[1].trim());
+    }
+    this.hadoopConf = configuration;
+    return this;
+  }
+
   /**
    * Set the endpoint for S3
    *
