@@ -93,8 +93,8 @@ bool readFromLocalWithoutProjection(JNIEnv *env) {
  */
 bool readFromLocal(JNIEnv *env) {
 
-    CarbonReader carbonReaderClass;
-    carbonReaderClass.builder(env, "../resources/carbondata", "test");
+    CarbonReader reader;
+    reader.builder(env, "../resources/carbondata", "test");
 
     char *argv[11];
     argv[0] = "stringField";
@@ -108,14 +108,14 @@ bool readFromLocal(JNIEnv *env) {
     argv[8] = "decimalField";
     argv[9] = "varcharField";
     argv[10] = "arrayField";
-    carbonReaderClass.projection(11, argv);
+    reader.projection(11, argv);
 
-    carbonReaderClass.build();
+    reader.build();
 
     printf("\nRead data from local:\n");
 
-    while (carbonReaderClass.hasNext()) {
-        jobjectArray row = carbonReaderClass.readNextRow();
+    while (reader.hasNext()) {
+        jobjectArray row = reader.readNextRow();
         jsize length = env->GetArrayLength(row);
 
         int j = 0;
@@ -127,7 +127,7 @@ bool readFromLocal(JNIEnv *env) {
         printf("\n");
     }
 
-    carbonReaderClass.close();
+    reader.close();
 }
 
 /**
@@ -139,7 +139,7 @@ bool readFromLocal(JNIEnv *env) {
  * @return
  */
 bool readFromS3(JNIEnv *env, char *argv[]) {
-    CarbonReader carbonReaderClass;
+    CarbonReader reader;
 
     char *args[3];
     // "your access key"
@@ -149,12 +149,12 @@ bool readFromS3(JNIEnv *env, char *argv[]) {
     // "your endPoint"
     args[2] = argv[3];
 
-    carbonReaderClass.builder(env, "s3a://sdk/WriterOutput", "test");
-    carbonReaderClass.withHadoopConf(3, args);
-    carbonReaderClass.build();
+    reader.builder(env, "s3a://sdk/WriterOutput", "test");
+    reader.withHadoopConf(3, args);
+    reader.build();
     printf("\nRead data from S3:\n");
-    while (carbonReaderClass.hasNext()) {
-        jobjectArray row = carbonReaderClass.readNextRow();
+    while (reader.hasNext()) {
+        jobjectArray row = reader.readNextRow();
         jsize length = env->GetArrayLength(row);
 
         int j = 0;
@@ -166,7 +166,7 @@ bool readFromS3(JNIEnv *env, char *argv[]) {
         printf("\n");
     }
 
-    carbonReaderClass.close();
+    reader.close();
 }
 
 
