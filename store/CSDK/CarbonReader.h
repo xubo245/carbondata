@@ -17,7 +17,7 @@
 
 #ifndef TM_SCALA_CARBONREADER_H
 #define TM_SCALA_CARBONREADER_H
-
+#define ARRAY_LENGTH 1024
 
 #include <jni.h>
 #include <string>
@@ -63,15 +63,24 @@ public:
     jobject projection(int argc, char *argv[]);
 
     /**
+     * configure parameter, including ak,sk and endpoint
+     *
+     * @param key key word
+     * @param value value
+     * @return CarbonReaderBuilder object
+     */
+    jobject config(char *key, char *value);
+
+    /**
      *  build carbon reader with argument vector
      *  it support multiple parameter
      *  like: key=value
      *  for example: fs.s3a.access.key=XXXX, XXXX is user's access key value
      *
-     * @param argc argument counter
-     * @param argv argument vector
-     * @return CarbonReaderBuilder object
-     **/
+     *  @param argc argument counter
+     *  @param argv argument vector
+     *  @return CarbonReaderBuilder object
+     *  **/
     jobject withHadoopConf(int argc, char *argv[]);
 
     /**
@@ -102,4 +111,23 @@ public:
      * @return  boolean value
      */
     jboolean close();
+
+private:
+    /**
+     * configuration counter
+     */
+    int confc;
+    /**
+     * configuration vector
+     */
+    char *confv[ARRAY_LENGTH];
+
+    /**
+     * build configuration
+     *
+     * @param argc argument counter
+     * @param argv argument vector
+     * @return CarbonReaderBuilder object
+     */
+    jobject buildConf(int argc, char *argv[]);
 };

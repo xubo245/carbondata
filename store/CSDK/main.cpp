@@ -150,6 +150,47 @@ bool readFromS3(JNIEnv *env, char *argv[]) {
     args[2] = argv[3];
 
     reader.builder(env, "s3a://sdk/WriterOutput", "test");
+    reader.config("fs.s3a.access.key", argv[1]);
+    reader.config("fs.s3a.secret.key", argv[2]);
+    reader.config("fs.s3a.endpoint", argv[3]);
+    reader.build();
+    printf("\nRead data from S3:\n");
+    while (reader.hasNext()) {
+        jobjectArray row = reader.readNextRow();
+        jsize length = env->GetArrayLength(row);
+
+        int j = 0;
+        for (j = 0; j < length; j++) {
+            jobject element = env->GetObjectArrayElement(row, j);
+            char *str = (char *) env->GetStringUTFChars((jstring) element, JNI_FALSE);
+            printf("%s\t", str);
+        }
+        printf("\n");
+    }
+
+    reader.close();
+}
+
+/**
+ * read data from S3
+ * parameter is ak sk endpoint
+ *
+ * @param env jni env
+ * @param argv argument vector
+ * @return
+ */
+bool readFromS3WithHadoopConf(JNIEnv *env, char *argv[]) {
+    CarbonReader reader;
+
+    char *args[3];
+    // "your access key"
+    args[0] = argv[1];
+    // "your secret key"
+    args[1] = argv[2];
+    // "your endPoint"
+    args[2] = argv[3];
+
+    reader.builder(env, "s3a://sdk/WriterOutput", "test");
     reader.withHadoopConf(3, args);
     reader.build();
     printf("\nRead data from S3:\n");
@@ -169,7 +210,6 @@ bool readFromS3(JNIEnv *env, char *argv[]) {
     reader.close();
 }
 
-
 /**
  * This a example for C++ interface to read carbon file
  * If you want to test read data fromS3, please input the parameter: ak sk endpoint
@@ -184,7 +224,18 @@ int main(int argc, char *argv[]) {
     env = initJVM();
 
     if (argc > 3) {
-        readFromS3(env, argv);
+        int len = strlen(argv[1]);
+        bool flag = false;
+        for (int i = 0; i < len; i++) {
+            if (argv[1][i] == '=') {
+                flag = true;
+            }
+        }
+        if (flag) {
+            readFromS3WithHadoopConf(env, argv);
+        } else {
+            readFromS3(env, argv);
+        }
     } else {
         readFromLocal(env);
         readFromLocalWithoutProjection(env);

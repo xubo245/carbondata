@@ -50,10 +50,26 @@ jobject CarbonReader::projection(int argc, char *argv[]) {
     return carbonReaderBuilderObject;
 }
 
-jobject CarbonReader::withHadoopConf(int argc, char *argv[]) {
+jobject CarbonReader::config(char *key, char *value) {
+    int keyLen = strlen(key);
+    int len = keyLen + strlen(value) + 1;
+    confv[confc] = new char[len + 1];
+    for (int i = 0; i < keyLen; i++) {
+        confv[confc][i] = key[i];
+    }
+    confv[confc][keyLen] = '=';
+    for (int i = keyLen + 1; i < len; i++) {
+        confv[confc][i] = value[i - keyLen - 1];
+    }
+    confv[confc][len] = '\0';
+    confc = confc + 1;
+    return carbonReaderBuilderObject;
+}
+
+jobject CarbonReader::buildConf(int argc, char *argv[]) {
     jclass carbonReaderBuilderClass = jniEnv->GetObjectClass(carbonReaderBuilderObject);
     jmethodID buildID = jniEnv->GetMethodID(carbonReaderBuilderClass, "withHadoopConf",
-        "([Ljava/lang/String;)Lorg/apache/carbondata/sdk/file/CarbonReaderBuilder;");
+                                            "([Ljava/lang/String;)Lorg/apache/carbondata/sdk/file/CarbonReaderBuilder;");
 
     jclass objectArrayClass = jniEnv->FindClass("Ljava/lang/String;");
     jobjectArray array = jniEnv->NewObjectArray(argc, objectArrayClass, NULL);
@@ -68,7 +84,16 @@ jobject CarbonReader::withHadoopConf(int argc, char *argv[]) {
     return carbonReaderBuilderObject;
 }
 
+jobject CarbonReader::withHadoopConf(int argc, char *argv[]) {
+    confc = argc;
+    for (int i = 0; i < argc; i++) {
+        confv[i] = argv[i];
+    }
+    return carbonReaderBuilderObject;
+}
+
 jobject CarbonReader::build() {
+    buildConf(confc, confv);
     jclass carbonReaderBuilderClass = jniEnv->GetObjectClass(carbonReaderBuilderObject);
     jmethodID buildID = jniEnv->GetMethodID(carbonReaderBuilderClass, "build",
                                             "()Lorg/apache/carbondata/sdk/file/CarbonReader;");
