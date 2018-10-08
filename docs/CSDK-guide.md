@@ -68,20 +68,22 @@ JNIEnv *initJVM() {
 bool readFromLocalWithoutProjection(JNIEnv *env) {
 
     CarbonReader carbonReaderClass;
-    carbonReaderClass.builder(env, "../resources/carbondata", "test");
+    carbonReaderClass.builder(env, "../resources/carbondata");
     carbonReaderClass.build();
 
+    printf("\nRead data from local  without projection:\n");
+
     while (carbonReaderClass.hasNext()) {
-        jobjectArray row = carbonReaderClass.readNextRow();
-        jsize length = env->GetArrayLength(row);
-        int j = 0;
-        for (j = 0; j < length; j++) {
-            jobject element = env->GetObjectArrayElement(row, j);
-            char *str = (char *) env->GetStringUTFChars((jstring) element, JNI_FALSE);
-            printf("%s\t", str);
+        jobject row = carbonReaderClass.readNextCarbonRow();
+
+        CarbonRow carbonRow(env, row);
+
+        for (int i = 0; i < carbonRow.getLength(); ++i) {
+            carbonRow.print(i);
         }
         printf("\n");
     }
+
     carbonReaderClass.close();
 }
 
@@ -107,18 +109,18 @@ bool readFromS3(JNIEnv *env, char *argv[]) {
     args[2] = argv[3];
 
     reader.builder(env, "s3a://sdk/WriterOutput", "test");
-    reader.withHadoopConf(3, args);
+    reader.withHadoopConf("fs.s3a.access.key", argv[1]);
+    reader.withHadoopConf("fs.s3a.secret.key", argv[2]);
+    reader.withHadoopConf("fs.s3a.endpoint", argv[3]);
     reader.build();
     printf("\nRead data from S3:\n");
     while (reader.hasNext()) {
-        jobjectArray row = reader.readNextRow();
-        jsize length = env->GetArrayLength(row);
+        jobject row = reader.readNextCarbonRow();
 
-        int j = 0;
-        for (j = 0; j < length; j++) {
-            jobject element = env->GetObjectArrayElement(row, j);
-            char *str = (char *) env->GetStringUTFChars((jstring) element, JNI_FALSE);
-            printf("%s\t", str);
+        CarbonRow carbonRow(env, row);
+
+        for (int i = 0; i < carbonRow.getLength(); ++i) {
+            carbonRow.print(i);
         }
         printf("\n");
     }
@@ -181,11 +183,10 @@ Find example code at main.cpp of CSDK module
     jboolean hasNext();
 
     /**
-     * read next row from data
-     *
-     * @return object array of one row
+     * read next carbonRow from data
+     * @return carbonRow object of one row
      */
-    jobjectArray readNextRow();
+     jobject readNextCarbonRow();
 
     /**
      * close the carbon reader

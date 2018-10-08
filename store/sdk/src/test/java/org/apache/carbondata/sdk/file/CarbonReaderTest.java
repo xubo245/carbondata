@@ -28,6 +28,8 @@ import org.apache.carbondata.common.logging.LogService;
 import org.apache.carbondata.common.logging.LogServiceFactory;
 import org.apache.carbondata.core.constants.CarbonCommonConstants;
 import org.apache.carbondata.core.datastore.impl.FileFactory;
+import org.apache.carbondata.core.datastore.row.CarbonRow;
+import org.apache.carbondata.core.datastore.row.Row;
 import org.apache.carbondata.core.metadata.datatype.DataTypes;
 import org.apache.carbondata.core.scan.expression.ColumnExpression;
 import org.apache.carbondata.core.scan.expression.LiteralExpression;
@@ -1521,4 +1523,125 @@ public class CarbonReaderTest extends TestCase {
       e.printStackTrace();
     }
   }
+
+  @Test
+  public void testReadNextCarbonRow() {
+    String path = "./testWriteFiles";
+    try {
+      FileUtils.deleteDirectory(new File(path));
+
+      Field[] fields = new Field[12];
+      fields[0] = new Field("stringField", DataTypes.STRING);
+      fields[1] = new Field("shortField", DataTypes.SHORT);
+      fields[2] = new Field("intField", DataTypes.INT);
+      fields[3] = new Field("longField", DataTypes.LONG);
+      fields[4] = new Field("doubleField", DataTypes.DOUBLE);
+      fields[5] = new Field("boolField", DataTypes.BOOLEAN);
+      fields[6] = new Field("dateField", DataTypes.DATE);
+      fields[7] = new Field("timeField", DataTypes.TIMESTAMP);
+      fields[8] = new Field("decimalField", DataTypes.createDecimalType(8, 2));
+      fields[9] = new Field("varcharField", DataTypes.VARCHAR);
+      fields[10] = new Field("arrayField", DataTypes.createArrayType(DataTypes.STRING));
+      fields[11] = new Field("floatField", DataTypes.FLOAT);
+      Map<String, String> map = new HashMap<>();
+      map.put("complex_delimiter_level_1", "#");
+      CarbonWriter writer = CarbonWriter.builder()
+          .outputPath(path)
+          .withLoadOptions(map)
+          .withCsvInput(new Schema(fields)).build();
+
+      for (int i = 0; i < 10; i++) {
+        String[] row2 = new String[]{
+            "robot" + (i % 10),
+            String.valueOf(i % 10000),
+            String.valueOf(i),
+            String.valueOf(Long.MAX_VALUE - i),
+            String.valueOf((double) i / 2),
+            String.valueOf(true),
+            "2019-03-02",
+            "2019-02-12 03:03:34",
+            "12.345",
+            "varchar",
+            "Hello#World#From#Carbon",
+            "1.23"
+        };
+        writer.write(row2);
+      }
+      writer.close();
+
+      File[] dataFiles = new File(path).listFiles(new FilenameFilter() {
+        @Override
+        public boolean accept(File dir, String name) {
+          if (name == null) {
+            return false;
+          }
+          return name.endsWith("carbonindex");
+        }
+      });
+      if (dataFiles == null || dataFiles.length < 1) {
+        throw new RuntimeException("Carbon index file not exists.");
+      }
+      Schema schema = CarbonSchemaReader
+          .readSchemaInIndexFile(dataFiles[0].getAbsolutePath())
+          .asOriginOrder();
+      // Transform the schema
+      int count = 0;
+      for (int i = 0; i < schema.getFields().length; i++) {
+        if (!((schema.getFields())[i].getFieldName().contains("."))) {
+          count++;
+        }
+      }
+      String[] strings = new String[count];
+      int index = 0;
+      for (int i = 0; i < schema.getFields().length; i++) {
+        if (!((schema.getFields())[i].getFieldName().contains("."))) {
+          strings[index] = (schema.getFields())[i].getFieldName();
+          index++;
+        }
+      }
+      // Read data
+      CarbonReader reader = CarbonReader
+          .builder(path, "_temp")
+          .projection(strings)
+          .build();
+
+      int i = 0;
+      while (reader.hasNext()) {
+        Row row = reader.readNextCarbonRow();
+        assert (row.getDataTypeName(0).equals("STRING"));
+        assert (row.getDataTypeName(1).equals("SHORT"));
+        assert (row.getDataTypeName(2).equals("INT"));
+        assert (row.getDataTypeName(3).equals("LONG"));
+        assert (row.getDataTypeName(4).equals("DOUBLE"));
+        assert (row.getDataTypeName(5).equals("BOOLEAN"));
+        assert (row.getDataTypeName(6).equals("DATE"));
+        assert (row.getDataTypeName(7).equals("TIMESTAMP"));
+        assert (row.getDataTypeName(8).equals("DECIMAL"));
+        assert (row.getDataTypeName(9).equals("VARCHAR"));
+        assert (row.getDataTypeName(10).equals("ARRAY"));
+        assert (row.getArrayElementTypeName(10).equals("STRING"));
+        assert (row.getDataTypeName(11).equals("FLOAT"));
+
+        assert (row.getString(0).equals("robot" + i));
+        assertEquals(row.getShort(1), i);
+        assertEquals(row.getInt(2), i);
+        assertEquals(row.getLong(3), Long.MAX_VALUE - i);
+        assert (row.getBoolean(5));
+        assert (row.getDecimal(8).toString().equals("12.35"));
+        assert (row.getVarchar(9).equals("varchar"));
+
+        Object[] arr = (Object[]) row.getArray(10);
+        assert (arr[0].equals("Hello"));
+        assert (arr[1].equals("World"));
+        assert (arr[2].equals("From"));
+        assert (arr[3].equals("Carbon"));
+        i++;
+      }
+      reader.close();
+      FileUtils.deleteDirectory(new File(path));
+    } catch (Throwable e) {
+      e.printStackTrace();
+    }
+  }
+
 }

@@ -52,6 +52,7 @@ CarbonData is built using Apache Maven, to [build CarbonData](https://github.com
 * [Configuring Carbondata](https://github.com/apache/carbondata/blob/master/docs/configuration-parameters.md)
 * [Streaming Ingestion](https://github.com/apache/carbondata/blob/master/docs/streaming-guide.md)
 * [SDK Guide](https://github.com/apache/carbondata/blob/master/docs/sdk-guide.md)
+* [CSDK Guide](https://github.com/apache/carbondata/blob/master/docs/CSDK-guide.md)
 * [S3 Guide](https://github.com/apache/carbondata/blob/master/docs/s3-guide.md)
 * [DataMap Developer Guide](https://github.com/apache/carbondata/blob/master/docs/datamap-developer-guide.md)
 * [CarbonData DataMap Management](https://github.com/apache/carbondata/blob/master/docs/datamap/datamap-management.md)

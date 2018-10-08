@@ -24,6 +24,7 @@ import org.apache.carbondata.core.cache.CacheType;
 import org.apache.carbondata.core.cache.dictionary.Dictionary;
 import org.apache.carbondata.core.cache.dictionary.DictionaryColumnUniqueIdentifier;
 import org.apache.carbondata.core.constants.CarbonCommonConstants;
+import org.apache.carbondata.core.datastore.row.Row;
 import org.apache.carbondata.core.metadata.datatype.DataType;
 import org.apache.carbondata.core.metadata.encoder.Encoding;
 import org.apache.carbondata.core.metadata.schema.table.CarbonTable;
@@ -82,6 +83,16 @@ public class DictionaryDecodeReadSupport<T> implements CarbonReadSupport<T> {
       }
     }
     return (T)data;
+  }
+
+  /**
+   * get carbonRow, including data and data types
+   *
+   * @param data row data
+   * @return Row Object
+   */
+  public Row readCarbonRow(Object[] data) {
+    return new Row(data, dataTypes, dictionaries);
   }
 
   /**

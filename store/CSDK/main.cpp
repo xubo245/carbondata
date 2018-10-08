@@ -21,6 +21,7 @@
 #include <iostream>
 #include <unistd.h>
 #include "CarbonReader.h"
+#include "CarbonRow.h"
 
 using namespace std;
 
@@ -70,14 +71,12 @@ bool readFromLocalWithoutProjection(JNIEnv *env) {
     printf("\nRead data from local  without projection:\n");
 
     while (carbonReaderClass.hasNext()) {
-        jobjectArray row = carbonReaderClass.readNextRow();
-        jsize length = env->GetArrayLength(row);
+        jobject row = carbonReaderClass.readNextCarbonRow();
 
-        int j = 0;
-        for (j = 0; j < length; j++) {
-            jobject element = env->GetObjectArrayElement(row, j);
-            char *str = (char *) env->GetStringUTFChars((jstring) element, JNI_FALSE);
-            printf("%s\t", str);
+        CarbonRow carbonRow(env, row);
+
+        for (int i = 0; i < carbonRow.getLength(); ++i) {
+            carbonRow.print(i);
         }
         printf("\n");
     }
@@ -115,14 +114,12 @@ bool readFromLocal(JNIEnv *env) {
     printf("\nRead data from local:\n");
 
     while (reader.hasNext()) {
-        jobjectArray row = reader.readNextRow();
-        jsize length = env->GetArrayLength(row);
+        jobject row = reader.readNextCarbonRow();
 
-        int j = 0;
-        for (j = 0; j < length; j++) {
-            jobject element = env->GetObjectArrayElement(row, j);
-            char *str = (char *) env->GetStringUTFChars((jstring) element, JNI_FALSE);
-            printf("%s\t", str);
+        CarbonRow carbonRow(env, row);
+
+        for (int i = 0; i < carbonRow.getLength(); ++i) {
+            carbonRow.print(i);
         }
         printf("\n");
     }
@@ -156,14 +153,12 @@ bool readFromS3(JNIEnv *env, char *argv[]) {
     reader.build();
     printf("\nRead data from S3:\n");
     while (reader.hasNext()) {
-        jobjectArray row = reader.readNextRow();
-        jsize length = env->GetArrayLength(row);
+        jobject row = reader.readNextCarbonRow();
 
-        int j = 0;
-        for (j = 0; j < length; j++) {
-            jobject element = env->GetObjectArrayElement(row, j);
-            char *str = (char *) env->GetStringUTFChars((jstring) element, JNI_FALSE);
-            printf("%s\t", str);
+        CarbonRow carbonRow(env, row);
+
+        for (int i = 0; i < carbonRow.getLength(); ++i) {
+            carbonRow.print(i);
         }
         printf("\n");
     }

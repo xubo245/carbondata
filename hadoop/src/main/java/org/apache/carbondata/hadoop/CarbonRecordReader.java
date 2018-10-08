@@ -25,6 +25,7 @@ import org.apache.carbondata.common.CarbonIterator;
 import org.apache.carbondata.core.cache.dictionary.Dictionary;
 import org.apache.carbondata.core.datamap.DataMapStoreManager;
 import org.apache.carbondata.core.datastore.block.TableBlockInfo;
+import org.apache.carbondata.core.datastore.row.Row;
 import org.apache.carbondata.core.scan.executor.QueryExecutor;
 import org.apache.carbondata.core.scan.executor.QueryExecutorFactory;
 import org.apache.carbondata.core.scan.executor.exception.QueryExecutionException;
@@ -32,6 +33,7 @@ import org.apache.carbondata.core.scan.model.QueryModel;
 import org.apache.carbondata.core.scan.result.iterator.ChunkRowIterator;
 import org.apache.carbondata.core.util.CarbonUtil;
 import org.apache.carbondata.hadoop.readsupport.CarbonReadSupport;
+import org.apache.carbondata.hadoop.readsupport.impl.DictionaryDecodeReadSupport;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.mapreduce.InputSplit;
@@ -114,6 +116,31 @@ public class CarbonRecordReader<T> extends AbstractRecordReader<T> {
       inputMetricsStats.incrementRecordRead(1L);
     }
     return readSupport.readRow(carbonIterator.next());
+  }
+
+  /**
+   * get CarbonRow data, including data and datatypes
+   *
+   * @return carbonRow object
+   * @throws IOException
+   * @throws InterruptedException
+   */
+  public Row getCarbonRow() throws IOException, InterruptedException {
+    rowCount += 1;
+    if (null != inputMetricsStats) {
+      inputMetricsStats.incrementRecordRead(1L);
+    }
+    if (readSupport instanceof DictionaryDecodeReadSupport) {
+      return ((DictionaryDecodeReadSupport) readSupport)
+          .readCarbonRow(carbonIterator.next());
+    } else {
+      T value = getCurrentValue();
+      if (value instanceof Row) {
+        return (Row) value;
+      } else {
+        throw new RuntimeException("Can't get CarbonRow from the current value.");
+      }
+    }
   }
 
   @Override public float getProgress() throws IOException, InterruptedException {
