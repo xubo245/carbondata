@@ -40,11 +40,12 @@ public class Row implements Serializable {
   }
 
   /**
-   * constructor of CarbonRow
+   * constructor
    * create with data and data type
    *
    * @param data      carbon row data
    * @param dataTypes data types
+   * @param dictionaries Dictionary array
    */
   public Row(Object[] data, DataType[] dataTypes, Dictionary[] dictionaries) {
     assert (data.length == dictionaries.length);
@@ -72,8 +73,8 @@ public class Row implements Serializable {
   /**
    * get short type data by ordinal
    *
-   * @param ordinal the data index of carbonRow
-   * @return
+   * @param ordinal the data index of Row
+   * @return short data type data
    */
   public short getShort(int ordinal) {
     return (short) data[ordinal];
@@ -82,8 +83,8 @@ public class Row implements Serializable {
   /**
    * get int data type data by ordinal
    *
-   * @param ordinal the data index of carbonRow
-   * @return
+   * @param ordinal the data index of Row
+   * @return int data type data
    */
   public int getInt(int ordinal) {
     return (Integer) data[ordinal];
@@ -92,8 +93,8 @@ public class Row implements Serializable {
   /**
    * get long data type data by ordinal
    *
-   * @param ordinal the data index of carbonRow
-   * @return
+   * @param ordinal the data index of Row
+   * @return long data type data
    */
   public long getLong(int ordinal) {
     return (long) data[ordinal];
@@ -102,8 +103,8 @@ public class Row implements Serializable {
   /**
    * get array data type data by ordinal
    *
-   * @param ordinal the data index of carbonRow
-   * @return
+   * @param ordinal the data index of Row
+   * @return array data type data
    */
   public Object[] getArray(int ordinal) {
     return (Object[]) data[ordinal];
@@ -112,8 +113,8 @@ public class Row implements Serializable {
   /**
    * get double data type data by ordinal
    *
-   * @param ordinal the data index of carbonRow
-   * @return
+   * @param ordinal the data index of Row
+   * @return double data type data
    */
   public double getDouble(int ordinal) {
     return (double) data[ordinal];
@@ -122,8 +123,8 @@ public class Row implements Serializable {
   /**
    * get boolean data type data by ordinal
    *
-   * @param ordinal the data index of carbonRow
-   * @return
+   * @param ordinal the data index of Row
+   * @return boolean data type data
    */
   public boolean getBoolean(int ordinal) {
     return (boolean) data[ordinal];
@@ -132,8 +133,8 @@ public class Row implements Serializable {
   /**
    * get byte data type data by ordinal
    *
-   * @param ordinal the data index of carbonRow
-   * @return
+   * @param ordinal the data index of Row
+   * @return byte data type data
    */
   public Byte getByte(int ordinal) {
     return (Byte) data[ordinal];
@@ -142,8 +143,8 @@ public class Row implements Serializable {
   /**
    * get float data type data by ordinal
    *
-   * @param ordinal the data index of carbonRow
-   * @return
+   * @param ordinal the data index of Row
+   * @return float data type data
    */
   public float getFloat(int ordinal) {
     return (float) data[ordinal];
@@ -154,8 +155,8 @@ public class Row implements Serializable {
    * This is for CSDK
    * JNI don't support varchar, so carbon convert decimal to string
    *
-   * @param ordinal the data index of carbonRow
-   * @return
+   * @param ordinal the data index of Row
+   * @return string data type data
    */
   public String getVarchar(int ordinal) {
     return (String) data[ordinal];
@@ -166,8 +167,8 @@ public class Row implements Serializable {
    * This is for CSDK
    * JNI don't support Decimal, so carbon convert decimal to string
    *
-   * @param ordinal the data index of carbonRow
-   * @return
+   * @param ordinal the data index of Row
+   * @return string data type data
    */
   public String getDecimal(int ordinal) {
     return ((BigDecimal) data[ordinal]).toString();
@@ -176,8 +177,8 @@ public class Row implements Serializable {
   /**
    * get data type by ordinal
    *
-   * @param ordinal the data index of carbonRow
-   * @return
+   * @param ordinal the data index of Row
+   * @return data type
    */
   public DataType getDataType(int ordinal) {
     return dataTypes[ordinal];
@@ -186,8 +187,8 @@ public class Row implements Serializable {
   /**
    * get data type name by ordinal
    *
-   * @param ordinal the data index of carbonRow
-   * @return
+   * @param ordinal the data index of Row
+   * @return data type name
    */
   public String getDataTypeName(int ordinal) {
     return dataTypes[ordinal].getName();
@@ -198,7 +199,7 @@ public class Row implements Serializable {
    * child schema data type name
    * for example: return STRING if it's Array<String> in java
    *
-   * @param ordinal the data index of carbonRow
+   * @param ordinal the data index of Row
    * @return element type name
    */
   public String getArrayElementTypeName(int ordinal) {
@@ -221,15 +222,7 @@ public class Row implements Serializable {
     return data[ordinal];
   }
 
-  public void update(Object value, int ordinal) {
-    data[ordinal] = value;
-  }
-
   @Override public String toString() {
     return Arrays.toString(data);
-  }
-
-  public void clearData() {
-    this.data = null;
   }
 }

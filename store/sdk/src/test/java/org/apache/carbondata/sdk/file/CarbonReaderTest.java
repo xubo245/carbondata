@@ -1627,10 +1627,10 @@ public class CarbonReaderTest extends TestCase {
         assertEquals(row.getInt(2), i);
         assertEquals(row.getLong(3), Long.MAX_VALUE - i);
         assert (row.getBoolean(5));
-        assert (row.getDecimal(8).toString().equals("12.35"));
+        assert (row.getDecimal(8).equals("12.35"));
         assert (row.getVarchar(9).equals("varchar"));
 
-        Object[] arr = (Object[]) row.getArray(10);
+        Object[] arr = row.getArray(10);
         assert (arr[0].equals("Hello"));
         assert (arr[1].equals("World"));
         assert (arr[2].equals("From"));

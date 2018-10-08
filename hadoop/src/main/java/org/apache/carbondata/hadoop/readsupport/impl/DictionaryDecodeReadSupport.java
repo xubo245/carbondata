@@ -86,7 +86,7 @@ public class DictionaryDecodeReadSupport<T> implements CarbonReadSupport<T> {
   }
 
   /**
-   * get carbonRow, including data and data types
+   * get carbon Row, including data and data types
    *
    * @param data row data
    * @return Row Object

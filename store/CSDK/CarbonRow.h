@@ -29,19 +29,19 @@ public:
      * Constructor and express the carbon row result
      *
      * @param env JNI env
-     * @param jo CarbonRow object
+     * @param jo carbon Row object
      */
     CarbonRow(JNIEnv *env, jobject jo);
 
     /**
      * print result
      *
-     * @param ordinal the data index of carbonRow
+     * @param ordinal the data index of carbon Row
      */
     void print(int ordinal);
 
     /**
-     * the length of CarbonRow object
+     * the length of carbon Row object
      *
      * @return
      */
@@ -50,7 +50,7 @@ public:
     /**
      * get data type name of ordinal data
      *
-     * @param ordinal the data index of carbonRow
+     * @param ordinal the data index of carbon Row
      * @return data type name
      */
     char *getDataTypeName(int ordinal);
@@ -60,7 +60,7 @@ public:
      * child schema data type name
      * for example: return STRING if it's Array<String> in java
      *
-     * @param ordinal the data index of carbonRow
+     * @param ordinal the data index of carbon Row
      * @return element type name
      */
     char *getArrayElementTypeName(int ordinal);
@@ -68,7 +68,7 @@ public:
     /**
      * get short data type data by ordinal
      *
-     * @param ordinal the data index of carbonRow
+     * @param ordinal the data index of carbon Row
      * @return short data type data
      */
     short getShort(int ordinal);
@@ -76,7 +76,7 @@ public:
     /**
      * get int data type data by ordinal
      *
-     * @param ordinal the data index of carbonRow
+     * @param ordinal the data index of carbon Row
      * @return int data type data
      */
     int getInt(int ordinal);
@@ -84,7 +84,7 @@ public:
     /**
      * get long data type data by ordinal
      *
-     * @param ordinal the data index of carbonRow
+     * @param ordinal the data index of carbon Row
      * @return  long data type data
      */
     long getLong(int ordinal);
@@ -92,7 +92,7 @@ public:
     /**
      * get double data type data by ordinal
      *
-     * @param ordinal the data index of carbonRow
+     * @param ordinal the data index of carbon Row
      * @return  double data type data
      */
     double getDouble(int ordinal);
@@ -100,7 +100,7 @@ public:
     /**
      * get float data type data by ordinal
      *
-     * @param ordinal the data index of carbonRow
+     * @param ordinal the data index of carbon Row
      * @return float data type data
      */
     float getFloat(int ordinal);
@@ -108,7 +108,7 @@ public:
     /**
      * get boolean data type data by ordinal
      *
-     * @param ordinal the data index of carbonRow
+     * @param ordinal the data index of carbon Row
      * @return jboolean data type data
      */
     jboolean getBoolean(int ordinal);
@@ -117,7 +117,7 @@ public:
      *  get decimal data type data by ordinal
      * JNI don't support Decimal, so carbon convert decimal to string
      *
-     * @param ordinal the data index of carbonRow
+     * @param ordinal the data index of carbon Row
      * @return string data type data
      */
     char *getDecimal(int ordinal);
@@ -125,7 +125,7 @@ public:
     /**
      * get string data type data by ordinal
      *
-     * @param ordinal the data index of carbonRow
+     * @param ordinal the data index of carbon Row
      * @return string data type data
      */
     char *getString(int ordinal);
@@ -134,7 +134,7 @@ public:
      * get varchar data type data by ordinal
      * JNI don't support varchar, so carbon convert decimal to string
      *
-     * @param ordinal the data index of carbonRow
+     * @param ordinal the data index of carbon Row
      * @return string data type data
      */
     char *getVarchar(int ordinal);
@@ -142,7 +142,7 @@ public:
     /**
      * get array<T> data type data by ordinal
      *
-     * @param ordinal the data index of carbonRow
+     * @param ordinal the data index of carbon Row
      * @return jobjectArray data type data
      */
     jobjectArray getArray(int ordinal);

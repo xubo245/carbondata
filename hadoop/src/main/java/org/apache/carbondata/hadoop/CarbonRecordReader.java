@@ -119,9 +119,9 @@ public class CarbonRecordReader<T> extends AbstractRecordReader<T> {
   }
 
   /**
-   * get CarbonRow data, including data and datatypes
+   * get Carbon Row data, including data and datatypes
    *
-   * @return carbonRow object
+   * @return carbon Row object
    * @throws IOException
    * @throws InterruptedException
    */
@@ -138,7 +138,7 @@ public class CarbonRecordReader<T> extends AbstractRecordReader<T> {
       if (value instanceof Row) {
         return (Row) value;
       } else {
-        throw new RuntimeException("Can't get CarbonRow from the current value.");
+        throw new RuntimeException("Can't get Carbon Row from the current value.");
       }
     }
   }
