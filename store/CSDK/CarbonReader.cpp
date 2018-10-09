@@ -89,11 +89,12 @@ jboolean CarbonReader::hasNext() {
     return hasNext;
 }
 
-jobjectArray CarbonReader::readNextRow() {
+jobject CarbonReader::readNextCarbonRow() {
     jclass carbonReader = jniEnv->GetObjectClass(carbonReaderObject);
-    jmethodID readNextRow2ID = jniEnv->GetMethodID(carbonReader, "readNextStringRow", "()[Ljava/lang/Object;");
-    jobjectArray row = (jobjectArray) jniEnv->CallObjectMethod(carbonReaderObject, readNextRow2ID);
-    return row;
+    jmethodID readNextCarbonRowID = jniEnv->GetMethodID(carbonReader, "readNextCarbonRow",
+        "()[Ljava/lang/Object;");
+    jobject carbonRow = (jobject) jniEnv->CallObjectMethod(carbonReaderObject, readNextCarbonRowID);
+    return carbonRow;
 }
 
 jboolean CarbonReader::close() {

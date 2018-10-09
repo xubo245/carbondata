@@ -68,20 +68,42 @@ JNIEnv *initJVM() {
 bool readFromLocalWithoutProjection(JNIEnv *env) {
 
     CarbonReader carbonReaderClass;
-    carbonReaderClass.builder(env, "../resources/carbondata", "test");
+    carbonReaderClass.builder(env, "../resources/carbondata");
     carbonReaderClass.build();
 
+    printf("\nRead data from local  without projection:\n");
+
+    CarbonRow carbonRow(env);
     while (carbonReaderClass.hasNext()) {
-        jobjectArray row = carbonReaderClass.readNextRow();
-        jsize length = env->GetArrayLength(row);
+        jobject row = carbonReaderClass.readNextCarbonRow();
+        carbonRow.setCarbonRow(row);
+        printf("%s\t", carbonRow.getString(0));
+        printf("%d\t", carbonRow.getInt(1));
+        printf("%ld\t", carbonRow.getLong(2));
+        printf("%s\t", carbonRow.getVarchar(3));
+        jobjectArray jobjectArray1 = carbonRow.getArray(4);
+        jsize length = env->GetArrayLength(jobjectArray1);
         int j = 0;
         for (j = 0; j < length; j++) {
-            jobject element = env->GetObjectArrayElement(row, j);
+            jobject element = env->GetObjectArrayElement(jobjectArray1, j);
             char *str = (char *) env->GetStringUTFChars((jstring) element, JNI_FALSE);
             printf("%s\t", str);
         }
+        printf("%d\t", carbonRow.getShort(5));
+        printf("%d\t", carbonRow.getInt(6));
+        printf("%ld\t", carbonRow.getLong(7));
+        printf("%lf\t", carbonRow.getDouble(8));
+        bool bool1 = carbonRow.getBoolean(9);
+        if (bool1) {
+            printf("true\t");
+        } else {
+            printf("false\t");
+        }
+        printf("%s\t", carbonRow.getDecimal(10));
+        printf("%f\t", carbonRow.getFloat(11));
         printf("\n");
     }
+
     carbonReaderClass.close();
 }
 
@@ -106,20 +128,41 @@ bool readFromS3(JNIEnv *env, char *argv[]) {
     // "your endPoint"
     args[2] = argv[3];
 
-    reader.builder(env, "s3a://sdk/WriterOutput", "test");
-    reader.withHadoopConf(3, args);
+    reader.builder(env, "s3a://sdk/WriterOutput/carbondata/", "test");
+    reader.withHadoopConf("fs.s3a.access.key", argv[1]);
+    reader.withHadoopConf("fs.s3a.secret.key", argv[2]);
+    reader.withHadoopConf("fs.s3a.endpoint", argv[3]);
     reader.build();
     printf("\nRead data from S3:\n");
+    CarbonRow carbonRow(env);
     while (reader.hasNext()) {
-        jobjectArray row = reader.readNextRow();
-        jsize length = env->GetArrayLength(row);
+        jobject row = reader.readNextCarbonRow();
+        carbonRow.setCarbonRow(row);
 
+        printf("%s\t", carbonRow.getString(0));
+        printf("%d\t", carbonRow.getInt(1));
+        printf("%ld\t", carbonRow.getLong(2));
+        printf("%s\t", carbonRow.getVarchar(3));
+        jobjectArray jobjectArray1 = carbonRow.getArray(4);
+        jsize length = env->GetArrayLength(jobjectArray1);
         int j = 0;
         for (j = 0; j < length; j++) {
-            jobject element = env->GetObjectArrayElement(row, j);
+            jobject element = env->GetObjectArrayElement(jobjectArray1, j);
             char *str = (char *) env->GetStringUTFChars((jstring) element, JNI_FALSE);
             printf("%s\t", str);
         }
+        printf("%d\t", carbonRow.getShort(5));
+        printf("%d\t", carbonRow.getInt(6));
+        printf("%ld\t", carbonRow.getLong(7));
+        printf("%lf\t", carbonRow.getDouble(8));
+        bool bool1 = carbonRow.getBoolean(9);
+        if (bool1) {
+            printf("true\t");
+        } else {
+            printf("false\t");
+        }
+        printf("%s\t", carbonRow.getDecimal(10));
+        printf("%f\t", carbonRow.getFloat(11));
         printf("\n");
     }
 
@@ -181,11 +224,10 @@ Find example code at main.cpp of CSDK module
     jboolean hasNext();
 
     /**
-     * read next row from data
-     *
-     * @return object array of one row
+     * read next carbonRow from data
+     * @return carbonRow object of one row
      */
-    jobjectArray readNextRow();
+     jobject readNextCarbonRow();
 
     /**
      * close the carbon reader

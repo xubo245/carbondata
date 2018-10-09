@@ -21,6 +21,7 @@
 #include <iostream>
 #include <unistd.h>
 #include "CarbonReader.h"
+#include "CarbonRow.h"
 
 using namespace std;
 
@@ -69,16 +70,34 @@ bool readFromLocalWithoutProjection(JNIEnv *env) {
 
     printf("\nRead data from local  without projection:\n");
 
+    CarbonRow carbonRow(env);
     while (carbonReaderClass.hasNext()) {
-        jobjectArray row = carbonReaderClass.readNextRow();
-        jsize length = env->GetArrayLength(row);
-
+        jobject row = carbonReaderClass.readNextCarbonRow();
+        carbonRow.setCarbonRow(row);
+        printf("%s\t", carbonRow.getString(0));
+        printf("%d\t", carbonRow.getInt(1));
+        printf("%ld\t", carbonRow.getLong(2));
+        printf("%s\t", carbonRow.getVarchar(3));
+        jobjectArray jobjectArray1 = carbonRow.getArray(4);
+        jsize length = env->GetArrayLength(jobjectArray1);
         int j = 0;
         for (j = 0; j < length; j++) {
-            jobject element = env->GetObjectArrayElement(row, j);
+            jobject element = env->GetObjectArrayElement(jobjectArray1, j);
             char *str = (char *) env->GetStringUTFChars((jstring) element, JNI_FALSE);
             printf("%s\t", str);
         }
+        printf("%d\t", carbonRow.getShort(5));
+        printf("%d\t", carbonRow.getInt(6));
+        printf("%ld\t", carbonRow.getLong(7));
+        printf("%lf\t", carbonRow.getDouble(8));
+        bool bool1 = carbonRow.getBoolean(9);
+        if (bool1) {
+            printf("true\t");
+        } else {
+            printf("false\t");
+        }
+        printf("%s\t", carbonRow.getDecimal(10));
+        printf("%f\t", carbonRow.getFloat(11));
         printf("\n");
     }
 
@@ -96,7 +115,7 @@ bool readFromLocal(JNIEnv *env) {
     CarbonReader reader;
     reader.builder(env, "../resources/carbondata", "test");
 
-    char *argv[11];
+    char *argv[12];
     argv[0] = "stringField";
     argv[1] = "shortField";
     argv[2] = "intField";
@@ -108,22 +127,42 @@ bool readFromLocal(JNIEnv *env) {
     argv[8] = "decimalField";
     argv[9] = "varcharField";
     argv[10] = "arrayField";
-    reader.projection(11, argv);
+    argv[11] = "floatField";
+    reader.projection(12, argv);
 
     reader.build();
 
     printf("\nRead data from local:\n");
 
+    CarbonRow carbonRow(env);
     while (reader.hasNext()) {
-        jobjectArray row = reader.readNextRow();
-        jsize length = env->GetArrayLength(row);
+        jobject row = reader.readNextCarbonRow();
+        carbonRow.setCarbonRow(row);
 
+        printf("%s\t", carbonRow.getString(0));
+        printf("%d\t", carbonRow.getShort(1));
+        printf("%d\t", carbonRow.getInt(2));
+        printf("%ld\t", carbonRow.getLong(3));
+        printf("%lf\t", carbonRow.getDouble(4));
+        bool bool1 = carbonRow.getBoolean(5);
+        if (bool1) {
+            printf("true\t");
+        } else {
+            printf("false\t");
+        }
+        printf("%d\t", carbonRow.getInt(6));
+        printf("%ld\t", carbonRow.getLong(7));
+        printf("%s\t", carbonRow.getDecimal(8));
+        printf("%s\t", carbonRow.getVarchar(9));
+        jobjectArray jobjectArray1 = carbonRow.getArray(10);
+        jsize length = env->GetArrayLength(jobjectArray1);
         int j = 0;
         for (j = 0; j < length; j++) {
-            jobject element = env->GetObjectArrayElement(row, j);
+            jobject element = env->GetObjectArrayElement(jobjectArray1, j);
             char *str = (char *) env->GetStringUTFChars((jstring) element, JNI_FALSE);
             printf("%s\t", str);
         }
+        printf("%f\t", carbonRow.getFloat(11));
         printf("\n");
     }
 
@@ -149,22 +188,41 @@ bool readFromS3(JNIEnv *env, char *argv[]) {
     // "your endPoint"
     args[2] = argv[3];
 
-    reader.builder(env, "s3a://sdk/WriterOutput", "test");
+    reader.builder(env, "s3a://sdk/WriterOutput/carbondata/", "test");
     reader.withHadoopConf("fs.s3a.access.key", argv[1]);
     reader.withHadoopConf("fs.s3a.secret.key", argv[2]);
     reader.withHadoopConf("fs.s3a.endpoint", argv[3]);
     reader.build();
     printf("\nRead data from S3:\n");
+    CarbonRow carbonRow(env);
     while (reader.hasNext()) {
-        jobjectArray row = reader.readNextRow();
-        jsize length = env->GetArrayLength(row);
+        jobject row = reader.readNextCarbonRow();
+        carbonRow.setCarbonRow(row);
 
+        printf("%s\t", carbonRow.getString(0));
+        printf("%d\t", carbonRow.getInt(1));
+        printf("%ld\t", carbonRow.getLong(2));
+        printf("%s\t", carbonRow.getVarchar(3));
+        jobjectArray jobjectArray1 = carbonRow.getArray(4);
+        jsize length = env->GetArrayLength(jobjectArray1);
         int j = 0;
         for (j = 0; j < length; j++) {
-            jobject element = env->GetObjectArrayElement(row, j);
+            jobject element = env->GetObjectArrayElement(jobjectArray1, j);
             char *str = (char *) env->GetStringUTFChars((jstring) element, JNI_FALSE);
             printf("%s\t", str);
         }
+        printf("%d\t", carbonRow.getShort(5));
+        printf("%d\t", carbonRow.getInt(6));
+        printf("%ld\t", carbonRow.getLong(7));
+        printf("%lf\t", carbonRow.getDouble(8));
+        bool bool1 = carbonRow.getBoolean(9);
+        if (bool1) {
+            printf("true\t");
+        } else {
+            printf("false\t");
+        }
+        printf("%s\t", carbonRow.getDecimal(10));
+        printf("%f\t", carbonRow.getFloat(11));
         printf("\n");
     }
 

@@ -90,11 +90,10 @@ public:
     jboolean hasNext();
 
     /**
-     * read next row from data
-     *
-     * @return object array of one row
+     * read next carbon Row from data
+     * @return carbon Row object of one row
      */
-    jobjectArray readNextRow();
+    jobject readNextCarbonRow();
 
     /**
      * close the carbon reader
