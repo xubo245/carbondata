@@ -26,6 +26,7 @@ import java.util.List;
 import org.apache.carbondata.core.constants.CarbonCommonConstants;
 import org.apache.carbondata.core.datastore.FileReader;
 import org.apache.carbondata.core.datastore.filesystem.CarbonFile;
+import org.apache.carbondata.core.datastore.filesystem.CarbonFileFilter;
 import org.apache.carbondata.core.datastore.impl.FileFactory;
 import org.apache.carbondata.core.metadata.converter.SchemaConverter;
 import org.apache.carbondata.core.metadata.converter.ThriftWrapperSchemaConverterImpl;
@@ -51,6 +52,7 @@ public class CarbonSchemaReader {
    * @return schema object
    * @throws IOException
    */
+  @Deprecated
   public static Schema readSchemaInSchemaFile(String schemaFilePath) throws IOException {
     org.apache.carbondata.format.TableInfo tableInfo = CarbonUtil.readSchemaFile(schemaFilePath);
     SchemaConverter schemaConverter = new ThriftWrapperSchemaConverterImpl();
@@ -64,11 +66,70 @@ public class CarbonSchemaReader {
   /**
    * Read carbondata file and return the schema
    *
-   * @param dataFilePath complete path including carbondata file name
+   * @param path carbondata store path
    * @return Schema object
    * @throws IOException
    */
-  public static Schema readSchemaInDataFile(String dataFilePath) throws IOException {
+  public static Schema readSchemaFromFirstDataFile(String path) throws IOException {
+    String dataFilePath = getFirstCarbonDataFile(path);
+    return readSchemaInDataFile(dataFilePath);
+  }
+
+  /**
+   * get first carbondata file in path and don't check all files schema
+   *
+   * @param path carbondata file path
+   * @return first carbondata file name
+   */
+  public static String getFirstCarbonDataFile(String path) {
+    String dataFilePath = path;
+    if (!(dataFilePath.contains(".carbondata"))) {
+      CarbonFile[] carbonFiles = FileFactory
+          .getCarbonFile(path)
+          .listFiles(new CarbonFileFilter() {
+            @Override
+            public boolean accept(CarbonFile file) {
+              if (file == null) {
+                return false;
+              }
+              return file.getName().endsWith(".carbondata");
+            }
+          });
+      if (carbonFiles == null || carbonFiles.length < 1) {
+        throw new RuntimeException("Carbon data file not exists.");
+      }
+      dataFilePath = carbonFiles[0].getAbsolutePath();
+    }
+    return dataFilePath;
+  }
+
+  /**
+   * Read carbondata file and return the schema
+   *
+   * @param path carbonindex store path
+   * @return Schema object
+   * @throws IOException
+   */
+  public static Schema readSchemaInDataFile(String path) throws IOException {
+    String dataFilePath = path;
+    if (!(dataFilePath.contains(".carbondata"))) {
+      CarbonFile[] carbonFiles = FileFactory
+          .getCarbonFile(path)
+          .listFiles(new CarbonFileFilter() {
+            @Override
+            public boolean accept(CarbonFile file) {
+              if (file == null) {
+                return false;
+              }
+              return file.getName().endsWith(".carbondata");
+            }
+          });
+      if (carbonFiles == null || carbonFiles.length < 1) {
+        throw new RuntimeException("Carbon data file not exists.");
+      }
+      dataFilePath = carbonFiles[0].getAbsolutePath();
+    }
+
     CarbonHeaderReader reader = new CarbonHeaderReader(dataFilePath);
     List<ColumnSchema> columnSchemaList = new ArrayList<ColumnSchema>();
     List<ColumnSchema> schemaList = reader.readSchema();
@@ -102,6 +163,46 @@ public class CarbonSchemaReader {
     } else {
       return "Version Details are not found in carbondata file";
     }
+  }
+
+  /**
+   * Read carbonindex file and return the schema
+   *
+   * @param path complete path including index file name
+   * @return schema object
+   * @throws IOException
+   */
+  public static Schema readSchemaFromFirstIndexFile(String path) throws IOException {
+    String dataFilePath = getFirstCarbonIndexFile(path);
+    return readSchemaInIndexFile(dataFilePath);
+  }
+
+  /**
+   * get first carbonindex file in path and don't check all files schema
+   *
+   * @param path carbonindex file path
+   * @return first carbonindex file name
+   */
+  public static String getFirstCarbonIndexFile(String path) {
+    String indexFilePath = path;
+    if (!(indexFilePath.contains(".carbonindex"))) {
+      CarbonFile[] carbonFiles = FileFactory
+          .getCarbonFile(path)
+          .listFiles(new CarbonFileFilter() {
+            @Override
+            public boolean accept(CarbonFile file) {
+              if (file == null) {
+                return false;
+              }
+              return file.getName().endsWith(".carbonindex");
+            }
+          });
+      if (carbonFiles == null || carbonFiles.length < 1) {
+        throw new RuntimeException("Carbon index file not exists.");
+      }
+      indexFilePath = carbonFiles[0].getAbsolutePath();
+    }
+    return indexFilePath;
   }
 
   /**

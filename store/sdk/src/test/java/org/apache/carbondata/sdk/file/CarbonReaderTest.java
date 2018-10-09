@@ -1495,7 +1495,7 @@ public class CarbonReaderTest extends TestCase {
         }
       });
       if (dataFiles == null || dataFiles.length < 1) {
-        throw new RuntimeException("Carbon index file not exists.");
+        throw new RuntimeException("Carbon data file not exists.");
       }
       Schema schema = CarbonSchemaReader
           .readSchemaInDataFile(dataFiles[0].getAbsolutePath())

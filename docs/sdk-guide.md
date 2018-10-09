@@ -686,6 +686,47 @@ Find example code at [CarbonReaderExample](https://github.com/apache/carbondata/
   public static Schema readSchemaInIndexFile(String indexFilePath);
 ```
 
+```
+  /**
+   * Read carbondata file and return the schema
+   *
+   * @param path carbondata store path
+   * @return Schema object
+   * @throws IOException
+   */
+  public static Schema readSchemaFromFirstDataFile(String path);
+```
+```
+  /**
+   * get first carbondata file in path and don't check all files schema
+   *
+   * @param path carbondata file path
+   * @return first carbondata file name
+   */
+  public static String getFirstCarbonDataFile(String path);
+```
+
+```
+  /**
+   * Read carbonindex file and return the schema
+   *
+   * @param path complete path including index file name
+   * @return schema object
+   * @throws IOException
+   */
+  public static Schema readSchemaFromFirstIndexFile(String path);
+```
+
+```
+  /**
+   * get first carbonindex file in path and don't check all files schema
+   *
+   * @param path carbonindex file path
+   * @return first carbonindex file name
+   */
+  public static String getFirstCarbonIndexFile(String path);
+```
+
 ### Class org.apache.carbondata.sdk.file.Schema
 ```
   /**
