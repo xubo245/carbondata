@@ -229,6 +229,12 @@ public class BlockletInfo implements Serializable, Writable {
     if (isSortedPresent) {
       output.writeBoolean(isSorted);
     }
+    if (null != getNumberOfRowsPerPage()) {
+      output.writeShort(getNumberOfRowsPerPage().length);
+      for (int i = 0; i < getNumberOfRowsPerPage().length; i++) {
+        output.writeInt(getNumberOfRowsPerPage()[i]);
+      }
+    }
   }
 
   /**
@@ -298,6 +304,10 @@ public class BlockletInfo implements Serializable, Writable {
     final boolean isSortedPresent = input.readBoolean();
     if (isSortedPresent) {
       this.isSorted = input.readBoolean();
+    }
+    numberOfRowsPerPage = new int[input.readShort()];
+    for (int i = 0; i < numberOfRowsPerPage.length; i++) {
+      numberOfRowsPerPage[i] = input.readInt();
     }
   }
 
