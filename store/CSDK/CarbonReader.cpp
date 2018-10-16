@@ -17,6 +17,7 @@
 
 #include "CarbonReader.h"
 #include <jni.h>
+#include <sys/time.h>
 
 jobject CarbonReader::builder(JNIEnv *env, char *path, char *tableName) {
 
@@ -74,27 +75,41 @@ jobject CarbonReader::withHadoopConf(char *key, char *value) {
     return carbonReaderBuilderObject;
 }
 
+jobject CarbonReader::withBatch(int batch) {
+    jclass carbonReaderBuilderClass = jniEnv->GetObjectClass(carbonReaderBuilderObject);
+    jmethodID buildID = jniEnv->GetMethodID(carbonReaderBuilderClass, "withBatch",
+        "(I)Lorg/apache/carbondata/sdk/file/CarbonReaderBuilder;");
+
+    jvalue args[1];
+    args[0].i = batch;
+    carbonReaderBuilderObject = jniEnv->CallObjectMethodA(carbonReaderBuilderObject, buildID, args);
+    return carbonReaderBuilderObject;
+}
+
 jobject CarbonReader::build() {
     jclass carbonReaderBuilderClass = jniEnv->GetObjectClass(carbonReaderBuilderObject);
     jmethodID buildID = jniEnv->GetMethodID(carbonReaderBuilderClass, "build",
         "()Lorg/apache/carbondata/sdk/file/CarbonReader;");
     carbonReaderObject = jniEnv->CallObjectMethod(carbonReaderBuilderObject, buildID);
+    carbonReader = jniEnv->GetObjectClass(carbonReaderObject);
+    hasNextID = jniEnv->GetMethodID(carbonReader, "hasNext", "()Z");
+    readNextCarbonRowID = jniEnv->GetMethodID(carbonReader, "readNextCarbonRow", "()[Ljava/lang/Object;");
+    readNextBatchRowID = jniEnv->GetMethodID(carbonReader, "readNextBatchRow", "(I)[Ljava/lang/Object;");
     return carbonReaderObject;
 }
 
 jboolean CarbonReader::hasNext() {
-    jclass carbonReader = jniEnv->GetObjectClass(carbonReaderObject);
-    jmethodID hasNextID = jniEnv->GetMethodID(carbonReader, "hasNext", "()Z");
-    unsigned char hasNext = jniEnv->CallBooleanMethod(carbonReaderObject, hasNextID);
-    return hasNext;
+    return jniEnv->CallBooleanMethod(carbonReaderObject, hasNextID);
 }
 
 jobject CarbonReader::readNextCarbonRow() {
-    jclass carbonReader = jniEnv->GetObjectClass(carbonReaderObject);
-    jmethodID readNextCarbonRowID = jniEnv->GetMethodID(carbonReader, "readNextCarbonRow",
-        "()[Ljava/lang/Object;");
-    jobject carbonRow = (jobject) jniEnv->CallObjectMethod(carbonReaderObject, readNextCarbonRowID);
-    return carbonRow;
+    return (jobject) jniEnv->CallObjectMethod(carbonReaderObject, readNextCarbonRowID);
+}
+
+jobjectArray CarbonReader::readNextBatchRow(int batch) {
+    jvalue args[1];
+    args[0].i = batch;
+    return (jobjectArray) jniEnv->CallObjectMethodA(carbonReaderObject, readNextBatchRowID, args);
 }
 
 jboolean CarbonReader::close() {

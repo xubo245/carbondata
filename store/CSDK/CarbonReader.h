@@ -36,6 +36,26 @@ public:
     jobject carbonReaderObject;
 
     /**
+     * carbon read class
+     */
+    jclass carbonReader;
+
+    /**
+     * hasNext method id
+     */
+    jmethodID hasNextID;
+
+    /**
+     * readNextCarbonRow method id
+     */
+    jmethodID readNextCarbonRowID;
+
+    /**
+     * readNextBatchRow method id
+     */
+    jmethodID readNextBatchRowID;
+
+    /**
      * create a CarbonReaderBuilder object for building carbonReader,
      * CarbonReaderBuilder object  can configure different parameter
      *
@@ -75,6 +95,15 @@ public:
     jobject withHadoopConf(char *key, char *value);
 
     /**
+     * set batch size
+     *
+     * @param batch batch size
+     * @return CarbonReaderBuilder object
+     */
+    jobject withBatch(int batch);
+
+
+    /**
      * build carbonReader object for reading data
      * it support read data from load disk
      *
@@ -94,6 +123,14 @@ public:
      * @return carbon Row object of one row
      */
     jobject readNextCarbonRow();
+
+    /**
+     * read Next Batch Row
+     *
+     * @param batch batch size
+     * @return rows
+     */
+    jobjectArray readNextBatchRow(int batch);
 
     /**
      * close the carbon reader
