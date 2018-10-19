@@ -8,7 +8,7 @@ find_package(JNI REQUIRED)
 include_directories(${JNI_INCLUDE_DIRS})
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-set(SOURCE_FILES CarbonReader.cpp CarbonReader.h main.cpp CarbonRow.h CarbonRow.cpp)
+set(SOURCE_FILES CarbonReader.cpp CarbonReader.h main.cpp CarbonRow.h CarbonRow.cpp CarbonWriter.cpp CarbonWriter.h)
 
 add_executable(CJDK ${SOURCE_FILES})
 get_filename_component(JAVA_JVM_LIBRARY_DIR ${JAVA_JVM_LIBRARY} DIRECTORY)
