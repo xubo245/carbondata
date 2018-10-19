@@ -130,6 +130,7 @@ public class CSVCarbonWriterTest {
       System.out.println();
       i++;
     }
+    carbonReader.close();
     FileUtils.deleteDirectory(new File(path));
   }
 
