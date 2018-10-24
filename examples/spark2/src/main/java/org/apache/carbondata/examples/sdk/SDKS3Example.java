@@ -62,7 +62,7 @@ public class SDKS3Example {
             num = Integer.parseInt(args[4]);
         }
 
-        Configuration conf = new Configuration(false);
+        Configuration conf = new Configuration(true);
         conf.set(Constants.ACCESS_KEY, args[0]);
         conf.set(Constants.SECRET_KEY, args[1]);
         conf.set(Constants.ENDPOINT, args[2]);

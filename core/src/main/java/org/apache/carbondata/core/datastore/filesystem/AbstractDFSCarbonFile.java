@@ -72,6 +72,13 @@ public abstract class AbstractDFSCarbonFile implements CarbonFile {
     Path path = new Path(filePath);
     try {
       fs = path.getFileSystem(this.hadoopConf);
+      System.out.println(path);
+      if (path.getName().contains("carbondata")) {
+        System.out.println("debug");
+      }
+      if (path.getName().contains("carbonindex")) {
+        System.out.println("debug");
+      }
       fileStatus = fs.getFileStatus(path);
     } catch (IOException e) {
       LOGGER.debug("Exception occurred:" + e.getMessage());
