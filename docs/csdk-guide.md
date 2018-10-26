@@ -39,7 +39,7 @@ and read data from S3 at main.cpp of CSDK module.  Finally, Finally, users need 
 release the memory and destroy JVM.
 
 ## API List
-### read data
+### CarbonReader
 ```
     /**
      * create a CarbonReaderBuilder object for building carbonReader,
