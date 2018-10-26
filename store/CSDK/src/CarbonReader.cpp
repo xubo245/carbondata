@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-#include "CarbonReader.h"
 #include <jni.h>
 #include <mach/mach_types.h>
 #include <stdexcept>
+#include <sys/time.h>
+#include "CarbonReader.h"
 
 void CarbonReader::builder(JNIEnv *env, char *path, char *tableName) {
     if (env == NULL) {
@@ -118,12 +119,34 @@ void CarbonReader::withHadoopConf(char *key, char *value) {
     carbonReaderBuilderObject = jniEnv->CallObjectMethodA(carbonReaderBuilderObject, id, args);
 }
 
+void CarbonReader::withBatch(int batch) {
+    if (carbonReaderBuilderObject == NULL) {
+        throw std::runtime_error("carbonReaderBuilder Object shouldn't be NULL.");
+    }
+    if (batch < 1) {
+        throw std::runtime_error("batch parameter can't be negative and 0.");
+    }
+    jclass carbonReaderBuilderClass = jniEnv->GetObjectClass(carbonReaderBuilderObject);
+    jmethodID buildID = jniEnv->GetMethodID(carbonReaderBuilderClass, "withBatch",
+        "(I)Lorg/apache/carbondata/sdk/file/CarbonReaderBuilder;");
+    if (buildID == NULL) {
+        throw std::runtime_error("Can't find the method in java: withBatch.");
+    }
+    jvalue args[1];
+    args[0].i = batch;
+    carbonReaderBuilderObject = jniEnv->CallObjectMethodA(carbonReaderBuilderObject, buildID, args);
+}
+
 jobject CarbonReader::build() {
     jclass carbonReaderBuilderClass = jniEnv->GetObjectClass(carbonReaderBuilderObject);
     jmethodID buildID = jniEnv->GetMethodID(carbonReaderBuilderClass, "build",
         "()Lorg/apache/carbondata/sdk/file/CarbonReader;");
     if (buildID == NULL) {
         throw std::runtime_error("Can't find the method in java: build");
+    }
+    jboolean check0 = jniEnv->ExceptionCheck();
+    if (check0) {
+        throw jniEnv->ExceptionOccurred();
     }
     carbonReaderObject = jniEnv->CallObjectMethod(carbonReaderBuilderObject, buildID);
     if (jniEnv->ExceptionCheck()) {
@@ -161,6 +184,18 @@ jobject CarbonReader::readNextRow() {
         throw jniEnv->ExceptionOccurred();
     }
     return result;
+}
+
+jobjectArray CarbonReader::readNextBatchRow() {
+    if (readNextBatchRowID == NULL) {
+        jclass carbonReader = jniEnv->GetObjectClass(carbonReaderObject);
+        readNextBatchRowID = jniEnv->GetMethodID(carbonReader, "readNextBatchRow",
+            "()[Ljava/lang/Object;");
+        if (readNextBatchRowID == NULL) {
+            throw std::runtime_error("Can't find the method in java: readNextBatchRow");
+        }
+    }
+    return (jobjectArray) jniEnv->CallObjectMethod(carbonReaderObject, readNextBatchRowID);
 }
 
 void CarbonReader::close() {

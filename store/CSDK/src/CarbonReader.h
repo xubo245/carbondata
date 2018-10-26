@@ -30,6 +30,11 @@ private:
     jmethodID readNextRowID = NULL;
 
     /**
+     * readNextBatchRow jmethodID
+     */
+    jmethodID readNextBatchRowID = NULL;
+
+    /**
      * carbonReaderBuilder object for building carbonReader
      * it can configure some operation
      */
@@ -83,6 +88,15 @@ public:
     void withHadoopConf(char *key, char *value);
 
     /**
+     * set batch size
+     *
+     * @param batch batch size
+     * @return CarbonReaderBuilder object
+     */
+    void withBatch(int batch);
+
+
+    /**
      * build carbonReader object for reading data
      * it support read data from load disk
      *
@@ -102,6 +116,13 @@ public:
      * @return carbon Row object of one row
      */
     jobject readNextRow();
+
+    /**
+     * read Next Batch Row
+     *
+     * @return rows
+     */
+    jobjectArray readNextBatchRow();
 
     /**
      * close the carbon reader
