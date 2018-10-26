@@ -22,6 +22,8 @@
 #include <unistd.h>
 #include "../src/CarbonReader.h"
 #include "../src/CarbonRow.h"
+#include "../src/CarbonSchemaReader.h"
+#include "../src/Schema.h"
 
 using namespace std;
 
@@ -114,6 +116,66 @@ void printResult(JNIEnv *env, CarbonReader reader) {
         env->DeleteLocalRef(row);
     }
     reader.close();
+}
+
+/**
+ * test read Schema from Index File
+ *
+ * @param env jni env
+ * @return whether it is success
+ */
+bool readSchemaInIndexFile(JNIEnv *env) {
+    printf("\nread Schema from Index File:\n");
+    CarbonSchemaReader carbonSchemaReader(env);
+    jobject schema;
+    try {
+        schema = carbonSchemaReader.readSchemaInIndexFile(
+                "../../../../resources/carbondata/510199997055746_batchno0-0-null-510199277323454.carbonindex");
+    } catch (jthrowable e) {
+        env->ExceptionDescribe();
+    }
+    Schema carbonSchema(env, schema);
+    int length = carbonSchema.getFieldsLength();
+    printf("schema length is:%d\n", length);
+    for (int i = 0; i < length; i++) {
+        printf("%d\t", i);
+        printf("%s\t", carbonSchema.getFieldName(i));
+        printf("%s\n", carbonSchema.getFieldDataTypeName(i));
+        if (strcmp(carbonSchema.getFieldDataTypeName(i), "ARRAY") == 0) {
+            printf("Array Element Type Name is:%s\n", carbonSchema.getArrayElementTypeName(i));
+        }
+    }
+    return true;
+}
+
+/**
+ * test read Schema from Data File
+ *
+ * @param env jni env
+ * @return whether it is success
+ */
+bool readSchemaInDataFile(JNIEnv *env) {
+    printf("\nread Schema from Data File:\n");
+    CarbonSchemaReader carbonSchemaReader(env);
+    jobject schema;
+    try {
+        schema = carbonSchemaReader.readSchemaInDataFile(
+                "../../../../resources/carbondata/part-0-510199997055746_batchno0-0-null-510199277323454.carbondata");
+    } catch (jthrowable e) {
+        env->ExceptionDescribe();
+    }
+    Schema carbonSchema(env, schema);
+    int length = carbonSchema.getFieldsLength();
+    printf("schema length is:%d\n", length);
+    for (int i = 0; i < length; i++) {
+        printf("%d\t", i);
+        printf("%s\t", carbonSchema.getFieldName(i));
+        printf("%s\n", carbonSchema.getFieldDataTypeName(i));
+        if (strcmp(carbonSchema.getFieldDataTypeName(i), "ARRAY") == 0) {
+            printf("Array Element Type Name is:%s\n", carbonSchema.getArrayElementTypeName(i));
+        }
+    }
+    return true;
 }
 
 /**
@@ -239,6 +301,32 @@ bool readFromS3(JNIEnv *env, char *argv[]) {
 }
 
 /**
+ * test read Schema from Index File from S3
+ * TODO: need support in the future
+ *
+ * @param env jni env
+ * @return whether it is success
+ */
+bool readSchemaInIndexFileFromS3(JNIEnv *env) {
+    printf("\nread Schema from Index File:\n");
+    CarbonSchemaReader carbonSchemaReader(env);
+    jobject schema = carbonSchemaReader.readSchemaInIndexFile(
+            "s3a://sdk/WriterOutput/carbondata/510199997055746_batchno0-0-null-510199277323454.carbonindex");
+    Schema carbonSchema(env, schema);
+    int length = carbonSchema.getFieldsLength();
+    printf("schema length is:%d\n", length);
+    for (int i = 0; i < length; i++) {
+        printf("%d\t", i);
+        printf("%s\t", carbonSchema.getFieldName(i));
+        printf("%s\n", carbonSchema.getFieldDataTypeName(i));
+        if (strcmp(carbonSchema.getFieldDataTypeName(i), "ARRAY") == 0) {
+            printf("%s\n", carbonSchema.getArrayElementTypeName(i));
+        }
+    }
+    return true;
+}
+
+/**
  * This a example for C++ interface to read carbon file
  * If you want to test read data fromS3, please input the parameter: ak sk endpoint
  *
@@ -252,9 +340,13 @@ int main(int argc, char *argv[]) {
     env = initJVM();
 
     if (argc > 3) {
+        // TODO: need support in the future
+        // readSchemaInIndexFileFromS3(env);
         readFromS3(env, argv);
     } else {
         tryCatchException(env);
+        readSchemaInIndexFile(env);
+        readSchemaInDataFile(env);
         readFromLocalWithoutProjection(env);
         readFromLocal(env);
     }
