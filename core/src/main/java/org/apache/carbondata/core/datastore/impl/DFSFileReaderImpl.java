@@ -80,10 +80,10 @@ public class DFSFileReaderImpl implements FileReader {
    * @return byte buffer
    */
   private byte[] read(FSDataInputStream channel, int size, long offset) throws IOException {
-    byte[] byteBffer = new byte[size];
+    byte[] byteBuffer = new byte[size];
     channel.seek(offset);
-    channel.readFully(byteBffer);
-    return byteBffer;
+    channel.readFully(byteBuffer);
+    return byteBuffer;
   }
 
   /**

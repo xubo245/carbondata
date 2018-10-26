@@ -178,6 +178,7 @@ public final class CarbonUtil {
    */
   public static void closeStream(Closeable stream) throws IOException {
     if (null != stream) {
+      System.out.println("close");
       stream.close();
     }
   }
