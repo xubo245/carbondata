@@ -38,11 +38,11 @@ class TestTimeseriesTableSelection extends QueryTest with BeforeAndAfterAll {
   override def beforeAll: Unit = {
     timestampFormat = CarbonProperties.getInstance()
       .getProperty(CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
-        CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT)
+        CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT)
     SparkUtil4Test.createTaskMockUp(sqlContext)
     CarbonProperties.getInstance()
       .addProperty(CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
-        CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT)
+        CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT)
     sql("drop table if exists mainTable")
     sql(
       """

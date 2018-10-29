@@ -159,7 +159,7 @@ class CarbonIndexFileMergeTestCase
     checkAnswer(sql("""Select count(*) from nonindexmerge"""), rows)
     CarbonProperties.getInstance()
       .addProperty(CarbonCommonConstants.COMPACTION_SEGMENT_LEVEL_THRESHOLD,
-        CarbonCommonConstants.DEFAULT_SEGMENT_LEVEL_THRESHOLD)
+        CarbonCommonConstants.SEGMENT_LEVEL_THRESHOLD_DEFAULT)
   }
 
   test("Verify index merge for compacted segments") {
@@ -188,7 +188,7 @@ class CarbonIndexFileMergeTestCase
     checkAnswer(sql("""Select count(*) from nonindexmerge"""), rows)
     CarbonProperties.getInstance()
       .addProperty(CarbonCommonConstants.COMPACTION_SEGMENT_LEVEL_THRESHOLD,
-        CarbonCommonConstants.DEFAULT_SEGMENT_LEVEL_THRESHOLD)
+        CarbonCommonConstants.SEGMENT_LEVEL_THRESHOLD_DEFAULT)
   }
 
   test("Query should not fail after iud operation on a table having merge indexes") {
@@ -334,7 +334,7 @@ class CarbonIndexFileMergeTestCase
       CarbonProperties.getInstance()
         .addProperty(CarbonCommonConstants.CARBON_MERGE_INDEX_IN_SEGMENT, "true")
     CarbonProperties.getInstance()
-      .addProperty(CarbonCommonConstants.DEFAULT_ENABLE_AUTO_LOAD_MERGE, "true")
+      .addProperty(CarbonCommonConstants.ENABLE_AUTO_LOAD_MERGE_DEFAULT, "true")
     sql(s"LOAD DATA LOCAL INPATH '$file2' INTO TABLE nonindexmerge OPTIONS('header'='false', " +
     s"'GLOBAL_SORT_PARTITIONS'='100')"
     )
@@ -347,7 +347,7 @@ class CarbonIndexFileMergeTestCase
     assert(getIndexFileCount("default_nonindexmerge", "2.1") == 0)
     checkAnswer(sql("""Select count(*) from nonindexmerge"""), Seq(Row(3000000)))
     CarbonProperties.getInstance()
-      .addProperty(CarbonCommonConstants.DEFAULT_ENABLE_AUTO_LOAD_MERGE, "false")
+      .addProperty(CarbonCommonConstants.ENABLE_AUTO_LOAD_MERGE_DEFAULT, "false")
   }
 
   test("Verify index merge for compacted segments Auto Compaction - level 2") {
@@ -378,7 +378,7 @@ class CarbonIndexFileMergeTestCase
     CarbonProperties.getInstance()
       .addProperty(CarbonCommonConstants.CARBON_MERGE_INDEX_IN_SEGMENT, "true")
     CarbonProperties.getInstance()
-      .addProperty(CarbonCommonConstants.DEFAULT_ENABLE_AUTO_LOAD_MERGE, "true")
+      .addProperty(CarbonCommonConstants.ENABLE_AUTO_LOAD_MERGE_DEFAULT, "true")
     sql(s"LOAD DATA LOCAL INPATH '$file2' INTO TABLE nonindexmerge OPTIONS('header'='false', " +
     s"'GLOBAL_SORT_PARTITIONS'='100')"
     )
@@ -392,10 +392,10 @@ class CarbonIndexFileMergeTestCase
     assert(getIndexFileCount("default_nonindexmerge", "0.2") == 0)
     checkAnswer(sql("""Select count(*) from nonindexmerge"""), Seq(Row(3000000)))
     CarbonProperties.getInstance()
-      .addProperty(CarbonCommonConstants.DEFAULT_ENABLE_AUTO_LOAD_MERGE, "false")
+      .addProperty(CarbonCommonConstants.ENABLE_AUTO_LOAD_MERGE_DEFAULT, "false")
     CarbonProperties.getInstance()
       .addProperty(CarbonCommonConstants.COMPACTION_SEGMENT_LEVEL_THRESHOLD,
-        CarbonCommonConstants.DEFAULT_SEGMENT_LEVEL_THRESHOLD)
+        CarbonCommonConstants.SEGMENT_LEVEL_THRESHOLD_DEFAULT)
   }
 
 

@@ -110,7 +110,7 @@ object CarbonDataStoreCreator {
       loadModel.setDefaultDateFormat(
         CarbonProperties.getInstance.getProperty(
           CarbonCommonConstants.CARBON_DATE_FORMAT,
-          CarbonCommonConstants.CARBON_DATE_DEFAULT_FORMAT))
+          CarbonCommonConstants.CARBON_DATE_FORMAT_DEFAULT))
       loadModel.setSerializationNullFormat(
         TableOptionConstant.SERIALIZATION_NULL_FORMAT.getName +
         "," +

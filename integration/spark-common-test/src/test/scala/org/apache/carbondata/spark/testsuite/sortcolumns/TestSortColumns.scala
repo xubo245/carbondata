@@ -389,7 +389,7 @@ class TestSortColumns extends QueryTest with BeforeAndAfterAll {
   override def afterAll = {
     dropTestTables
     CarbonProperties.getInstance().addProperty(
-      CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT, CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT)
+      CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT, CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT)
   }
 
   def dropTestTables = {

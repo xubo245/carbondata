@@ -33,7 +33,7 @@ class TestNotEqualToFilter extends Spark2QueryTest with BeforeAndAfterAll {
     sql("drop table if exists test_not_equal_to_hive")
     CarbonProperties.getInstance()
       .addProperty(CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
-        CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT
+        CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT
       )
     sql(
       """

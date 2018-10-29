@@ -1130,7 +1130,7 @@ public class CarbonTable implements Serializable {
    * under table path
    */
   public boolean isSupportFlatFolder() {
-    boolean supportFlatFolder = Boolean.parseBoolean(CarbonCommonConstants.DEFAULT_FLAT_FOLDER);
+    boolean supportFlatFolder = Boolean.parseBoolean(CarbonCommonConstants.FLAT_FOLDER_DEFAULT);
     Map<String, String> tblProps = getTableInfo().getFactTable().getTableProperties();
     if (tblProps.containsKey(CarbonCommonConstants.FLAT_FOLDER)) {
       supportFlatFolder = tblProps.get(CarbonCommonConstants.FLAT_FOLDER).equalsIgnoreCase("true");

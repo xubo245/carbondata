@@ -24,7 +24,6 @@ import org.apache.carbondata.core.constants.CarbonCommonConstants;
 import org.apache.carbondata.core.util.CarbonProperties;
 
 import junit.framework.TestCase;
-import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -186,16 +185,16 @@ public class CarbonPropertiesValidationTest extends TestCase {
     String valueBeforeValidation =
         carbonProperties.getProperty(CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT);
     validateMethodType.invoke(carbonProperties, CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
-        CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT);
+        CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT);
     String valueAfterValidation =
         carbonProperties.getProperty(CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT);
     assertTrue(valueBeforeValidation.equals(valueAfterValidation));
-    assertTrue(CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT
+    assertTrue(CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT
         .equalsIgnoreCase(valueAfterValidation));
     carbonProperties.addProperty(CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
         "yyyy-MM-dd hh:mm:ss");
     validateMethodType.invoke(carbonProperties, CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
-        CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT);
+        CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT);
     assertEquals("yyyy-MM-dd hh:mm:ss",
         carbonProperties.getProperty(CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT));
   }
@@ -212,7 +211,7 @@ public class CarbonPropertiesValidationTest extends TestCase {
     String valueAfterValidation =
         carbonProperties.getProperty(CarbonCommonConstants.CARBON_SORT_FILE_WRITE_BUFFER_SIZE);
     assertTrue(valueBeforeValidation.equals(valueAfterValidation));
-    assertTrue(CarbonCommonConstants.CARBON_SORT_FILE_WRITE_BUFFER_SIZE_DEFAULT_VALUE
+    assertTrue(CarbonCommonConstants.CARBON_SORT_FILE_WRITE_BUFFER_SIZE_DEFAULT
         .equalsIgnoreCase(valueAfterValidation));
   }
   @Test public void testValidateSortIntermediateFilesLimit()

@@ -58,7 +58,7 @@ class TestCreateTableAsSelect extends QueryTest with BeforeAndAfterAll {
     createTablesAndInsertData
     CarbonProperties.getInstance().
       addProperty(CarbonCommonConstants.COMPACTION_SEGMENT_LEVEL_THRESHOLD,
-        CarbonCommonConstants.DEFAULT_SEGMENT_LEVEL_THRESHOLD)
+        CarbonCommonConstants.SEGMENT_LEVEL_THRESHOLD_DEFAULT)
   }
 
   test("test create table as select with select from same carbon table name with if not exists clause") {
@@ -346,7 +346,7 @@ class TestCreateTableAsSelect extends QueryTest with BeforeAndAfterAll {
       Seq(Row("shenzhen", 29), Row("shenzhen", 8), Row("shenzhen", 9), Row("shenzhen", 3)))
     CarbonProperties.getInstance().
       addProperty(CarbonCommonConstants.ENABLE_AUTO_LOAD_MERGE,
-        CarbonCommonConstants.DEFAULT_ENABLE_AUTO_LOAD_MERGE)
+        CarbonCommonConstants.ENABLE_AUTO_LOAD_MERGE_DEFAULT)
   }
 
   test("test create table as select with filter, <, and, >=") {

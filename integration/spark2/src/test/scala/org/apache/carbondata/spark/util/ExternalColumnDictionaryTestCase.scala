@@ -173,10 +173,10 @@ class ExternalColumnDictionaryTestCase extends Spark2QueryTest with BeforeAndAft
       TableOptionConstant.SERIALIZATION_NULL_FORMAT.getName + ",\\N")
     carbonLoadModel.setDefaultTimestampFormat(CarbonProperties.getInstance().getProperty(
       CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
-      CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT))
+      CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT))
     carbonLoadModel.setDefaultDateFormat(CarbonProperties.getInstance().getProperty(
       CarbonCommonConstants.CARBON_DATE_FORMAT,
-      CarbonCommonConstants.CARBON_DATE_DEFAULT_FORMAT))
+      CarbonCommonConstants.CARBON_DATE_FORMAT_DEFAULT))
     carbonLoadModel.setCsvHeaderColumns(
       LoadOption.getCsvHeaderColumns(carbonLoadModel, FileFactory.getConfiguration))
     carbonLoadModel.setMaxColumns("100")

@@ -30,7 +30,7 @@ public final class KeyGeneratorFactory {
   public static KeyGenerator getKeyGenerator(int[] dimension) {
     int[] incrementedCardinality;
     boolean isFullyFilled =
-        Boolean.parseBoolean(CarbonCommonConstants.IS_FULLY_FILLED_BITS_DEFAULT_VALUE);
+        Boolean.parseBoolean(CarbonCommonConstants.IS_FULLY_FILLED_BITS_DEFAULT);
     if (!isFullyFilled) {
       incrementedCardinality = CarbonUtil.getIncrementedCardinality(dimension);
     } else {

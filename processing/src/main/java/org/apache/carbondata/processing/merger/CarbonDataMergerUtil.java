@@ -112,7 +112,7 @@ public final class CarbonDataMergerUtil {
 
     String isLoadMergeEnabled = CarbonProperties.getInstance()
             .getProperty(CarbonCommonConstants.ENABLE_AUTO_LOAD_MERGE,
-                    CarbonCommonConstants.DEFAULT_ENABLE_AUTO_LOAD_MERGE);
+                    CarbonCommonConstants.ENABLE_AUTO_LOAD_MERGE_DEFAULT);
     if (tblProps.containsKey(CarbonCommonConstants.TABLE_AUTO_LOAD_MERGE)) {
       isLoadMergeEnabled = tblProps.get(CarbonCommonConstants.TABLE_AUTO_LOAD_MERGE);
     }
@@ -511,7 +511,7 @@ public final class CarbonDataMergerUtil {
       // overwrite system level option by table level option if exists
       numberOfDaysAllowedToMerge = Long.parseLong(CarbonProperties.getInstance()
               .getProperty(CarbonCommonConstants.DAYS_ALLOWED_TO_COMPACT,
-                      CarbonCommonConstants.DEFAULT_DAYS_ALLOWED_TO_COMPACT));
+                      CarbonCommonConstants.DAYS_ALLOWED_TO_COMPACT_DEFAULT));
       if (tblProps.containsKey(CarbonCommonConstants.TABLE_ALLOWED_COMPACTION_DAYS)) {
         numberOfDaysAllowedToMerge = Long.parseLong(
                 tblProps.get(CarbonCommonConstants.TABLE_ALLOWED_COMPACTION_DAYS));
@@ -523,12 +523,12 @@ public final class CarbonDataMergerUtil {
                 + " is incorrect."
                 + " Correct value should be in range of 0 -100. Taking the default value.");
         numberOfDaysAllowedToMerge =
-            Long.parseLong(CarbonCommonConstants.DEFAULT_DAYS_ALLOWED_TO_COMPACT);
+            Long.parseLong(CarbonCommonConstants.DAYS_ALLOWED_TO_COMPACT_DEFAULT);
       }
 
     } catch (NumberFormatException e) {
       numberOfDaysAllowedToMerge =
-          Long.parseLong(CarbonCommonConstants.DEFAULT_DAYS_ALLOWED_TO_COMPACT);
+          Long.parseLong(CarbonCommonConstants.DAYS_ALLOWED_TO_COMPACT_DEFAULT);
     }
     // if true then process loads according to the load date.
     if (numberOfDaysAllowedToMerge > 0) {
@@ -1190,8 +1190,9 @@ public final class CarbonDataMergerUtil {
    */
   public static boolean isHorizontalCompactionEnabled() {
     if ((CarbonProperties.getInstance()
-        .getProperty(CarbonCommonConstants.isHorizontalCompactionEnabled,
-            CarbonCommonConstants.defaultIsHorizontalCompactionEnabled)).equalsIgnoreCase("true")) {
+        .getProperty(CarbonCommonConstants.CARBON_HORIZONTAL_COMPACTION_ENABLE,
+            CarbonCommonConstants.CARBON_HORIZONTAL_COMPACTION_ENABLE_DEFAULT))
+        .equalsIgnoreCase("true")) {
       return true;
     } else {
       return false;

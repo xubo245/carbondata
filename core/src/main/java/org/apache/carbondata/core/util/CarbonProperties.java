@@ -35,6 +35,7 @@ import org.apache.carbondata.core.constants.CarbonLoadOptionConstants;
 import org.apache.carbondata.core.constants.CarbonV3DataFormatConstants;
 import org.apache.carbondata.core.datastore.impl.FileFactory;
 import org.apache.carbondata.core.metadata.ColumnarFormatVersion;
+import org.apache.carbondata.core.util.annotations.DynamicConfigurable;
 
 import static org.apache.carbondata.core.constants.CarbonCommonConstants.BLOCKLET_SIZE;
 import static org.apache.carbondata.core.constants.CarbonCommonConstants.CARBON_CUSTOM_BLOCK_DISTRIBUTION;
@@ -168,12 +169,12 @@ public final class CarbonProperties {
       // and reset to default value if validation fail
       case CARBON_TIMESTAMP_FORMAT:
         validateTimeFormatKey(CARBON_TIMESTAMP_FORMAT,
-            CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT);
+            CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT);
         break;
       // The method validate the validity of configured carbon.date.format value
       // and reset to default value if validation fail
       case CARBON_DATE_FORMAT:
-        validateTimeFormatKey(CARBON_DATE_FORMAT, CarbonCommonConstants.CARBON_DATE_DEFAULT_FORMAT);
+        validateTimeFormatKey(CARBON_DATE_FORMAT, CarbonCommonConstants.CARBON_DATE_FORMAT_DEFAULT);
         break;
       case CARBON_SORT_FILE_WRITE_BUFFER_SIZE:
         validateSortFileWriteBufferSize();
@@ -249,11 +250,11 @@ public final class CarbonProperties {
     // The method validate the validity of configured carbon.timestamp.format value
     // and reset to default value if validation fail
     validateTimeFormatKey(CARBON_TIMESTAMP_FORMAT,
-        CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT);
+        CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT);
     // The method validate the validity of configured carbon.date.format value
     // and reset to default value if validation fail
     validateTimeFormatKey(CARBON_DATE_FORMAT,
-        CarbonCommonConstants.CARBON_DATE_DEFAULT_FORMAT);
+        CarbonCommonConstants.CARBON_DATE_FORMAT_DEFAULT);
     validateSortFileWriteBufferSize();
     validateSortIntermediateFilesLimit();
     validateEnableAutoHandoff();
@@ -317,7 +318,7 @@ public final class CarbonProperties {
    */
   private void validateSortFileWriteBufferSize() {
     validateRange(CARBON_SORT_FILE_WRITE_BUFFER_SIZE,
-        CarbonCommonConstants.CARBON_SORT_FILE_WRITE_BUFFER_SIZE_DEFAULT_VALUE,
+        CarbonCommonConstants.CARBON_SORT_FILE_WRITE_BUFFER_SIZE_DEFAULT,
         CarbonCommonConstants.CARBON_SORT_FILE_WRITE_BUFFER_SIZE_MIN,
         CarbonCommonConstants.CARBON_SORT_FILE_WRITE_BUFFER_SIZE_MAX);
   }
@@ -492,19 +493,19 @@ public final class CarbonProperties {
   private void initPropertySet() throws IllegalAccessException {
     Field[] declaredFields = CarbonCommonConstants.class.getDeclaredFields();
     for (Field field : declaredFields) {
-      if (field.isAnnotationPresent(CarbonProperty.class)) {
+      if (field.isAnnotationPresent(DynamicConfigurable.class)) {
         propertySet.add(field.get(field.getName()).toString());
       }
     }
     declaredFields = CarbonV3DataFormatConstants.class.getDeclaredFields();
     for (Field field : declaredFields) {
-      if (field.isAnnotationPresent(CarbonProperty.class)) {
+      if (field.isAnnotationPresent(DynamicConfigurable.class)) {
         propertySet.add(field.get(field.getName()).toString());
       }
     }
     declaredFields = CarbonLoadOptionConstants.class.getDeclaredFields();
     for (Field field : declaredFields) {
-      if (field.isAnnotationPresent(CarbonProperty.class)) {
+      if (field.isAnnotationPresent(DynamicConfigurable.class)) {
         propertySet.add(field.get(field.getName()).toString());
       }
     }
@@ -574,26 +575,26 @@ public final class CarbonProperties {
   private void validateBlockletGroupSizeInMB() {
     String numberOfPagePerBlockletColumnString = carbonProperties
         .getProperty(BLOCKLET_SIZE_IN_MB,
-            CarbonV3DataFormatConstants.BLOCKLET_SIZE_IN_MB_DEFAULT_VALUE);
+            CarbonV3DataFormatConstants.BLOCKLET_SIZE_IN_MB_DEFAULT);
     try {
       short numberOfPagePerBlockletColumn = Short.parseShort(numberOfPagePerBlockletColumnString);
       if (numberOfPagePerBlockletColumn < CarbonV3DataFormatConstants.BLOCKLET_SIZE_IN_MB_MIN) {
         LOGGER.info("Blocklet Size Configured value \"" + numberOfPagePerBlockletColumnString
             + "\" is invalid. Using the default value \""
-            + CarbonV3DataFormatConstants.BLOCKLET_SIZE_IN_MB_DEFAULT_VALUE);
+            + CarbonV3DataFormatConstants.BLOCKLET_SIZE_IN_MB_DEFAULT);
         carbonProperties.setProperty(BLOCKLET_SIZE_IN_MB,
-            CarbonV3DataFormatConstants.BLOCKLET_SIZE_IN_MB_DEFAULT_VALUE);
+            CarbonV3DataFormatConstants.BLOCKLET_SIZE_IN_MB_DEFAULT);
       }
     } catch (NumberFormatException e) {
       LOGGER.info("Blocklet Size Configured value \"" + numberOfPagePerBlockletColumnString
           + "\" is invalid. Using the default value \""
-          + CarbonV3DataFormatConstants.BLOCKLET_SIZE_IN_MB_DEFAULT_VALUE);
+          + CarbonV3DataFormatConstants.BLOCKLET_SIZE_IN_MB_DEFAULT);
       carbonProperties.setProperty(BLOCKLET_SIZE_IN_MB,
-          CarbonV3DataFormatConstants.BLOCKLET_SIZE_IN_MB_DEFAULT_VALUE);
+          CarbonV3DataFormatConstants.BLOCKLET_SIZE_IN_MB_DEFAULT);
     }
     LOGGER.info("Blocklet Size Configured value is \"" + carbonProperties
         .getProperty(BLOCKLET_SIZE_IN_MB,
-            CarbonV3DataFormatConstants.BLOCKLET_SIZE_IN_MB_DEFAULT_VALUE));
+            CarbonV3DataFormatConstants.BLOCKLET_SIZE_IN_MB_DEFAULT));
   }
 
   /**
@@ -602,23 +603,23 @@ public final class CarbonProperties {
   private void validateNumberOfColumnPerIORead() {
     String numberofColumnPerIOString = carbonProperties
         .getProperty(NUMBER_OF_COLUMN_TO_READ_IN_IO,
-            CarbonV3DataFormatConstants.NUMBER_OF_COLUMN_TO_READ_IN_IO_DEFAULTVALUE);
+            CarbonV3DataFormatConstants.NUMBER_OF_COLUMN_TO_READ_IN_IO_DEFAULT);
     try {
       short numberofColumnPerIO = Short.parseShort(numberofColumnPerIOString);
       if (numberofColumnPerIO < CarbonV3DataFormatConstants.NUMBER_OF_COLUMN_TO_READ_IN_IO_MIN
           || numberofColumnPerIO > CarbonV3DataFormatConstants.NUMBER_OF_COLUMN_TO_READ_IN_IO_MAX) {
         LOGGER.info("The Number Of pages per blocklet column value \"" + numberofColumnPerIOString
             + "\" is invalid. Using the default value \""
-            + CarbonV3DataFormatConstants.NUMBER_OF_COLUMN_TO_READ_IN_IO_DEFAULTVALUE);
+            + CarbonV3DataFormatConstants.NUMBER_OF_COLUMN_TO_READ_IN_IO_DEFAULT);
         carbonProperties.setProperty(NUMBER_OF_COLUMN_TO_READ_IN_IO,
-            CarbonV3DataFormatConstants.NUMBER_OF_COLUMN_TO_READ_IN_IO_DEFAULTVALUE);
+            CarbonV3DataFormatConstants.NUMBER_OF_COLUMN_TO_READ_IN_IO_DEFAULT);
       }
     } catch (NumberFormatException e) {
       LOGGER.info("The Number Of pages per blocklet column value \"" + numberofColumnPerIOString
           + "\" is invalid. Using the default value \""
-          + CarbonV3DataFormatConstants.NUMBER_OF_COLUMN_TO_READ_IN_IO_DEFAULTVALUE);
+          + CarbonV3DataFormatConstants.NUMBER_OF_COLUMN_TO_READ_IN_IO_DEFAULT);
       carbonProperties.setProperty(NUMBER_OF_COLUMN_TO_READ_IN_IO,
-          CarbonV3DataFormatConstants.NUMBER_OF_COLUMN_TO_READ_IN_IO_DEFAULTVALUE);
+          CarbonV3DataFormatConstants.NUMBER_OF_COLUMN_TO_READ_IN_IO_DEFAULT);
     }
   }
 
@@ -627,24 +628,24 @@ public final class CarbonProperties {
    */
   private void validateBlockletSize() {
     String blockletSizeStr = carbonProperties.getProperty(BLOCKLET_SIZE,
-        CarbonCommonConstants.BLOCKLET_SIZE_DEFAULT_VAL);
+        CarbonCommonConstants.BLOCKLET_SIZE_DEFAULT);
     try {
       int blockletSize = Integer.parseInt(blockletSizeStr);
 
-      if (blockletSize < CarbonCommonConstants.BLOCKLET_SIZE_MIN_VAL
-          || blockletSize > CarbonCommonConstants.BLOCKLET_SIZE_MAX_VAL) {
+      if (blockletSize < CarbonCommonConstants.BLOCKLET_SIZE_MIN
+          || blockletSize > CarbonCommonConstants.BLOCKLET_SIZE_MAX) {
         LOGGER.info("The blocklet size value \"" + blockletSizeStr
             + "\" is invalid. Using the default value \""
-            + CarbonCommonConstants.BLOCKLET_SIZE_DEFAULT_VAL);
+            + CarbonCommonConstants.BLOCKLET_SIZE_DEFAULT);
         carbonProperties.setProperty(BLOCKLET_SIZE,
-            CarbonCommonConstants.BLOCKLET_SIZE_DEFAULT_VAL);
+            CarbonCommonConstants.BLOCKLET_SIZE_DEFAULT);
       }
     } catch (NumberFormatException e) {
       LOGGER.info("The blocklet size value \"" + blockletSizeStr
           + "\" is invalid. Using the default value \""
-          + CarbonCommonConstants.BLOCKLET_SIZE_DEFAULT_VAL);
+          + CarbonCommonConstants.BLOCKLET_SIZE_DEFAULT);
       carbonProperties.setProperty(BLOCKLET_SIZE,
-          CarbonCommonConstants.BLOCKLET_SIZE_DEFAULT_VAL);
+          CarbonCommonConstants.BLOCKLET_SIZE_DEFAULT);
     }
   }
 
@@ -653,23 +654,23 @@ public final class CarbonProperties {
    */
   private void validateSortSize() {
     String sortSizeStr = carbonProperties
-        .getProperty(SORT_SIZE, CarbonCommonConstants.SORT_SIZE_DEFAULT_VAL);
+        .getProperty(SORT_SIZE, CarbonCommonConstants.SORT_SIZE_DEFAULT);
     try {
       int sortSize = Integer.parseInt(sortSizeStr);
 
-      if (sortSize < CarbonCommonConstants.SORT_SIZE_MIN_VAL) {
+      if (sortSize < CarbonCommonConstants.SORT_SIZE_MIN) {
         LOGGER.info(
             "The batch size value \"" + sortSizeStr + "\" is invalid. Using the default value \""
-                + CarbonCommonConstants.SORT_SIZE_DEFAULT_VAL);
+                + CarbonCommonConstants.SORT_SIZE_DEFAULT);
         carbonProperties.setProperty(SORT_SIZE,
-            CarbonCommonConstants.SORT_SIZE_DEFAULT_VAL);
+            CarbonCommonConstants.SORT_SIZE_DEFAULT);
       }
     } catch (NumberFormatException e) {
       LOGGER.info(
           "The batch size value \"" + sortSizeStr + "\" is invalid. Using the default value \""
-              + CarbonCommonConstants.SORT_SIZE_DEFAULT_VAL);
+              + CarbonCommonConstants.SORT_SIZE_DEFAULT);
       carbonProperties.setProperty(SORT_SIZE,
-          CarbonCommonConstants.SORT_SIZE_DEFAULT_VAL);
+          CarbonCommonConstants.SORT_SIZE_DEFAULT);
     }
   }
 
@@ -706,9 +707,9 @@ public final class CarbonProperties {
    * memory
    */
   private void loadProperties() {
-    String property = System.getProperty("carbon.properties.filepath");
+    String property = System.getProperty(CarbonCommonConstants.CARBON_PROPERTIES_FILE_PATH);
     if (null == property) {
-      property = CarbonCommonConstants.CARBON_PROPERTIES_FILE_PATH;
+      property = CarbonCommonConstants.CARBON_PROPERTIES_FILE_PATH_DEFAULT;
     }
     File file = new File(property);
     LOGGER.info("Property file path: " + file.getAbsolutePath());
@@ -722,17 +723,19 @@ public final class CarbonProperties {
       }
     } catch (FileNotFoundException e) {
       LOGGER.error(
-          "The file: " + CarbonCommonConstants.CARBON_PROPERTIES_FILE_PATH + " does not exist");
+          "The file: " + CarbonCommonConstants.CARBON_PROPERTIES_FILE_PATH_DEFAULT
+              + " does not exist");
     } catch (IOException e) {
       LOGGER.error(
-          "Error while reading the file: " + CarbonCommonConstants.CARBON_PROPERTIES_FILE_PATH);
+          "Error while reading the file: "
+              + CarbonCommonConstants.CARBON_PROPERTIES_FILE_PATH_DEFAULT);
     } finally {
       if (null != fis) {
         try {
           fis.close();
         } catch (IOException e) {
           LOGGER.error("Error while closing the file stream for file: "
-              + CarbonCommonConstants.CARBON_PROPERTIES_FILE_PATH);
+              + CarbonCommonConstants.CARBON_PROPERTIES_FILE_PATH_DEFAULT);
         }
       }
     }
@@ -863,10 +866,10 @@ public final class CarbonProperties {
     try {
       compactionSize = Long.parseLong(getProperty(
               CarbonCommonConstants.CARBON_MAJOR_COMPACTION_SIZE,
-              CarbonCommonConstants.DEFAULT_CARBON_MAJOR_COMPACTION_SIZE));
+              CarbonCommonConstants.CARBON_MAJOR_COMPACTION_SIZE_DEFAULT));
     } catch (NumberFormatException e) {
       compactionSize = Long.parseLong(
-              CarbonCommonConstants.DEFAULT_CARBON_MAJOR_COMPACTION_SIZE);
+              CarbonCommonConstants.CARBON_MAJOR_COMPACTION_SIZE_DEFAULT);
     }
     return compactionSize;
   }
@@ -881,18 +884,18 @@ public final class CarbonProperties {
     try {
       numberOfSegmentsToBePreserved = Integer.parseInt(
           getProperty(CarbonCommonConstants.PRESERVE_LATEST_SEGMENTS_NUMBER,
-              CarbonCommonConstants.DEFAULT_PRESERVE_LATEST_SEGMENTS_NUMBER));
+              CarbonCommonConstants.PRESERVE_LATEST_SEGMENTS_NUMBER_DEFAULT));
       // checking min and max . 0  , 100 is min & max.
       if (numberOfSegmentsToBePreserved < 0 || numberOfSegmentsToBePreserved > 100) {
         LOGGER.warn("The specified value for property "
             + CarbonCommonConstants.PRESERVE_LATEST_SEGMENTS_NUMBER + " is incorrect."
             + " Correct value should be in range of 0 -100. Taking the default value.");
         numberOfSegmentsToBePreserved =
-            Integer.parseInt(CarbonCommonConstants.DEFAULT_PRESERVE_LATEST_SEGMENTS_NUMBER);
+            Integer.parseInt(CarbonCommonConstants.PRESERVE_LATEST_SEGMENTS_NUMBER_DEFAULT);
       }
     } catch (NumberFormatException e) {
       numberOfSegmentsToBePreserved =
-          Integer.parseInt(CarbonCommonConstants.DEFAULT_PRESERVE_LATEST_SEGMENTS_NUMBER);
+          Integer.parseInt(CarbonCommonConstants.PRESERVE_LATEST_SEGMENTS_NUMBER_DEFAULT);
     }
     return numberOfSegmentsToBePreserved;
   }
@@ -911,11 +914,11 @@ public final class CarbonProperties {
     String commaSeparatedLevels;
 
     commaSeparatedLevels = getProperty(CarbonCommonConstants.COMPACTION_SEGMENT_LEVEL_THRESHOLD,
-        CarbonCommonConstants.DEFAULT_SEGMENT_LEVEL_THRESHOLD);
+        CarbonCommonConstants.SEGMENT_LEVEL_THRESHOLD_DEFAULT);
     int[] compactionSize = getIntArray(commaSeparatedLevels);
 
     if (0 == compactionSize.length) {
-      compactionSize = getIntArray(CarbonCommonConstants.DEFAULT_SEGMENT_LEVEL_THRESHOLD);
+      compactionSize = getIntArray(CarbonCommonConstants.SEGMENT_LEVEL_THRESHOLD_DEFAULT);
     }
 
     return compactionSize;
@@ -943,7 +946,7 @@ public final class CarbonProperties {
         LOGGER.warn(
             "Given value for property" + CarbonCommonConstants.COMPACTION_SEGMENT_LEVEL_THRESHOLD
                 + " is not proper. Taking the default value "
-                + CarbonCommonConstants.DEFAULT_SEGMENT_LEVEL_THRESHOLD);
+                + CarbonCommonConstants.SEGMENT_LEVEL_THRESHOLD_DEFAULT);
         return new int[0];
       }
     }
@@ -961,12 +964,12 @@ public final class CarbonProperties {
       numberOfCores = Integer.parseInt(
           CarbonProperties.getInstance().getProperty(
               CarbonCommonConstants.NUM_CORES_LOADING,
-              CarbonCommonConstants.NUM_CORES_DEFAULT_VAL));
+              CarbonCommonConstants.NUM_CORES_DEFAULT));
     } catch (NumberFormatException exc) {
       LOGGER.warn("Configured value for property " + CarbonCommonConstants.NUM_CORES_LOADING
           + " is wrong. Falling back to the default value "
-          + CarbonCommonConstants.NUM_CORES_DEFAULT_VAL);
-      numberOfCores = Integer.parseInt(CarbonCommonConstants.NUM_CORES_DEFAULT_VAL);
+          + CarbonCommonConstants.NUM_CORES_DEFAULT);
+      numberOfCores = Integer.parseInt(CarbonCommonConstants.NUM_CORES_DEFAULT);
     }
     return numberOfCores;
   }
@@ -1083,7 +1086,7 @@ public final class CarbonProperties {
     try {
       numberOfDeltaFilesThreshold = Integer.parseInt(
           getProperty(CarbonCommonConstants.UPDATE_DELTAFILE_COUNT_THRESHOLD_IUD_COMPACTION,
-              CarbonCommonConstants.DEFAULT_UPDATE_DELTAFILE_COUNT_THRESHOLD_IUD_COMPACTION));
+              CarbonCommonConstants.UPDATE_DELTAFILE_COUNT_THRESHOLD_IUD_COMPACTION_DEFAULT));
 
       if (numberOfDeltaFilesThreshold < 0 || numberOfDeltaFilesThreshold > 10000) {
         LOGGER.warn("The specified value for property "
@@ -1091,14 +1094,14 @@ public final class CarbonProperties {
             + "is incorrect."
             + " Correct value should be in range of 0 -10000. Taking the default value.");
         numberOfDeltaFilesThreshold = Integer.parseInt(
-            CarbonCommonConstants.DEFAULT_UPDATE_DELTAFILE_COUNT_THRESHOLD_IUD_COMPACTION);
+            CarbonCommonConstants.UPDATE_DELTAFILE_COUNT_THRESHOLD_IUD_COMPACTION_DEFAULT);
       }
     } catch (NumberFormatException e) {
       LOGGER.warn("The specified value for property "
           + CarbonCommonConstants.UPDATE_DELTAFILE_COUNT_THRESHOLD_IUD_COMPACTION + "is incorrect."
           + " Correct value should be in range of 0 -10000. Taking the default value.");
       numberOfDeltaFilesThreshold = Integer
-          .parseInt(CarbonCommonConstants.DEFAULT_UPDATE_DELTAFILE_COUNT_THRESHOLD_IUD_COMPACTION);
+          .parseInt(CarbonCommonConstants.UPDATE_DELTAFILE_COUNT_THRESHOLD_IUD_COMPACTION_DEFAULT);
     }
     return numberOfDeltaFilesThreshold;
   }
@@ -1113,7 +1116,7 @@ public final class CarbonProperties {
     try {
       numberOfDeltaFilesThreshold = Integer.parseInt(
           getProperty(CarbonCommonConstants.DELETE_DELTAFILE_COUNT_THRESHOLD_IUD_COMPACTION,
-              CarbonCommonConstants.DEFAULT_DELETE_DELTAFILE_COUNT_THRESHOLD_IUD_COMPACTION));
+              CarbonCommonConstants.DELETE_DELTAFILE_COUNT_THRESHOLD_IUD_COMPACTION_DEFAULT));
 
       if (numberOfDeltaFilesThreshold < 0 || numberOfDeltaFilesThreshold > 10000) {
         LOGGER.warn("The specified value for property "
@@ -1121,14 +1124,14 @@ public final class CarbonProperties {
             + "is incorrect."
             + " Correct value should be in range of 0 -10000. Taking the default value.");
         numberOfDeltaFilesThreshold = Integer.parseInt(
-            CarbonCommonConstants.DEFAULT_DELETE_DELTAFILE_COUNT_THRESHOLD_IUD_COMPACTION);
+            CarbonCommonConstants.DELETE_DELTAFILE_COUNT_THRESHOLD_IUD_COMPACTION_DEFAULT);
       }
     } catch (NumberFormatException e) {
       LOGGER.warn("The specified value for property "
           + CarbonCommonConstants.DELETE_DELTAFILE_COUNT_THRESHOLD_IUD_COMPACTION + "is incorrect."
           + " Correct value should be in range of 0 -10000. Taking the default value.");
       numberOfDeltaFilesThreshold = Integer
-          .parseInt(CarbonCommonConstants.DEFAULT_DELETE_DELTAFILE_COUNT_THRESHOLD_IUD_COMPACTION);
+          .parseInt(CarbonCommonConstants.DELETE_DELTAFILE_COUNT_THRESHOLD_IUD_COMPACTION_DEFAULT);
     }
     return numberOfDeltaFilesThreshold;
   }
@@ -1188,15 +1191,15 @@ public final class CarbonProperties {
    * @return boolean
    */
   public boolean isPersistUpdateDataset() {
-    String isPersistEnabled = getProperty(CarbonCommonConstants.isPersistEnabled,
-            CarbonCommonConstants.defaultValueIsPersistEnabled);
+    String isPersistEnabled = getProperty(CarbonCommonConstants.CARBON_UPDATE_PERSIST_ENABLE,
+            CarbonCommonConstants.CARBON_UPDATE_PERSIST_ENABLE_DEFAULT);
     boolean validatePersistEnabled = CarbonUtil.validateBoolean(isPersistEnabled);
     if (!validatePersistEnabled) {
-      LOGGER.warn("The " + CarbonCommonConstants.isPersistEnabled
+      LOGGER.warn("The " + CarbonCommonConstants.CARBON_UPDATE_PERSIST_ENABLE
           + " configuration value is invalid. It will use default value("
-          + CarbonCommonConstants.defaultValueIsPersistEnabled
+          + CarbonCommonConstants.CARBON_UPDATE_PERSIST_ENABLE_DEFAULT
           + ").");
-      isPersistEnabled = CarbonCommonConstants.defaultValueIsPersistEnabled;
+      isPersistEnabled = CarbonCommonConstants.CARBON_UPDATE_PERSIST_ENABLE_DEFAULT;
     }
     return isPersistEnabled.equalsIgnoreCase("true");
   }

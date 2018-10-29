@@ -56,7 +56,7 @@ class CompactionSupportSpecifiedSegmentsTest
   private def resetConf() = {
     CarbonProperties.getInstance()
       .addProperty(CarbonCommonConstants.ENABLE_AUTO_LOAD_MERGE,
-        CarbonCommonConstants.DEFAULT_ENABLE_AUTO_LOAD_MERGE)
+        CarbonCommonConstants.ENABLE_AUTO_LOAD_MERGE_DEFAULT)
   }
 
   test("custom compaction") {

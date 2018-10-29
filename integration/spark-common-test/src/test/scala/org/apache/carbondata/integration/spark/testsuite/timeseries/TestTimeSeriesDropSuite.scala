@@ -33,10 +33,10 @@ class TestTimeSeriesDropSuite extends QueryTest with BeforeAndAfterAll with Befo
   override def beforeAll: Unit = {
     timestampFormat = CarbonProperties.getInstance()
       .getProperty(CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
-        CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT)
+        CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT)
     CarbonProperties.getInstance()
       .addProperty(CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
-        CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT)
+        CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT)
     dropTable("mainTable")
     sql(
       """

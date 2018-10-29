@@ -192,7 +192,7 @@ object CarbonDataRDDFactory {
           // continue in case of exception also, check for all the tables.
           val isConcurrentCompactionAllowed = CarbonProperties.getInstance().getProperty(
             CarbonCommonConstants.ENABLE_CONCURRENT_COMPACTION,
-            CarbonCommonConstants.DEFAULT_ENABLE_CONCURRENT_COMPACTION
+            CarbonCommonConstants.ENABLE_CONCURRENT_COMPACTION_DEFAULT
           ).equalsIgnoreCase("true")
 
           if (!isConcurrentCompactionAllowed) {
@@ -869,7 +869,7 @@ object CarbonDataRDDFactory {
 
       val isConcurrentCompactionAllowed = CarbonProperties.getInstance().getProperty(
         CarbonCommonConstants.ENABLE_CONCURRENT_COMPACTION,
-        CarbonCommonConstants.DEFAULT_ENABLE_CONCURRENT_COMPACTION
+        CarbonCommonConstants.ENABLE_CONCURRENT_COMPACTION_DEFAULT
       ).equalsIgnoreCase("true")
 
       if (!isConcurrentCompactionAllowed) {
@@ -992,7 +992,7 @@ object CarbonDataRDDFactory {
       } else {
         val timestampFormatString = CarbonProperties.getInstance().getProperty(
           CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
-          CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT)
+          CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT)
         new SimpleDateFormat(timestampFormatString)
       }
 
@@ -1000,7 +1000,7 @@ object CarbonDataRDDFactory {
       new SimpleDateFormat(specificDateFormat)
     } else {
       val dateFormatString = CarbonProperties.getInstance().getProperty(CarbonCommonConstants
-        .CARBON_DATE_FORMAT, CarbonCommonConstants.CARBON_DATE_DEFAULT_FORMAT)
+        .CARBON_DATE_FORMAT, CarbonCommonConstants.CARBON_DATE_FORMAT_DEFAULT)
       new SimpleDateFormat(dateFormatString)
     }
     dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"))

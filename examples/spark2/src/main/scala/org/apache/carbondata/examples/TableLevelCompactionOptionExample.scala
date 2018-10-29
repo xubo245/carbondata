@@ -112,10 +112,10 @@ object TableLevelCompactionOptionExample {
 
     CarbonProperties.getInstance().addProperty(
       CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
-      CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT)
+      CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT)
     CarbonProperties.getInstance().addProperty(
       CarbonCommonConstants.CARBON_DATE_FORMAT,
-      CarbonCommonConstants.CARBON_DATE_DEFAULT_FORMAT)
+      CarbonCommonConstants.CARBON_DATE_FORMAT_DEFAULT)
 
     // Drop table
     spark.sql("DROP TABLE IF EXISTS tablecompaction_table")

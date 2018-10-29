@@ -393,7 +393,7 @@ public class CarbonFactDataHandlerColumnar implements CarbonFactHandler {
     // get blocklet size
     this.pageSize = Integer.parseInt(CarbonProperties.getInstance()
         .getProperty(CarbonCommonConstants.BLOCKLET_SIZE,
-            CarbonCommonConstants.BLOCKLET_SIZE_DEFAULT_VAL));
+            CarbonCommonConstants.BLOCKLET_SIZE_DEFAULT));
     // support less than 32000 rows in one page, because we support super long string,
     // if it is long enough, a column page with 32000 rows will exceed 2GB
     if (version == ColumnarFormatVersion.V3) {
@@ -412,7 +412,7 @@ public class CarbonFactDataHandlerColumnar implements CarbonFactHandler {
     }
 
     int dimSet =
-        Integer.parseInt(CarbonCommonConstants.DIMENSION_SPLIT_VALUE_IN_COLUMNAR_DEFAULTVALUE);
+        Integer.parseInt(CarbonCommonConstants.DIMENSION_SPLIT_VALUE_IN_COLUMNAR_DEFAULT);
     // if at least one dimension is present then initialize column splitter otherwise null
     int[] keyBlockSize = new int[getExpandedComplexColsCount()];
 

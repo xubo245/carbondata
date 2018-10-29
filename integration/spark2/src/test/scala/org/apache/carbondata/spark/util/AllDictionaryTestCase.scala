@@ -62,7 +62,7 @@ class AllDictionaryTestCase extends Spark2QueryTest with BeforeAndAfterAll {
           TableOptionConstant.SERIALIZATION_NULL_FORMAT.getName + ",\\N")
     carbonLoadModel.setDefaultTimestampFormat(CarbonProperties.getInstance().getProperty(
       CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
-      CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT))
+      CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT))
     carbonLoadModel.setCsvHeaderColumns(
       LoadOption.getCsvHeaderColumns(carbonLoadModel, FileFactory.getConfiguration))
     // Create table and metadata folders if not exist

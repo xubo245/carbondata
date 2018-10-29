@@ -57,7 +57,7 @@ class TimestampDataTypeDirectDictionaryWithNoDictTestCase extends QueryTest with
     } catch {
       case x: Throwable => CarbonProperties.getInstance()
         .addProperty(CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
-          CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT)
+          CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT)
     }
   }
 
@@ -93,7 +93,7 @@ class TimestampDataTypeDirectDictionaryWithNoDictTestCase extends QueryTest with
     sql("drop table directDictionaryTable")
     CarbonProperties.getInstance()
       .addProperty(CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
-        CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT)
+        CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT)
     CarbonProperties.getInstance().addProperty("carbon.direct.dictionary", "false")
   }
 }

@@ -1767,11 +1767,11 @@ public final class CarbonUtil {
   public static String getFormatFromProperty(DataType dataType) {
     if (dataType.equals(DataTypes.DATE)) {
       return CarbonProperties.getInstance().getProperty(CarbonCommonConstants.CARBON_DATE_FORMAT,
-          CarbonCommonConstants.CARBON_DATE_DEFAULT_FORMAT);
+          CarbonCommonConstants.CARBON_DATE_FORMAT_DEFAULT);
     } else if (dataType.equals(DataTypes.TIMESTAMP)) {
       return CarbonProperties.getInstance()
           .getProperty(CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
-              CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT);
+              CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT);
     } else {
       return null;
     }
@@ -2506,7 +2506,7 @@ public final class CarbonUtil {
     AbsoluteTableIdentifier identifier = carbonTable.getAbsoluteTableIdentifier();
     String isCalculated = CarbonProperties.getInstance()
         .getProperty(CarbonCommonConstants.ENABLE_CALCULATE_SIZE,
-            CarbonCommonConstants.DEFAULT_ENABLE_CALCULATE_SIZE);
+            CarbonCommonConstants.ENABLE_CALCULATE_SIZE_DEFAULT);
     if (isCalculated.equalsIgnoreCase("true")) {
       SegmentStatusManager segmentStatusManager = new SegmentStatusManager(identifier);
       ICarbonLock carbonLock = segmentStatusManager.getTableStatusLock();

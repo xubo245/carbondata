@@ -52,11 +52,11 @@ object CastExpressionOptimization {
         if (dataType == TimestampType) {
           parser = new SimpleDateFormat(CarbonProperties.getInstance
             .getProperty(CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
-              CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT))
+              CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT))
         } else if (dataType == DateType) {
           parser = new SimpleDateFormat(CarbonProperties.getInstance
             .getProperty(CarbonCommonConstants.CARBON_DATE_FORMAT,
-              CarbonCommonConstants.CARBON_DATE_DEFAULT_FORMAT))
+              CarbonCommonConstants.CARBON_DATE_FORMAT_DEFAULT))
           parser.setTimeZone(TimeZone.getTimeZone("GMT"))
         }
         try {

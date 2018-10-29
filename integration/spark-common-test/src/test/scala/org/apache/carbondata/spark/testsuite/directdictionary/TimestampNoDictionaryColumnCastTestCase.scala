@@ -33,10 +33,10 @@ class TimestampNoDictionaryColumnCastTestCase extends QueryTest with BeforeAndAf
   override def beforeAll {
     CarbonProperties.getInstance()
       .addProperty(CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
-        CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT)
+        CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT)
     CarbonProperties.getInstance()
       .addProperty(CarbonCommonConstants.CARBON_DATE_FORMAT,
-        CarbonCommonConstants.CARBON_DATE_DEFAULT_FORMAT)
+        CarbonCommonConstants.CARBON_DATE_FORMAT_DEFAULT)
 
       sql("drop table if exists timestamp_nodictionary")
     sql("drop table if exists datetype")

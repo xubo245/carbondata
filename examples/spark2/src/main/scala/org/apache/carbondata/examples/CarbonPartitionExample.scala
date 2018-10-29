@@ -200,7 +200,7 @@ object CarbonPartitionExample {
 
     CarbonProperties.getInstance().addProperty(
       CarbonCommonConstants.CARBON_DATE_FORMAT,
-      CarbonCommonConstants.CARBON_DATE_DEFAULT_FORMAT)
+      CarbonCommonConstants.CARBON_DATE_FORMAT_DEFAULT)
 
     // drop table
     spark.sql("DROP TABLE IF EXISTS t0")

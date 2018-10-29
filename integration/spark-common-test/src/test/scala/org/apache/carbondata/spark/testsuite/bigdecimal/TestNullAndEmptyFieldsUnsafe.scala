@@ -32,7 +32,7 @@ class TestNullAndEmptyFieldsUnsafe extends QueryTest with BeforeAndAfterAll {
     sql("drop table if exists hiveTable")
     CarbonProperties.getInstance()
         .addProperty(CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
-          CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT)
+          CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT)
         .addProperty(CarbonCommonConstants.ENABLE_UNSAFE_COLUMN_PAGE, "true")
     val csvFilePath = s"$resourcesPath/nullandnonparsableValue.csv"
     sql(

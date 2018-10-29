@@ -202,7 +202,7 @@ public class LocalCarbonFile implements CarbonFile {
     FileChannel destination = null;
     boolean fileTruncatedSuccessfully = false;
     // temporary file name
-    String tempWriteFilePath = fileName + CarbonCommonConstants.TEMPWRITEFILEEXTENSION;
+    String tempWriteFilePath = fileName + CarbonCommonConstants.TEMP_WRITE_FILE_EXTENSION;
     FileFactory.FileType fileType = FileFactory.getFileType(fileName);
     try {
       CarbonFile tempFile = null;

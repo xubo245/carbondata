@@ -36,10 +36,10 @@ class RunExamples extends QueryTest with BeforeAndAfterAll {
   override def beforeAll: Unit = {
     CarbonProperties.getInstance().addProperty(
       CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
-      CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT)
+      CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT)
     CarbonProperties.getInstance().addProperty(
       CarbonCommonConstants.CARBON_DATE_FORMAT,
-      CarbonCommonConstants.CARBON_DATE_DEFAULT_FORMAT)
+      CarbonCommonConstants.CARBON_DATE_FORMAT_DEFAULT)
   }
 
   override def afterAll {

@@ -36,10 +36,10 @@ class TestTimeseriesDataLoad extends QueryTest with BeforeAndAfterAll {
   override def beforeAll: Unit = {
     timestampFormat = CarbonProperties.getInstance()
       .getProperty(CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
-        CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT)
+        CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT)
     SparkUtil4Test.createTaskMockUp(sqlContext)
     CarbonProperties.getInstance()
-      .addProperty(CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT, CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT)
+      .addProperty(CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT, CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT)
     sql("DROP TABLE IF EXISTS mainTable")
     sql("DROP TABLE IF EXISTS table_03")
     sql("CREATE TABLE mainTable(mytime timestamp, name string, age int) STORED BY 'org.apache.carbondata.format'")

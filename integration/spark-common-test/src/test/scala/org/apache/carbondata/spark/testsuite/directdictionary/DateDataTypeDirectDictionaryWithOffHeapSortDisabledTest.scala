@@ -59,7 +59,7 @@ class DateDataTypeDirectDictionaryWithOffHeapSortDisabledTest
       case x: Throwable =>
         x.printStackTrace()
         CarbonProperties.getInstance().addProperty(CarbonCommonConstants.CARBON_DATE_FORMAT,
-            CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT)
+            CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT)
     }
   }
 
@@ -71,7 +71,7 @@ class DateDataTypeDirectDictionaryWithOffHeapSortDisabledTest
   override def afterAll {
     sql("drop table directDictionaryTable")
     CarbonProperties.getInstance().addProperty(CarbonCommonConstants.CARBON_DATE_FORMAT,
-        CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT)
+        CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT)
     CarbonProperties.getInstance().addProperty(CarbonCommonConstants.CARBON_BAD_RECORDS_ACTION,
       originBadRecordsAction)
     CarbonProperties.getInstance().addProperty("carbon.direct.dictionary", "false")

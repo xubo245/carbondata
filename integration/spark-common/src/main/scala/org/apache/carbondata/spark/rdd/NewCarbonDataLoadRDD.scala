@@ -332,10 +332,10 @@ class NewRddIterator(rddIter: Iterator[Row],
 
   private val timeStampformatString = CarbonProperties.getInstance()
     .getProperty(CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
-      CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT)
+      CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT)
   private val timeStampFormat = new SimpleDateFormat(timeStampformatString)
   private val dateFormatString = CarbonProperties.getInstance().getProperty(CarbonCommonConstants
-    .CARBON_DATE_FORMAT, CarbonCommonConstants.CARBON_DATE_DEFAULT_FORMAT)
+    .CARBON_DATE_FORMAT, CarbonCommonConstants.CARBON_DATE_FORMAT_DEFAULT)
   private val dateFormat = new SimpleDateFormat(dateFormatString)
   private val delimiterLevel1 = carbonLoadModel.getComplexDelimiterLevel1
   private val delimiterLevel2 = carbonLoadModel.getComplexDelimiterLevel2
@@ -380,11 +380,11 @@ class LazyRddIterator(serializer: SerializerInstance,
 
   private val timeStampformatString = CarbonProperties.getInstance()
     .getProperty(CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
-      CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT)
+      CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT)
   private val timeStampFormat = new SimpleDateFormat(timeStampformatString)
   private val dateFormatString = CarbonProperties.getInstance()
     .getProperty(CarbonCommonConstants.CARBON_DATE_FORMAT,
-      CarbonCommonConstants.CARBON_DATE_DEFAULT_FORMAT)
+      CarbonCommonConstants.CARBON_DATE_FORMAT_DEFAULT)
   private val dateFormat = new SimpleDateFormat(dateFormatString)
   private val delimiterLevel1 = carbonLoadModel.getComplexDelimiterLevel1
   private val delimiterLevel2 = carbonLoadModel.getComplexDelimiterLevel2

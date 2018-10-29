@@ -101,7 +101,7 @@ class DataCompactionBoundaryConditionsTest extends QueryTest with BeforeAndAfter
       .addProperty(CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT, "dd-MM-yyyy")
     CarbonProperties.getInstance().
       addProperty(CarbonCommonConstants.COMPACTION_SEGMENT_LEVEL_THRESHOLD,
-        CarbonCommonConstants.DEFAULT_SEGMENT_LEVEL_THRESHOLD)
+        CarbonCommonConstants.SEGMENT_LEVEL_THRESHOLD_DEFAULT)
   }
 
 }

@@ -51,7 +51,7 @@ class TestNonTransactionalCarbonTableWithComplexType extends QueryTest with Befo
   override def beforeAll(): Unit = {
     CarbonProperties.getInstance()
       .addProperty(CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
-        CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT)
+        CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT)
     sql("DROP TABLE IF EXISTS sdkOutputTable")
   }
 

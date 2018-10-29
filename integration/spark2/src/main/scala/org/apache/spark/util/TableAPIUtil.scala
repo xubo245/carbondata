@@ -50,7 +50,7 @@ object TableAPIUtil {
   }
 
   def spark(storePath: String, appName: String): SparkSession = {
-    // CarbonEnv depends on CarbonProperty to get the store path, so set it here
+    // CarbonEnv depends on CarbonProperties to get the store path, so set it here
     CarbonProperties.getInstance().addProperty(CarbonCommonConstants.STORE_LOCATION, storePath)
     SparkSession
         .builder

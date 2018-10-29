@@ -757,9 +757,9 @@ class BloomCoarseGrainDataMapSuite extends QueryTest with BeforeAndAfterAll with
 
   test("test bloom datamap on all basic data types") {
     CarbonProperties.getInstance().addProperty(
-      CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT, CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT)
+      CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT, CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT)
     CarbonProperties.getInstance().addProperty(
-      CarbonCommonConstants.CARBON_DATE_FORMAT, CarbonCommonConstants.CARBON_DATE_DEFAULT_FORMAT)
+      CarbonCommonConstants.CARBON_DATE_FORMAT, CarbonCommonConstants.CARBON_DATE_FORMAT_DEFAULT)
 
     val columnNames = "booleanField,shortField,intField,bigintField,doubleField,stringField," +
       "timestampField,decimalField,dateField,charField,floatField"

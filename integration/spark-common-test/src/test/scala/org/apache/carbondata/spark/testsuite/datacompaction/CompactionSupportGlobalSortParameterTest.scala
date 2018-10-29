@@ -92,7 +92,7 @@ class CompactionSupportGlobalSortParameterTest extends QueryTest with BeforeAndA
     checkExistence(sql("SHOW SEGMENTS FOR TABLE compaction_globalsort"), true, "Success")
     checkExistence(sql("SHOW SEGMENTS FOR TABLE compaction_globalsort"), true, "Marked for Delete")
     CarbonProperties.getInstance().addProperty(CarbonCommonConstants.ENABLE_AUTO_LOAD_MERGE,
-      CarbonCommonConstants.DEFAULT_ENABLE_AUTO_LOAD_MERGE)
+      CarbonCommonConstants.ENABLE_AUTO_LOAD_MERGE_DEFAULT)
   }
 
   test("MINOR, ENABLE_AUTO_LOAD_MERGE: true") {
@@ -125,7 +125,7 @@ class CompactionSupportGlobalSortParameterTest extends QueryTest with BeforeAndA
       sql("SELECT * FROM carbon_localsort"))
 
     CarbonProperties.getInstance().addProperty(CarbonCommonConstants.ENABLE_AUTO_LOAD_MERGE,
-      CarbonCommonConstants.DEFAULT_ENABLE_AUTO_LOAD_MERGE)
+      CarbonCommonConstants.ENABLE_AUTO_LOAD_MERGE_DEFAULT)
   }
 
   test("MINOR, PRESERVE_LATEST_SEGMENTS_NUMBER: 0") {
@@ -166,7 +166,7 @@ class CompactionSupportGlobalSortParameterTest extends QueryTest with BeforeAndA
       sql("SELECT * FROM carbon_localsort"))
 
     CarbonProperties.getInstance().addProperty(CarbonCommonConstants.PRESERVE_LATEST_SEGMENTS_NUMBER,
-      CarbonCommonConstants.DEFAULT_PRESERVE_LATEST_SEGMENTS_NUMBER)
+      CarbonCommonConstants.PRESERVE_LATEST_SEGMENTS_NUMBER_DEFAULT)
   }
 
   test("MINOR, PRESERVE_LATEST_SEGMENTS_NUMBER: 4") {
@@ -205,7 +205,7 @@ class CompactionSupportGlobalSortParameterTest extends QueryTest with BeforeAndA
       sql("SELECT * FROM carbon_localsort"))
 
     CarbonProperties.getInstance().addProperty(CarbonCommonConstants.PRESERVE_LATEST_SEGMENTS_NUMBER,
-      CarbonCommonConstants.DEFAULT_PRESERVE_LATEST_SEGMENTS_NUMBER)
+      CarbonCommonConstants.PRESERVE_LATEST_SEGMENTS_NUMBER_DEFAULT)
   }
 
   test("MINOR, DAYS_ALLOWED_TO_COMPACT: 0") {
@@ -323,7 +323,7 @@ class CompactionSupportGlobalSortParameterTest extends QueryTest with BeforeAndA
     checkExistence(sql("SHOW SEGMENTS FOR TABLE compaction_globalsort"), true, "Success")
     checkExistence(sql("SHOW SEGMENTS FOR TABLE compaction_globalsort"), true, "Marked for Delete")
     CarbonProperties.getInstance().addProperty(CarbonCommonConstants.ENABLE_AUTO_LOAD_MERGE,
-      CarbonCommonConstants.DEFAULT_ENABLE_AUTO_LOAD_MERGE)
+      CarbonCommonConstants.ENABLE_AUTO_LOAD_MERGE_DEFAULT)
   }
 
   test("MAJOR, ENABLE_AUTO_LOAD_MERGE: true") {
@@ -357,7 +357,7 @@ class CompactionSupportGlobalSortParameterTest extends QueryTest with BeforeAndA
       sql("SELECT * FROM carbon_localsort"))
 
     CarbonProperties.getInstance().addProperty(CarbonCommonConstants.ENABLE_AUTO_LOAD_MERGE,
-      CarbonCommonConstants.DEFAULT_ENABLE_AUTO_LOAD_MERGE)
+      CarbonCommonConstants.ENABLE_AUTO_LOAD_MERGE_DEFAULT)
   }
 
   test("MAJOR, PRESERVE_LATEST_SEGMENTS_NUMBER: 0") {
@@ -398,7 +398,7 @@ class CompactionSupportGlobalSortParameterTest extends QueryTest with BeforeAndA
       sql("SELECT * FROM carbon_localsort"))
 
     CarbonProperties.getInstance().addProperty(CarbonCommonConstants.PRESERVE_LATEST_SEGMENTS_NUMBER,
-      CarbonCommonConstants.DEFAULT_PRESERVE_LATEST_SEGMENTS_NUMBER)
+      CarbonCommonConstants.PRESERVE_LATEST_SEGMENTS_NUMBER_DEFAULT)
   }
 
   test("MAJOR, PRESERVE_LATEST_SEGMENTS_NUMBER: 4") {
@@ -437,7 +437,7 @@ class CompactionSupportGlobalSortParameterTest extends QueryTest with BeforeAndA
       sql("SELECT * FROM carbon_localsort"))
 
     CarbonProperties.getInstance().addProperty(CarbonCommonConstants.PRESERVE_LATEST_SEGMENTS_NUMBER,
-      CarbonCommonConstants.DEFAULT_PRESERVE_LATEST_SEGMENTS_NUMBER)
+      CarbonCommonConstants.PRESERVE_LATEST_SEGMENTS_NUMBER_DEFAULT)
   }
 
   test("MAJOR, DAYS_ALLOWED_TO_COMPACT: 0") {
@@ -556,7 +556,7 @@ class CompactionSupportGlobalSortParameterTest extends QueryTest with BeforeAndA
     checkExistence(sql("SHOW SEGMENTS FOR TABLE compaction_globalsort"), true, "Success")
     checkExistence(sql("SHOW SEGMENTS FOR TABLE compaction_globalsort"), true, "Marked for Delete")
     CarbonProperties.getInstance().addProperty(CarbonCommonConstants.ENABLE_AUTO_LOAD_MERGE,
-      CarbonCommonConstants.DEFAULT_ENABLE_AUTO_LOAD_MERGE)
+      CarbonCommonConstants.ENABLE_AUTO_LOAD_MERGE_DEFAULT)
     CarbonProperties.getInstance().addProperty(CarbonCommonConstants.CARBON_COMPACTION_PREFETCH_ENABLE,
       CarbonCommonConstants.CARBON_COMPACTION_PREFETCH_ENABLE_DEFAULT)
   }
@@ -565,7 +565,7 @@ class CompactionSupportGlobalSortParameterTest extends QueryTest with BeforeAndA
     val prop = CarbonProperties.getInstance()
     prop.addProperty(CarbonCommonConstants.LOAD_SORT_SCOPE, CarbonCommonConstants.LOAD_SORT_SCOPE_DEFAULT)
     prop.addProperty(CarbonCommonConstants.LOAD_GLOBAL_SORT_PARTITIONS, CarbonCommonConstants.LOAD_GLOBAL_SORT_PARTITIONS_DEFAULT)
-    prop.addProperty(CarbonCommonConstants.COMPACTION_SEGMENT_LEVEL_THRESHOLD, CarbonCommonConstants.DEFAULT_SEGMENT_LEVEL_THRESHOLD)
+    prop.addProperty(CarbonCommonConstants.COMPACTION_SEGMENT_LEVEL_THRESHOLD, CarbonCommonConstants.SEGMENT_LEVEL_THRESHOLD_DEFAULT)
   }
 
   private def getIndexFileCount(tableName: String, segmentNo: String = "0"): Int = {

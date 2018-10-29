@@ -625,7 +625,7 @@ public class StreamSegment {
     }
     updateStreamFileIndex(indexMap, filePath, fileType, msrDataTypes);
 
-    String tempFilePath = filePath + CarbonCommonConstants.TEMPWRITEFILEEXTENSION;
+    String tempFilePath = filePath + CarbonCommonConstants.TEMP_WRITE_FILE_EXTENSION;
     CarbonIndexFileWriter writer = new CarbonIndexFileWriter();
     try {
       writer.openThriftWriter(tempFilePath);

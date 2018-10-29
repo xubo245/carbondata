@@ -257,10 +257,10 @@ public class TableInfo implements Serializable, Writable {
       tableBlockSize = tableProperties.get(CarbonCommonConstants.TABLE_BLOCKSIZE);
     }
     if (null == tableBlockSize) {
-      tableBlockSize = CarbonCommonConstants.BLOCK_SIZE_DEFAULT_VAL;
+      tableBlockSize = CarbonCommonConstants.BLOCK_SIZE_DEFAULT;
       LOGGER.info("Table block size not specified for " + getTableUniqueName()
           + ". Therefore considering the default value "
-          + CarbonCommonConstants.BLOCK_SIZE_DEFAULT_VAL + " MB");
+          + CarbonCommonConstants.BLOCK_SIZE_DEFAULT + " MB");
     }
     return Integer.parseInt(tableBlockSize);
   }

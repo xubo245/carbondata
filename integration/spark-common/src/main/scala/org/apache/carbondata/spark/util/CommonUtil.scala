@@ -172,12 +172,12 @@ object CommonUtil {
       case "timestamptype" =>
         val timeStampFormat = new SimpleDateFormat(CarbonProperties.getInstance()
           .getProperty(CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
-            CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT))
+            CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT))
         scala.util.Try(timeStampFormat.parse(value)).isSuccess
       case "datetype" =>
         val dateFormat = new SimpleDateFormat(CarbonProperties.getInstance()
           .getProperty(CarbonCommonConstants.CARBON_DATE_FORMAT,
-            CarbonCommonConstants.CARBON_DATE_DEFAULT_FORMAT))
+            CarbonCommonConstants.CARBON_DATE_FORMAT_DEFAULT))
         scala.util.Try(dateFormat.parse(value)).isSuccess
       case others =>
        if (others != null && others.startsWith("char")) {
@@ -224,12 +224,12 @@ object CommonUtil {
       case "timestamp" =>
         val timeStampFormat = new SimpleDateFormat(CarbonProperties.getInstance()
           .getProperty(CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
-          CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT))
+          CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT))
         scala.util.Try(timeStampFormat.parse(value)).isSuccess
       case "date" =>
         val dateFormat = new SimpleDateFormat(CarbonProperties.getInstance()
           .getProperty(CarbonCommonConstants.CARBON_DATE_FORMAT,
-            CarbonCommonConstants.CARBON_DATE_DEFAULT_FORMAT))
+            CarbonCommonConstants.CARBON_DATE_FORMAT_DEFAULT))
         scala.util.Try(dateFormat.parse(value)).isSuccess
       case _ =>
         validateTypeConvertForSpark2(partitionerField, value)
@@ -518,8 +518,8 @@ object CommonUtil {
                                                     s"$blockSizeStr, only int value from 1 MB to " +
                                                     s"2048 MB is supported.")
       }
-      if (size < CarbonCommonConstants.BLOCK_SIZE_MIN_VAL ||
-          size > CarbonCommonConstants.BLOCK_SIZE_MAX_VAL) {
+      if (size < CarbonCommonConstants.BLOCK_SIZE_MIN ||
+          size > CarbonCommonConstants.BLOCK_SIZE_MAX) {
         throw new MalformedCarbonCommandException(s"Invalid $propertyName value found: " +
                                                   s"$blockSizeStr, only int value from 1 MB to " +
                                                   s"2048 MB is supported.")

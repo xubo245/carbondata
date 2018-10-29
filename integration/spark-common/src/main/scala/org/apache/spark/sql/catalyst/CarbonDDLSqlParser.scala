@@ -515,10 +515,10 @@ abstract class CarbonDDLSqlParser extends AbstractCarbonSparkSQLParser {
       tableProperties: Map[String, String]): Option[PartitionInfo] = {
     val timestampFormatter = new SimpleDateFormat(CarbonProperties.getInstance
       .getProperty(CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
-        CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT))
+        CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT))
     val dateFormatter = new SimpleDateFormat(CarbonProperties.getInstance
       .getProperty(CarbonCommonConstants.CARBON_DATE_FORMAT,
-        CarbonCommonConstants.CARBON_DATE_DEFAULT_FORMAT))
+        CarbonCommonConstants.CARBON_DATE_FORMAT_DEFAULT))
     if (partitionCols.isEmpty) {
       None
     } else {

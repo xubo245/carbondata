@@ -45,10 +45,10 @@ class StreamingOption(val userInputMap: Map[String, String]) {
       CarbonTablePath.getStreamingCheckpointDir(tablePath))
 
   lazy val timeStampFormat: String =
-    userInputMap.getOrElse("timestampformat", CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT)
+    userInputMap.getOrElse("timestampformat", CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT)
 
   lazy val dateFormat: String =
-    userInputMap.getOrElse("dateformat", CarbonCommonConstants.CARBON_DATE_DEFAULT_FORMAT)
+    userInputMap.getOrElse("dateformat", CarbonCommonConstants.CARBON_DATE_FORMAT_DEFAULT)
 
   lazy val rowParser: String =
     userInputMap.getOrElse(CarbonStreamParser.CARBON_STREAM_PARSER,
@@ -58,7 +58,7 @@ class StreamingOption(val userInputMap: Map[String, String]) {
     userInputMap
       .getOrElse("bad_record_path", CarbonProperties.getInstance()
         .getProperty(CarbonCommonConstants.CARBON_BADRECORDS_LOC,
-          CarbonCommonConstants.CARBON_BADRECORDS_LOC_DEFAULT_VAL))
+          CarbonCommonConstants.CARBON_BADRECORDS_LOC_DEFAULT))
 
   lazy val badRecordsAction: String =
     userInputMap

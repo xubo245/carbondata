@@ -16,7 +16,7 @@
  */
 package org.apache.carbondata.core.constants;
 
-import org.apache.carbondata.core.util.CarbonProperty;
+import org.apache.carbondata.core.util.annotations.*;
 
 /**
  * Constants for V3 data format
@@ -26,43 +26,49 @@ public interface CarbonV3DataFormatConstants {
   /**
    * each blocklet group size in mb
    */
-  @CarbonProperty
+  @DynamicConfigurable
   String BLOCKLET_SIZE_IN_MB = "carbon.blockletgroup.size.in.mb";
 
   /**
    * blocklet group size default value
    */
-  String BLOCKLET_SIZE_IN_MB_DEFAULT_VALUE = "64";
+  @DefaultValue()
+  String BLOCKLET_SIZE_IN_MB_DEFAULT = "64";
 
   /**
    * blocklet group size min value
    */
+  @Threshold
   short BLOCKLET_SIZE_IN_MB_MIN = 16;
 
   /**
    * number of column to be read in one IO in query
    */
-  @CarbonProperty
+  @NonDynamicConfigurable
   String NUMBER_OF_COLUMN_TO_READ_IN_IO = "number.of.column.to.read.in.io";
 
   /**
    * number of column to be read in one IO in query default value
    */
-  String NUMBER_OF_COLUMN_TO_READ_IN_IO_DEFAULTVALUE = "10";
+  @DefaultValue
+  String NUMBER_OF_COLUMN_TO_READ_IN_IO_DEFAULT = "10";
 
   /**
    * number of column to be read in one IO in query max value
    */
+  @Threshold
   short NUMBER_OF_COLUMN_TO_READ_IN_IO_MAX = 20;
 
   /**
    * number of column to be read in one IO in query min value
    */
+  @Threshold
   short NUMBER_OF_COLUMN_TO_READ_IN_IO_MIN = 1;
 
   /**
    * number of rows per blocklet column page default value
    */
+  @Constant
   short NUMBER_OF_ROWS_PER_BLOCKLET_COLUMN_PAGE_DEFAULT = 32000;
 
 }

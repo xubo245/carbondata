@@ -983,7 +983,7 @@ class BooleanDataTypesInsertTest extends QueryTest with BeforeAndAfterEach with 
 
     CarbonProperties.getInstance()
       .addProperty(CarbonCommonConstants.ENABLE_AUTO_LOAD_MERGE,
-        CarbonCommonConstants.DEFAULT_ENABLE_AUTO_LOAD_MERGE)
+        CarbonCommonConstants.ENABLE_AUTO_LOAD_MERGE_DEFAULT)
   }
 
 }

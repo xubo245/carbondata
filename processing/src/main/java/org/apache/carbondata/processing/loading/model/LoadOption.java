@@ -125,7 +125,7 @@ public class LoadOption {
             options,
             "dateformat",
             CarbonProperties.getInstance().getProperty(
-                CarbonLoadOptionConstants.CARBON_OPTIONS_DATEFORMAT,
+                CarbonLoadOptionConstants.CARBON_OPTIONS_DATE_FORMAT,
                 CarbonLoadOptionConstants.CARBON_OPTIONS_DATEFORMAT_DEFAULT)));
 
     optionsFinal.put(
@@ -134,8 +134,8 @@ public class LoadOption {
             options,
             "timestampformat",
             CarbonProperties.getInstance().getProperty(
-                CarbonLoadOptionConstants.CARBON_OPTIONS_TIMESTAMPFORMAT,
-                CarbonLoadOptionConstants.CARBON_OPTIONS_TIMESTAMPFORMAT_DEFAULT)));
+                CarbonLoadOptionConstants.CARBON_OPTIONS_TIMESTAMP_FORMAT,
+                CarbonLoadOptionConstants.CARBON_OPTIONS_TIMESTAMP_FORMAT_DEFAULT)));
 
     optionsFinal.put(
         "global_sort_partitions",

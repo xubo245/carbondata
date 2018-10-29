@@ -52,6 +52,7 @@ object CarbonThriftServer {
       .builder()
       .config(sparkConf)
       .appName("Carbon Thrift Server(uses CarbonSession)")
+      .master("local[16]")
       .enableHiveSupport()
 
     if (!sparkConf.contains("carbon.properties.filepath")) {

@@ -88,7 +88,7 @@ class CarbonSQLConf(sparkSession: SparkSession) {
         .doc("Property to configure the bad record location.")
         .stringConf
         .createWithDefault(carbonProperties.getProperty(CarbonCommonConstants.CARBON_BADRECORDS_LOC,
-          CarbonCommonConstants.CARBON_BADRECORDS_LOC_DEFAULT_VAL))
+          CarbonCommonConstants.CARBON_BADRECORDS_LOC_DEFAULT))
     val GLOBAL_SORT_PARTITIONS =
       buildConf(CarbonLoadOptionConstants.CARBON_OPTIONS_GLOBAL_SORT_PARTITIONS)
         .doc("Property to configure the global sort partitions.")
@@ -97,7 +97,7 @@ class CarbonSQLConf(sparkSession: SparkSession) {
           .getProperty(CarbonCommonConstants.LOAD_GLOBAL_SORT_PARTITIONS,
             CarbonCommonConstants.LOAD_GLOBAL_SORT_PARTITIONS_DEFAULT))
     val DATEFORMAT =
-      buildConf(CarbonLoadOptionConstants.CARBON_OPTIONS_DATEFORMAT)
+      buildConf(CarbonLoadOptionConstants.CARBON_OPTIONS_DATE_FORMAT)
         .doc("Property to configure data format for date type columns.")
         .stringConf
         .createWithDefault(CarbonLoadOptionConstants.CARBON_OPTIONS_DATEFORMAT_DEFAULT)
@@ -135,14 +135,14 @@ class CarbonSQLConf(sparkSession: SparkSession) {
       CarbonLoadOptionConstants.CARBON_OPTIONS_SINGLE_PASS_DEFAULT.toBoolean)
     sparkSession.conf.set(CarbonLoadOptionConstants.CARBON_OPTIONS_BAD_RECORD_PATH,
       carbonProperties.getProperty(CarbonCommonConstants.CARBON_BADRECORDS_LOC,
-        CarbonCommonConstants.CARBON_BADRECORDS_LOC_DEFAULT_VAL))
+        CarbonCommonConstants.CARBON_BADRECORDS_LOC_DEFAULT))
     sparkSession.conf.set(CarbonLoadOptionConstants.CARBON_OPTIONS_BAD_RECORD_PATH,
       carbonProperties.getProperty(CarbonCommonConstants.CARBON_BADRECORDS_LOC,
-        CarbonCommonConstants.CARBON_BADRECORDS_LOC_DEFAULT_VAL))
+        CarbonCommonConstants.CARBON_BADRECORDS_LOC_DEFAULT))
     sparkSession.conf.set(CarbonLoadOptionConstants.CARBON_OPTIONS_GLOBAL_SORT_PARTITIONS,
       carbonProperties.getProperty(CarbonCommonConstants.LOAD_GLOBAL_SORT_PARTITIONS,
         CarbonCommonConstants.LOAD_GLOBAL_SORT_PARTITIONS_DEFAULT))
-    sparkSession.conf.set(CarbonLoadOptionConstants.CARBON_OPTIONS_DATEFORMAT,
+    sparkSession.conf.set(CarbonLoadOptionConstants.CARBON_OPTIONS_DATE_FORMAT,
       CarbonLoadOptionConstants.CARBON_OPTIONS_DATEFORMAT_DEFAULT)
   }
 }

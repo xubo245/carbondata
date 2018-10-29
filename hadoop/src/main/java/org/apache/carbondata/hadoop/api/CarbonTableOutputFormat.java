@@ -342,15 +342,15 @@ public class CarbonTableOutputFormat extends FileOutputFormat<NullWritable, Obje
         conf.get(
             DATE_FORMAT,
             carbonProperty.getProperty(
-                CarbonLoadOptionConstants.CARBON_OPTIONS_DATEFORMAT,
+                CarbonLoadOptionConstants.CARBON_OPTIONS_DATE_FORMAT,
                 CarbonLoadOptionConstants.CARBON_OPTIONS_DATEFORMAT_DEFAULT)));
 
     model.setTimestampformat(
         conf.get(
             TIMESTAMP_FORMAT,
             carbonProperty.getProperty(
-                CarbonLoadOptionConstants.CARBON_OPTIONS_TIMESTAMPFORMAT,
-                CarbonLoadOptionConstants.CARBON_OPTIONS_TIMESTAMPFORMAT_DEFAULT)));
+                CarbonLoadOptionConstants.CARBON_OPTIONS_TIMESTAMP_FORMAT,
+                CarbonLoadOptionConstants.CARBON_OPTIONS_TIMESTAMP_FORMAT_DEFAULT)));
 
     model.setGlobalSortPartitions(
         conf.get(
@@ -376,7 +376,7 @@ public class CarbonTableOutputFormat extends FileOutputFormat<NullWritable, Obje
         badRecordsPath = carbonProperty
             .getProperty(CarbonLoadOptionConstants.CARBON_OPTIONS_BAD_RECORD_PATH, carbonProperty
                 .getProperty(CarbonCommonConstants.CARBON_BADRECORDS_LOC,
-                    CarbonCommonConstants.CARBON_BADRECORDS_LOC_DEFAULT_VAL));
+                    CarbonCommonConstants.CARBON_BADRECORDS_LOC_DEFAULT));
       }
     }
     model.setBadRecordsLocation(badRecordsPath);

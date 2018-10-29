@@ -60,7 +60,7 @@ class AtomicFileOperationsImpl implements AtomicFileOperations {
 
     filePath = filePath.replace("\\", "/");
 
-    tempWriteFilePath = filePath + CarbonCommonConstants.TEMPWRITEFILEEXTENSION;
+    tempWriteFilePath = filePath + CarbonCommonConstants.TEMP_WRITE_FILE_EXTENSION;
 
     if (FileFactory.isFileExist(tempWriteFilePath, fileType)) {
       FileFactory.getCarbonFile(tempWriteFilePath, fileType).delete();

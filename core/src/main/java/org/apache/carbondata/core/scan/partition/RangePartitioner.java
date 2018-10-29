@@ -40,11 +40,11 @@ public class RangePartitioner implements Partitioner {
 
   private SimpleDateFormat timestampFormatter = new SimpleDateFormat(CarbonProperties.getInstance()
       .getProperty(CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
-          CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT));
+          CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT));
 
   private SimpleDateFormat dateFormatter = new SimpleDateFormat(CarbonProperties.getInstance()
       .getProperty(CarbonCommonConstants.CARBON_DATE_FORMAT,
-          CarbonCommonConstants.CARBON_DATE_DEFAULT_FORMAT));
+          CarbonCommonConstants.CARBON_DATE_FORMAT_DEFAULT));
 
   public RangePartitioner(PartitionInfo partitionInfo) {
     List<String> values = partitionInfo.getRangeInfo();

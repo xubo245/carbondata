@@ -92,7 +92,7 @@ public class TimeStampDirectDictionaryGenerator implements DirectDictionaryGener
       try {
         SimpleDateFormat timeParser = new SimpleDateFormat(CarbonProperties.getInstance()
             .getProperty(CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
-                CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT));
+                CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT));
         timeParser.setLenient(false);
         Date dateToStr = timeParser.parse(cutOffTimeStampString);
         cutOffTimeStampLocal = dateToStr.getTime();
@@ -114,7 +114,7 @@ public class TimeStampDirectDictionaryGenerator implements DirectDictionaryGener
 
   public TimeStampDirectDictionaryGenerator() {
     this(CarbonProperties.getInstance().getProperty(CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
-        CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT));
+        CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT));
   }
 
   /**

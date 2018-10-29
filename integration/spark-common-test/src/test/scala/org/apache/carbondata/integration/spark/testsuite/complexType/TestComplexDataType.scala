@@ -34,7 +34,7 @@ class TestComplexDataType extends QueryTest with BeforeAndAfterAll {
       .addProperty(CarbonCommonConstants.ENABLE_AUTO_LOAD_MERGE, "false")
     CarbonProperties.getInstance()
       .addProperty(CarbonCommonConstants.CARBON_DATE_FORMAT,
-        CarbonCommonConstants.CARBON_DATE_DEFAULT_FORMAT)
+        CarbonCommonConstants.CARBON_DATE_FORMAT_DEFAULT)
     CarbonProperties.getInstance()
       .addProperty(CarbonCommonConstants.CARBON_BAD_RECORDS_ACTION, badRecordAction)
   }
@@ -187,7 +187,7 @@ class TestComplexDataType extends QueryTest with BeforeAndAfterAll {
           Timestamp.valueOf("2017-01-01 00:00:00.0")))))))
     CarbonProperties.getInstance()
       .addProperty(CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
-        CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT)
+        CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT)
   }
 
   test("test Projection PushDown for Struct - long type") {
@@ -328,7 +328,7 @@ class TestComplexDataType extends QueryTest with BeforeAndAfterAll {
       Seq(Row(1, Row(Row(Timestamp.valueOf("2018-01-01 00:00:00.0"))))))
     CarbonProperties.getInstance()
       .addProperty(CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
-        CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT)
+        CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT)
   }
 
   test("test Projection PushDown for StructofStruct - long type") {
@@ -665,7 +665,7 @@ class TestComplexDataType extends QueryTest with BeforeAndAfterAll {
       .show(false)
     CarbonProperties.getInstance()
       .addProperty(CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
-        CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT)
+        CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT)
   }
 
   test("test arrayofstruct with count(distinct)") {
@@ -694,10 +694,10 @@ class TestComplexDataType extends QueryTest with BeforeAndAfterAll {
   /* test struct of date*/
   test("test struct complex type with date") {
     var backupdateFormat = CarbonProperties.getInstance().getProperty(
-      CarbonCommonConstants.CARBON_DATE_FORMAT, CarbonCommonConstants.CARBON_DATE_DEFAULT_FORMAT)
+      CarbonCommonConstants.CARBON_DATE_FORMAT, CarbonCommonConstants.CARBON_DATE_FORMAT_DEFAULT)
     CarbonProperties.getInstance()
       .addProperty(CarbonCommonConstants.CARBON_DATE_FORMAT,
-        CarbonCommonConstants.CARBON_DATE_DEFAULT_FORMAT)
+        CarbonCommonConstants.CARBON_DATE_FORMAT_DEFAULT)
     sql("DROP TABLE IF EXISTS test")
     sql("create table test(a struct<b:date>) stored by 'carbondata'")
     sql("insert into test select '1992-02-19' ")
@@ -1007,7 +1007,7 @@ class TestComplexDataType extends QueryTest with BeforeAndAfterAll {
     checkAnswer(sql("select * from test "), Row(Row(java.sql.Date.valueOf("2012-02-18"),java.sql.Date.valueOf("2016-12-09"))))
     CarbonProperties.getInstance()
       .addProperty(CarbonCommonConstants.CARBON_DATE_FORMAT,
-        CarbonCommonConstants.CARBON_DATE_DEFAULT_FORMAT)
+        CarbonCommonConstants.CARBON_DATE_FORMAT_DEFAULT)
   }
   test("test null values in primitive data type and select all data types including complex data type") {
     sql("DROP TABLE IF EXISTS table1")

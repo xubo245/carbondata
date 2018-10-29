@@ -35,7 +35,7 @@ class BloomCoarseGrainDataMapFunctionSuite  extends QueryTest with BeforeAndAfte
     sql(s"DROP TABLE IF EXISTS $normalTable")
     sql(s"DROP TABLE IF EXISTS $bloomDMSampleTable")
     CarbonProperties.getInstance().addProperty(CarbonCommonConstants.CARBON_DATE_FORMAT,
-      CarbonCommonConstants.CARBON_DATE_DEFAULT_FORMAT)
+      CarbonCommonConstants.CARBON_DATE_FORMAT_DEFAULT)
   }
 
   test("test bloom datamap: index column is integer, dictionary, sort_column") {
@@ -829,9 +829,9 @@ class BloomCoarseGrainDataMapFunctionSuite  extends QueryTest with BeforeAndAfte
 
     sql("drop table if exists test_rcd").collect()
     CarbonProperties.getInstance().addProperty(CarbonCommonConstants.BLOCKLET_SIZE,
-      CarbonCommonConstants.BLOCKLET_SIZE_DEFAULT_VAL)
+      CarbonCommonConstants.BLOCKLET_SIZE_DEFAULT)
     CarbonProperties.getInstance().addProperty(CarbonV3DataFormatConstants.BLOCKLET_SIZE_IN_MB,
-      CarbonV3DataFormatConstants.BLOCKLET_SIZE_IN_MB_DEFAULT_VALUE)
+      CarbonV3DataFormatConstants.BLOCKLET_SIZE_IN_MB_DEFAULT)
   }
 
   /**

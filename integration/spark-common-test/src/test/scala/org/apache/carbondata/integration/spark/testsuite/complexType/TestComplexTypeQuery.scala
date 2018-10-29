@@ -34,10 +34,10 @@ class TestComplexTypeQuery extends QueryTest with BeforeAndAfterAll {
   override def beforeAll: Unit = {
     timestampFormat = CarbonProperties.getInstance()
       .getProperty(CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
-    CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT)
+    CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT)
     CarbonProperties.getInstance()
       .addProperty(CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
-    CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT)
+    CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT)
       .addProperty(CarbonCommonConstants.CARBON_BAD_RECORDS_ACTION,
         "force")
     sql("drop table if exists complexcarbontable")

@@ -105,7 +105,7 @@ case class PreAggregateTableHelper(
       .put(CarbonCommonConstants.TABLE_BLOCKSIZE, parentTable.getBlockSizeInMB.toString)
     tableProperties.put(CarbonCommonConstants.FLAT_FOLDER,
       parentTable.getTableInfo.getFactTable.getTableProperties.asScala.getOrElse(
-        CarbonCommonConstants.FLAT_FOLDER, CarbonCommonConstants.DEFAULT_FLAT_FOLDER))
+        CarbonCommonConstants.FLAT_FOLDER, CarbonCommonConstants.FLAT_FOLDER_DEFAULT))
 
     // Datamap table name and columns are automatically added prefix with parent table name
     // in carbon. For convenient, users can type column names same as the ones in select statement

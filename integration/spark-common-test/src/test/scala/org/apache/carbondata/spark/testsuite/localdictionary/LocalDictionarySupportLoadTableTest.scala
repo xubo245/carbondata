@@ -170,7 +170,7 @@ class LocalDictionarySupportLoadTableTest extends QueryTest with BeforeAndAfterA
     deleteFile(file2)
     CarbonProperties.getInstance
       .addProperty(CarbonCommonConstants.BLOCKLET_SIZE,
-        CarbonCommonConstants.BLOCKLET_SIZE_DEFAULT_VAL)
+        CarbonCommonConstants.BLOCKLET_SIZE_DEFAULT)
   }
 
   /**

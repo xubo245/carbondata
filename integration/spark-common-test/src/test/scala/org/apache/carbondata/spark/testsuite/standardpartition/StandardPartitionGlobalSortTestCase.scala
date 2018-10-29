@@ -1028,10 +1028,10 @@ class StandardPartitionGlobalSortTestCase extends QueryTest with BeforeAndAfterA
   override def afterAll = {
     CarbonProperties.getInstance()
       .addProperty(CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
-        CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT)
+        CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT)
     CarbonProperties.getInstance()
       .addProperty(CarbonCommonConstants.CARBON_DATE_FORMAT,
-        CarbonCommonConstants.CARBON_DATE_DEFAULT_FORMAT)
+        CarbonCommonConstants.CARBON_DATE_FORMAT_DEFAULT)
     CarbonProperties.getInstance().addProperty(CarbonCommonConstants.CARBON_TASK_DISTRIBUTION ,
       CarbonCommonConstants.CARBON_TASK_DISTRIBUTION_DEFAULT)
     dropTable

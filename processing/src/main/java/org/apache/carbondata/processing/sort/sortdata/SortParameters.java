@@ -408,7 +408,7 @@ public class SortParameters implements Serializable {
     // get sort buffer size
     parameters.setSortBufferSize(Integer.parseInt(carbonProperties
         .getProperty(CarbonCommonConstants.SORT_SIZE,
-            CarbonCommonConstants.SORT_SIZE_DEFAULT_VAL)));
+            CarbonCommonConstants.SORT_SIZE_DEFAULT)));
     LOGGER.info("Sort size for table: " + parameters.getSortBufferSize());
     // set number of intermedaite file to merge
     parameters.setNumberOfIntermediateFileToBeMerged(Integer.parseInt(carbonProperties
@@ -437,7 +437,7 @@ public class SortParameters implements Serializable {
 
     parameters.setFileWriteBufferSize(Integer.parseInt(carbonProperties
         .getProperty(CarbonCommonConstants.CARBON_SORT_FILE_WRITE_BUFFER_SIZE,
-            CarbonCommonConstants.CARBON_SORT_FILE_WRITE_BUFFER_SIZE_DEFAULT_VALUE)));
+            CarbonCommonConstants.CARBON_SORT_FILE_WRITE_BUFFER_SIZE_DEFAULT)));
 
     parameters.setSortTempCompressorName(CarbonProperties.getInstance().getSortTempCompressor());
     if (!parameters.sortTempCompressorName.isEmpty()) {
@@ -495,7 +495,7 @@ public class SortParameters implements Serializable {
     // get sort buffer size
     parameters.setSortBufferSize(Integer.parseInt(carbonProperties
         .getProperty(CarbonCommonConstants.SORT_SIZE,
-            CarbonCommonConstants.SORT_SIZE_DEFAULT_VAL)));
+            CarbonCommonConstants.SORT_SIZE_DEFAULT)));
     LOGGER.info("Sort size for table: " + parameters.getSortBufferSize());
     // set number of intermedaite file to merge
     parameters.setNumberOfIntermediateFileToBeMerged(Integer.parseInt(carbonProperties
@@ -518,7 +518,7 @@ public class SortParameters implements Serializable {
 
     parameters.setFileWriteBufferSize(Integer.parseInt(carbonProperties
         .getProperty(CarbonCommonConstants.CARBON_SORT_FILE_WRITE_BUFFER_SIZE,
-            CarbonCommonConstants.CARBON_SORT_FILE_WRITE_BUFFER_SIZE_DEFAULT_VALUE)));
+            CarbonCommonConstants.CARBON_SORT_FILE_WRITE_BUFFER_SIZE_DEFAULT)));
 
     parameters.setSortTempCompressorName(CarbonProperties.getInstance().getSortTempCompressor());
     if (!parameters.sortTempCompressorName.isEmpty()) {

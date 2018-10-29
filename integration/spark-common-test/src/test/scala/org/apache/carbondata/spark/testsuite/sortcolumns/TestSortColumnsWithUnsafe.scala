@@ -249,7 +249,7 @@ class TestSortColumnsWithUnsafe extends QueryTest with BeforeAndAfterAll with Be
   override def afterAll = {
     CarbonProperties.getInstance()
       .addProperty(CarbonCommonConstants.ENABLE_UNSAFE_IN_QUERY_EXECUTION,
-        CarbonCommonConstants.ENABLE_UNSAFE_IN_QUERY_EXECUTION_DEFAULTVALUE)
+        CarbonCommonConstants.ENABLE_UNSAFE_IN_QUERY_EXECUTION_DEFAULT)
 
     dropTable
   }

@@ -269,7 +269,7 @@ case class CarbonAlterTableCompactionCommand(
 
     val isConcurrentCompactionAllowed = CarbonProperties.getInstance()
       .getProperty(CarbonCommonConstants.ENABLE_CONCURRENT_COMPACTION,
-        CarbonCommonConstants.DEFAULT_ENABLE_CONCURRENT_COMPACTION
+        CarbonCommonConstants.ENABLE_CONCURRENT_COMPACTION_DEFAULT
       )
       .equalsIgnoreCase("true")
 

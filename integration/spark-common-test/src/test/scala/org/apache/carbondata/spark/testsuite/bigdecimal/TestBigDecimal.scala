@@ -214,7 +214,7 @@ class TestBigDecimal extends QueryTest with BeforeAndAfterAll {
     CarbonProperties.getInstance()
       .addProperty(CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT, "dd-MM-yyyy")
     CarbonProperties.getInstance().addProperty(CarbonCommonConstants.SORT_SIZE,
-      CarbonCommonConstants.SORT_SIZE_DEFAULT_VAL)
+      CarbonCommonConstants.SORT_SIZE_DEFAULT)
     CarbonProperties.getInstance().addProperty(CarbonCommonConstants.SORT_INTERMEDIATE_FILES_LIMIT,
       CarbonCommonConstants.SORT_INTERMEDIATE_FILES_LIMIT_DEFAULT_VALUE)
   }

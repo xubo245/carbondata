@@ -60,10 +60,10 @@ class TestStreamingTableOperation extends QueryTest with BeforeAndAfterAll {
     badRecordFilePath.mkdirs()
     CarbonProperties.getInstance().addProperty(
       CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
-      CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT)
+      CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT)
     CarbonProperties.getInstance().addProperty(
       CarbonCommonConstants.CARBON_DATE_FORMAT,
-      CarbonCommonConstants.CARBON_DATE_DEFAULT_FORMAT)
+      CarbonCommonConstants.CARBON_DATE_FORMAT_DEFAULT)
     sql("DROP DATABASE IF EXISTS streaming CASCADE")
     sql("CREATE DATABASE streaming")
     sql("USE streaming")
@@ -2361,7 +2361,7 @@ class TestStreamingTableOperation extends QueryTest with BeforeAndAfterAll {
       intervalSecond: Int = 2,
       handoffSize: Long = CarbonCommonConstants.HANDOFF_SIZE_DEFAULT,
       autoHandoff: Boolean = CarbonCommonConstants.ENABLE_AUTO_HANDOFF_DEFAULT.toBoolean,
-      badRecordsPath: String = CarbonCommonConstants.CARBON_BADRECORDS_LOC_DEFAULT_VAL
+      badRecordsPath: String = CarbonCommonConstants.CARBON_BADRECORDS_LOC_DEFAULT
   ): Thread = {
     new Thread() {
       override def run(): Unit = {
@@ -2386,7 +2386,7 @@ class TestStreamingTableOperation extends QueryTest with BeforeAndAfterAll {
             .option(CarbonStreamParser.CARBON_STREAM_PARSER,
               CarbonStreamParser.CARBON_STREAM_PARSER_CSV)
             .option(CarbonCommonConstants.HANDOFF_SIZE, handoffSize)
-            .option("timestampformat", CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT)
+            .option("timestampformat", CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT)
             .option(CarbonCommonConstants.ENABLE_AUTO_HANDOFF, autoHandoff)
             .start()
           qry.awaitTermination()
@@ -2417,7 +2417,7 @@ class TestStreamingTableOperation extends QueryTest with BeforeAndAfterAll {
       badRecordAction: String,
       handoffSize: Long = CarbonCommonConstants.HANDOFF_SIZE_DEFAULT,
       autoHandoff: Boolean = CarbonCommonConstants.ENABLE_AUTO_HANDOFF_DEFAULT.toBoolean,
-      badRecordsPath: String = CarbonCommonConstants.CARBON_BADRECORDS_LOC_DEFAULT_VAL
+      badRecordsPath: String = CarbonCommonConstants.CARBON_BADRECORDS_LOC_DEFAULT
   ): Unit = {
     val identifier = new TableIdentifier(tableName, Option("streaming"))
     val carbonTable = CarbonEnv.getInstance(spark).carbonMetastore.lookupRelation(identifier)(spark)
@@ -2520,7 +2520,7 @@ class TestStreamingTableOperation extends QueryTest with BeforeAndAfterAll {
             .option("checkpointLocation", CarbonTablePath.getStreamingCheckpointDir(carbonTable.getTablePath))
             .option("dbName", tableIdentifier.database.get)
             .option("tableName", tableIdentifier.table)
-            .option("timestampformat", CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT)
+            .option("timestampformat", CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT)
             .option(CarbonStreamParser.CARBON_STREAM_PARSER,
               CarbonStreamParser.CARBON_STREAM_PARSER_CSV)
             .start()

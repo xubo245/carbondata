@@ -155,7 +155,7 @@ object DataUpdateDeleteExample {
 
     CarbonProperties.getInstance().addProperty(
       CarbonCommonConstants.CARBON_DATE_FORMAT,
-      CarbonCommonConstants.CARBON_DATE_DEFAULT_FORMAT)
+      CarbonCommonConstants.CARBON_DATE_FORMAT_DEFAULT)
 
     // Drop table
     spark.sql("DROP TABLE IF EXISTS IUD_table1")

@@ -47,13 +47,13 @@ import static org.apache.carbondata.core.constants.CarbonLoadOptionConstants.CAR
 import static org.apache.carbondata.core.constants.CarbonLoadOptionConstants.CARBON_OPTIONS_BAD_RECORDS_LOGGER_ENABLE;
 import static org.apache.carbondata.core.constants.CarbonLoadOptionConstants.CARBON_OPTIONS_BAD_RECORD_PATH;
 import static org.apache.carbondata.core.constants.CarbonLoadOptionConstants.CARBON_OPTIONS_BATCH_SORT_SIZE_INMB;
-import static org.apache.carbondata.core.constants.CarbonLoadOptionConstants.CARBON_OPTIONS_DATEFORMAT;
+import static org.apache.carbondata.core.constants.CarbonLoadOptionConstants.CARBON_OPTIONS_DATE_FORMAT;
 import static org.apache.carbondata.core.constants.CarbonLoadOptionConstants.CARBON_OPTIONS_GLOBAL_SORT_PARTITIONS;
 import static org.apache.carbondata.core.constants.CarbonLoadOptionConstants.CARBON_OPTIONS_IS_EMPTY_DATA_BAD_RECORD;
 import static org.apache.carbondata.core.constants.CarbonLoadOptionConstants.CARBON_OPTIONS_SERIALIZATION_NULL_FORMAT;
 import static org.apache.carbondata.core.constants.CarbonLoadOptionConstants.CARBON_OPTIONS_SINGLE_PASS;
 import static org.apache.carbondata.core.constants.CarbonLoadOptionConstants.CARBON_OPTIONS_SORT_SCOPE;
-import static org.apache.carbondata.core.constants.CarbonLoadOptionConstants.CARBON_OPTIONS_TIMESTAMPFORMAT;
+import static org.apache.carbondata.core.constants.CarbonLoadOptionConstants.CARBON_OPTIONS_TIMESTAMP_FORMAT;
 import static org.apache.carbondata.core.constants.CarbonV3DataFormatConstants.BLOCKLET_SIZE_IN_MB;
 
 import org.apache.log4j.Logger;
@@ -206,12 +206,12 @@ public class SessionParams implements Serializable, Cloneable {
           throw new InvalidConfigurationException("Invalid bad records location.");
         }
         break;
-      // no validation needed while set for CARBON_OPTIONS_DATEFORMAT
-      case CARBON_OPTIONS_DATEFORMAT:
+      // no validation needed while set for CARBON_OPTIONS_DATE_FORMAT
+      case CARBON_OPTIONS_DATE_FORMAT:
         isValid = true;
         break;
-      // no validation needed while set for CARBON_OPTIONS_TIMESTAMPFORMAT
-      case CARBON_OPTIONS_TIMESTAMPFORMAT:
+      // no validation needed while set for CARBON_OPTIONS_TIMESTAMP_FORMAT
+      case CARBON_OPTIONS_TIMESTAMP_FORMAT:
         isValid = true;
         break;
       // no validation needed while set for CARBON_OPTIONS_SERIALIZATION_NULL_FORMAT

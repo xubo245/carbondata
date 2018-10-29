@@ -525,7 +525,7 @@ class CompactionSupportGlobalSortFunctionTest extends QueryTest with BeforeAndAf
     val prop = CarbonProperties.getInstance()
     prop.addProperty(CarbonCommonConstants.LOAD_SORT_SCOPE, CarbonCommonConstants.LOAD_SORT_SCOPE_DEFAULT)
     prop.addProperty(CarbonCommonConstants.LOAD_GLOBAL_SORT_PARTITIONS, CarbonCommonConstants.LOAD_GLOBAL_SORT_PARTITIONS_DEFAULT)
-    prop.addProperty(CarbonCommonConstants.COMPACTION_SEGMENT_LEVEL_THRESHOLD, CarbonCommonConstants.DEFAULT_SEGMENT_LEVEL_THRESHOLD)
+    prop.addProperty(CarbonCommonConstants.COMPACTION_SEGMENT_LEVEL_THRESHOLD, CarbonCommonConstants.SEGMENT_LEVEL_THRESHOLD_DEFAULT)
   }
 
   private def getIndexFileCount(tableName: String, segmentNo: String = "0"): Int = {

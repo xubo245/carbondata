@@ -609,7 +609,7 @@ class LuceneFineGrainDataMapSuite extends QueryTest with BeforeAndAfterAll {
       LuceneFineGrainDataMapSuite.deleteFile(file1)
       sql("drop datamap dm on table main")
       CarbonProperties.getInstance().addProperty(
-        CarbonCommonConstants.BLOCKLET_SIZE, CarbonCommonConstants.BLOCKLET_SIZE_DEFAULT_VAL)
+        CarbonCommonConstants.BLOCKLET_SIZE, CarbonCommonConstants.BLOCKLET_SIZE_DEFAULT)
     }
   }
 

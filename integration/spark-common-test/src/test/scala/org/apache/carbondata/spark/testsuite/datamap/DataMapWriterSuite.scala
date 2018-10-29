@@ -157,7 +157,7 @@ class DataMapWriterSuite extends QueryTest with BeforeAndAfterAll {
       .addProperty("carbon.blockletgroup.size.in.mb", "1")
     CarbonProperties.getInstance()
       .addProperty("carbon.number.of.cores.while.loading",
-        CarbonCommonConstants.NUM_CORES_DEFAULT_VAL)
+        CarbonCommonConstants.NUM_CORES_DEFAULT)
 
     val df = buildTestData(300000)
 

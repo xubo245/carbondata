@@ -40,7 +40,7 @@ class TestLoadDataWithEmptyArrayColumns extends QueryTest with BeforeAndAfterAll
   test("test carbon table data loading when there are empty array columns in data") {
     CarbonProperties.getInstance()
       .addProperty(CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
-        CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT
+        CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT
       )
     sql(
       s"""

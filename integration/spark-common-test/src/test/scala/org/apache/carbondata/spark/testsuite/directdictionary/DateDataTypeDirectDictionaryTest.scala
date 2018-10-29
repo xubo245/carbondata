@@ -60,7 +60,7 @@ class DateDataTypeDirectDictionaryTest extends QueryTest with BeforeAndAfterAll 
         x.printStackTrace()
         CarbonProperties.getInstance()
         .addProperty(CarbonCommonConstants.CARBON_DATE_FORMAT,
-          CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT)
+          CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT)
     }
   }
 
@@ -150,7 +150,7 @@ class DateDataTypeDirectDictionaryTest extends QueryTest with BeforeAndAfterAll 
     sql("drop table directDictionaryTable")
     CarbonProperties.getInstance()
       .addProperty(CarbonCommonConstants.CARBON_DATE_FORMAT,
-        CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT)
+        CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT)
     CarbonProperties.getInstance().addProperty(
       CarbonCommonConstants.CARBON_BAD_RECORDS_ACTION,
       bad_records_action)

@@ -91,13 +91,13 @@ public class CarbonLoadModelBuilder {
     if (timestampFormat == null) {
       timestampFormat = CarbonProperties.getInstance()
           .getProperty(CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
-              CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT);
+              CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT);
     }
     String dateFormat = options.get("dateFormat");
     if (dateFormat == null) {
       dateFormat = CarbonProperties.getInstance()
           .getProperty(CarbonCommonConstants.CARBON_DATE_FORMAT,
-              CarbonCommonConstants.CARBON_DATE_DEFAULT_FORMAT);
+              CarbonCommonConstants.CARBON_DATE_FORMAT_DEFAULT);
     }
     model.setDateFormat(dateFormat);
     model.setTimestampformat(timestampFormat);
@@ -220,12 +220,12 @@ public class CarbonLoadModelBuilder {
     carbonLoadModel.setDefaultTimestampFormat(
         CarbonProperties.getInstance().getProperty(
             CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
-            CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT));
+            CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT));
 
     carbonLoadModel.setDefaultDateFormat(
         CarbonProperties.getInstance().getProperty(
             CarbonCommonConstants.CARBON_DATE_FORMAT,
-            CarbonCommonConstants.CARBON_DATE_DEFAULT_FORMAT));
+            CarbonCommonConstants.CARBON_DATE_FORMAT_DEFAULT));
 
     carbonLoadModel.setSerializationNullFormat(
         TableOptionConstant.SERIALIZATION_NULL_FORMAT.getName() + "," +
@@ -383,7 +383,7 @@ public class CarbonLoadModelBuilder {
       String columnCompressor = carbonLoadModel.getColumnCompressor();
       if (StringUtils.isBlank(columnCompressor)) {
         columnCompressor = CarbonProperties.getInstance().getProperty(
-            CarbonCommonConstants.COMPRESSOR, CarbonCommonConstants.DEFAULT_COMPRESSOR);
+            CarbonCommonConstants.COMPRESSOR, CarbonCommonConstants.COMPRESSOR_DEFAULT);
       }
       // check and load compressor
       CompressorFactory.getInstance().getCompressor(columnCompressor);

@@ -133,7 +133,7 @@ class BadRecordActionTest extends QueryTest {
     val badRecordLocation = CarbonProperties.getInstance()
       .getProperty(CarbonCommonConstants.CARBON_BADRECORDS_LOC)
     CarbonProperties.getInstance().addProperty(CarbonCommonConstants.CARBON_BADRECORDS_LOC,
-      CarbonCommonConstants.CARBON_BADRECORDS_LOC_DEFAULT_VAL)
+      CarbonCommonConstants.CARBON_BADRECORDS_LOC_DEFAULT)
     try {
       val exMessage = intercept[Exception] {
         sql("LOAD DATA local inpath '" + csvFilePath + "' INTO TABLE sales OPTIONS" +

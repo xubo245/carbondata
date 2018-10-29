@@ -160,7 +160,7 @@ class TestLoadDataGeneral extends QueryTest with BeforeAndAfterEach {
     CarbonProperties.getInstance()
       .addProperty(CarbonCommonConstants.SORT_INTERMEDIATE_FILES_LIMIT,
         CarbonCommonConstants.SORT_INTERMEDIATE_FILES_LIMIT_DEFAULT_VALUE)
-      .addProperty(CarbonCommonConstants.SORT_SIZE, CarbonCommonConstants.SORT_SIZE_DEFAULT_VAL)
+      .addProperty(CarbonCommonConstants.SORT_SIZE, CarbonCommonConstants.SORT_SIZE_DEFAULT)
       .addProperty(CarbonCommonConstants.DATA_LOAD_BATCH_SIZE,
         CarbonCommonConstants.DATA_LOAD_BATCH_SIZE_DEFAULT)
     sql("drop table if exists carbon_table")
@@ -272,7 +272,7 @@ class TestLoadDataGeneral extends QueryTest with BeforeAndAfterEach {
     )
 
     CarbonProperties.getInstance().addProperty(CarbonCommonConstants.BLOCKLET_SIZE,
-      CarbonCommonConstants.BLOCKLET_SIZE_DEFAULT_VAL)
+      CarbonCommonConstants.BLOCKLET_SIZE_DEFAULT)
   }
 
   override def afterEach {
@@ -281,7 +281,7 @@ class TestLoadDataGeneral extends QueryTest with BeforeAndAfterEach {
     CarbonProperties.getInstance()
       .addProperty(CarbonCommonConstants.SORT_INTERMEDIATE_FILES_LIMIT,
         CarbonCommonConstants.SORT_INTERMEDIATE_FILES_LIMIT_DEFAULT_VALUE)
-      .addProperty(CarbonCommonConstants.SORT_SIZE, CarbonCommonConstants.SORT_SIZE_DEFAULT_VAL)
+      .addProperty(CarbonCommonConstants.SORT_SIZE, CarbonCommonConstants.SORT_SIZE_DEFAULT)
       .addProperty(CarbonCommonConstants.DATA_LOAD_BATCH_SIZE,
         CarbonCommonConstants.DATA_LOAD_BATCH_SIZE_DEFAULT)
   }

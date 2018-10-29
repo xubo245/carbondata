@@ -42,19 +42,19 @@ class TableLevelCompactionOptionTest extends QueryTest
   private def resetConf() ={
     CarbonProperties.getInstance().addProperty(
       CarbonCommonConstants.CARBON_MAJOR_COMPACTION_SIZE,
-      CarbonCommonConstants.DEFAULT_CARBON_MAJOR_COMPACTION_SIZE)
+      CarbonCommonConstants.CARBON_MAJOR_COMPACTION_SIZE_DEFAULT)
     CarbonProperties.getInstance()
       .addProperty(CarbonCommonConstants.ENABLE_AUTO_LOAD_MERGE,
-        CarbonCommonConstants.DEFAULT_ENABLE_AUTO_LOAD_MERGE)
+        CarbonCommonConstants.ENABLE_AUTO_LOAD_MERGE_DEFAULT)
     CarbonProperties.getInstance()
       .addProperty(CarbonCommonConstants.COMPACTION_SEGMENT_LEVEL_THRESHOLD,
-        CarbonCommonConstants.DEFAULT_SEGMENT_LEVEL_THRESHOLD)
+        CarbonCommonConstants.SEGMENT_LEVEL_THRESHOLD_DEFAULT)
     CarbonProperties.getInstance()
       .addProperty(CarbonCommonConstants.PRESERVE_LATEST_SEGMENTS_NUMBER,
-        CarbonCommonConstants.DEFAULT_PRESERVE_LATEST_SEGMENTS_NUMBER)
+        CarbonCommonConstants.PRESERVE_LATEST_SEGMENTS_NUMBER_DEFAULT)
     CarbonProperties.getInstance()
       .addProperty(CarbonCommonConstants.DAYS_ALLOWED_TO_COMPACT,
-        CarbonCommonConstants.DEFAULT_DAYS_ALLOWED_TO_COMPACT)
+        CarbonCommonConstants.DAYS_ALLOWED_TO_COMPACT_DEFAULT)
   }
 
   private def cleanTable() = {
@@ -151,7 +151,7 @@ class TableLevelCompactionOptionTest extends QueryTest
 
     CarbonProperties.getInstance().addProperty(
       CarbonCommonConstants.CARBON_MAJOR_COMPACTION_SIZE,
-      CarbonCommonConstants.DEFAULT_CARBON_MAJOR_COMPACTION_SIZE)
+      CarbonCommonConstants.CARBON_MAJOR_COMPACTION_SIZE_DEFAULT)
   }
 
   test("ENABLE_AUTO_LOAD_MERGE: true, use system level configuration"){

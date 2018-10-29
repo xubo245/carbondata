@@ -91,10 +91,10 @@ public class SingleThreadFinalSortFilesMerger extends CarbonIterator<Object[]> {
     try {
       maxThreadForSorting = Integer.parseInt(CarbonProperties.getInstance()
           .getProperty(CarbonCommonConstants.CARBON_MERGE_SORT_READER_THREAD,
-              CarbonCommonConstants.CARBON_MERGE_SORT_READER_THREAD_DEFAULTVALUE));
+              CarbonCommonConstants.CARBON_MERGE_SORT_READER_THREAD_DEFAULT));
     } catch (NumberFormatException e) {
       maxThreadForSorting =
-          Integer.parseInt(CarbonCommonConstants.CARBON_MERGE_SORT_READER_THREAD_DEFAULTVALUE);
+          Integer.parseInt(CarbonCommonConstants.CARBON_MERGE_SORT_READER_THREAD_DEFAULT);
     }
     this.mergerTask = new ArrayList<>();
   }

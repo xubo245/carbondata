@@ -50,10 +50,10 @@ class TestStreamingTableWithRowParser extends QueryTest with BeforeAndAfterAll {
   override def beforeAll {
     CarbonProperties.getInstance().addProperty(
       CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
-      CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT)
+      CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT)
     CarbonProperties.getInstance().addProperty(
       CarbonCommonConstants.CARBON_DATE_FORMAT,
-      CarbonCommonConstants.CARBON_DATE_DEFAULT_FORMAT)
+      CarbonCommonConstants.CARBON_DATE_FORMAT_DEFAULT)
     sql("DROP DATABASE IF EXISTS streaming1 CASCADE")
     sql("CREATE DATABASE streaming1")
     sql("USE streaming1")
@@ -783,7 +783,7 @@ class TestStreamingTableWithRowParser extends QueryTest with BeforeAndAfterAll {
             .option("dbName", tableIdentifier.database.get)
             .option("tableName", tableIdentifier.table)
             .option(CarbonCommonConstants.HANDOFF_SIZE, handoffSize)
-            .option("timestampformat", CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT)
+            .option("timestampformat", CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT)
             .option(CarbonCommonConstants.ENABLE_AUTO_HANDOFF, autoHandoff)
             .start()
           qry.awaitTermination()

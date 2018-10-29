@@ -52,11 +52,11 @@ public class RangeFilterImpl implements PartitionFilterIntf {
 
     SimpleDateFormat timestampFormatter = new SimpleDateFormat(CarbonProperties.getInstance()
         .getProperty(CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
-            CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT));
+            CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT));
 
     SimpleDateFormat dateFormatter = new SimpleDateFormat(CarbonProperties.getInstance()
         .getProperty(CarbonCommonConstants.CARBON_DATE_FORMAT,
-            CarbonCommonConstants.CARBON_DATE_DEFAULT_FORMAT));
+            CarbonCommonConstants.CARBON_DATE_FORMAT_DEFAULT));
 
     switch (partitionInfo.getPartitionType()) {
       case LIST:

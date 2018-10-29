@@ -526,7 +526,7 @@ class StandardPartitionTableLoadingTestCase extends QueryTest with BeforeAndAfte
   override def afterAll = {
     CarbonProperties.getInstance()
       .addProperty(CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
-        CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT)
+        CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT)
     CarbonProperties.getInstance().addProperty(CarbonCommonConstants.CARBON_TASK_DISTRIBUTION ,
       CarbonCommonConstants.CARBON_TASK_DISTRIBUTION_DEFAULT)
     dropTable

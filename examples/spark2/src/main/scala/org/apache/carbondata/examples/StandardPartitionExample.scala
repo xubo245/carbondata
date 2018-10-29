@@ -189,7 +189,7 @@ object StandardPartitionExample {
 
     CarbonProperties.getInstance().addProperty(
       CarbonCommonConstants.CARBON_DATE_FORMAT,
-      CarbonCommonConstants.CARBON_DATE_DEFAULT_FORMAT)
+      CarbonCommonConstants.CARBON_DATE_FORMAT_DEFAULT)
 
     spark.sql("DROP TABLE IF EXISTS partitiontable0")
     spark.sql("DROP TABLE IF EXISTS withoutpartition")

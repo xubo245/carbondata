@@ -194,7 +194,7 @@ public abstract class AbstractFactDataWriter implements CarbonFactDataWriter {
         this.model.getWrapperColumnSchema());
     this.numberCompressor = new NumberCompressor(Integer.parseInt(CarbonProperties.getInstance()
         .getProperty(CarbonCommonConstants.BLOCKLET_SIZE,
-            CarbonCommonConstants.BLOCKLET_SIZE_DEFAULT_VAL)));
+            CarbonCommonConstants.BLOCKLET_SIZE_DEFAULT)));
     this.dataChunksOffsets = new ArrayList<>();
     this.dataChunksLength = new ArrayList<>();
     blockletMetadata = new ArrayList<BlockletInfo3>();

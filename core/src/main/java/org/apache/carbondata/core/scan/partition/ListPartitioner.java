@@ -33,11 +33,11 @@ public class ListPartitioner implements Partitioner {
 
   private SimpleDateFormat timestampFormatter = new SimpleDateFormat(CarbonProperties.getInstance()
       .getProperty(CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
-          CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT));
+          CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT));
 
   private SimpleDateFormat dateFormatter = new SimpleDateFormat(CarbonProperties.getInstance()
       .getProperty(CarbonCommonConstants.CARBON_DATE_FORMAT,
-          CarbonCommonConstants.CARBON_DATE_DEFAULT_FORMAT));
+          CarbonCommonConstants.CARBON_DATE_FORMAT_DEFAULT));
 
   /**
    * Map the value of ListPartition to partition id.

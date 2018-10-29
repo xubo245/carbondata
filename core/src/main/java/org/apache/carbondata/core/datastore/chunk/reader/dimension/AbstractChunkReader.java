@@ -76,9 +76,9 @@ public abstract class AbstractChunkReader implements DimensionColumnChunkReader 
     try {
       numberOfElement = Integer.parseInt(CarbonProperties.getInstance()
           .getProperty(CarbonCommonConstants.BLOCKLET_SIZE,
-              CarbonCommonConstants.BLOCKLET_SIZE_DEFAULT_VAL));
+              CarbonCommonConstants.BLOCKLET_SIZE_DEFAULT));
     } catch (NumberFormatException exception) {
-      numberOfElement = Integer.parseInt(CarbonCommonConstants.BLOCKLET_SIZE_DEFAULT_VAL);
+      numberOfElement = Integer.parseInt(CarbonCommonConstants.BLOCKLET_SIZE_DEFAULT);
     }
     this.numberComressor = new NumberCompressor(numberOfElement);
     this.numberOfRows = numberOfRows;

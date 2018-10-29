@@ -55,7 +55,7 @@ public final class DataTypeUtil {
     @Override protected DateFormat initialValue() {
       DateFormat dateFormat = new SimpleDateFormat(CarbonProperties.getInstance()
           .getProperty(CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT,
-              CarbonCommonConstants.CARBON_TIMESTAMP_DEFAULT_FORMAT));
+              CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT_DEFAULT));
       dateFormat.setLenient(false);
       return dateFormat;
     }
@@ -65,7 +65,7 @@ public final class DataTypeUtil {
     @Override protected DateFormat initialValue() {
       return new SimpleDateFormat(CarbonProperties.getInstance()
           .getProperty(CarbonCommonConstants.CARBON_DATE_FORMAT,
-              CarbonCommonConstants.CARBON_DATE_DEFAULT_FORMAT));
+              CarbonCommonConstants.CARBON_DATE_FORMAT_DEFAULT));
     }
   };
 

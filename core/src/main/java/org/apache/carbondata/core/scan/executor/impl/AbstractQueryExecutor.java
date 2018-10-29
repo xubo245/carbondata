@@ -531,7 +531,7 @@ public abstract class AbstractQueryExecutor<E> implements QueryExecutor<E> {
         currentBlockFilterDimensions, allProjectionListDimensionIdexes);
     int numberOfColumnToBeReadInOneIO = Integer.parseInt(CarbonProperties.getInstance()
         .getProperty(CarbonV3DataFormatConstants.NUMBER_OF_COLUMN_TO_READ_IN_IO,
-            CarbonV3DataFormatConstants.NUMBER_OF_COLUMN_TO_READ_IN_IO_DEFAULTVALUE));
+            CarbonV3DataFormatConstants.NUMBER_OF_COLUMN_TO_READ_IN_IO_DEFAULT));
 
     if (dimensionChunkIndexes.length > 0) {
       numberOfElementToConsider = dimensionChunkIndexes[dimensionChunkIndexes.length - 1]

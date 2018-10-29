@@ -44,7 +44,7 @@ import org.apache.carbondata.processing.store.writer.AbstractFactDataWriter;
 
 import static org.apache.carbondata.core.constants.CarbonCommonConstants.TABLE_BLOCKLET_SIZE;
 import static org.apache.carbondata.core.constants.CarbonV3DataFormatConstants.BLOCKLET_SIZE_IN_MB;
-import static org.apache.carbondata.core.constants.CarbonV3DataFormatConstants.BLOCKLET_SIZE_IN_MB_DEFAULT_VALUE;
+import static org.apache.carbondata.core.constants.CarbonV3DataFormatConstants.BLOCKLET_SIZE_IN_MB_DEFAULT;
 import static org.apache.carbondata.processing.loading.sort.SortScopeOptions.SortScope.NO_SORT;
 
 import org.apache.log4j.Logger;
@@ -83,7 +83,7 @@ public class CarbonFactDataWriterImplV3 extends AbstractFactDataWriter {
             .get(TABLE_BLOCKLET_SIZE);
     if (blockletSize == null) {
       blockletSize = CarbonProperties.getInstance().getProperty(
-          BLOCKLET_SIZE_IN_MB, BLOCKLET_SIZE_IN_MB_DEFAULT_VALUE);
+          BLOCKLET_SIZE_IN_MB, BLOCKLET_SIZE_IN_MB_DEFAULT);
     }
     blockletSizeThreshold = Long.parseLong(blockletSize) << 20;
     if (blockletSizeThreshold > fileSizeInBytes) {

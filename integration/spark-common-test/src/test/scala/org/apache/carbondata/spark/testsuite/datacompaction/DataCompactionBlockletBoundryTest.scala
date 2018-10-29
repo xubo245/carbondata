@@ -88,7 +88,7 @@ class DataCompactionBlockletBoundryTest extends QueryTest with BeforeAndAfterAll
       .addProperty(CarbonCommonConstants.CARBON_TIMESTAMP_FORMAT, "dd-MM-yyyy")
     CarbonProperties.getInstance()
       .addProperty(CarbonCommonConstants.BLOCKLET_SIZE,
-        "" + CarbonCommonConstants.BLOCKLET_SIZE_DEFAULT_VAL)
+        "" + CarbonCommonConstants.BLOCKLET_SIZE_DEFAULT)
   }
 
 }

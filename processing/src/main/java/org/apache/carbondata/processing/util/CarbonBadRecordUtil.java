@@ -143,7 +143,7 @@ public class CarbonBadRecordUtil {
           .getProperty(CarbonLoadOptionConstants.CARBON_OPTIONS_BAD_RECORD_PATH,
               CarbonProperties.getInstance()
                   .getProperty(CarbonCommonConstants.CARBON_BADRECORDS_LOC,
-                      CarbonCommonConstants.CARBON_BADRECORDS_LOC_DEFAULT_VAL));
+                      CarbonCommonConstants.CARBON_BADRECORDS_LOC_DEFAULT));
       if (!badRecordsFromProp.isEmpty()) {
         badRecordsFromProp =
             badRecordsFromProp + CarbonCommonConstants.FILE_SEPARATOR + table.getDatabaseName()

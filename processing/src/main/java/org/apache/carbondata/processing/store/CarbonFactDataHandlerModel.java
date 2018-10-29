@@ -692,12 +692,12 @@ public class CarbonFactDataHandlerModel {
       try {
         model.numberOfCores = Integer.parseInt(CarbonProperties.getInstance()
             .getProperty(CarbonCommonConstants.NUM_CORES_COMPACTING,
-                CarbonCommonConstants.NUM_CORES_DEFAULT_VAL));
+                CarbonCommonConstants.NUM_CORES_DEFAULT));
       } catch (NumberFormatException exc) {
         LOGGER.error("Configured value for property " + CarbonCommonConstants.NUM_CORES_COMPACTING
             + "is wrong.Falling back to the default value "
-            + CarbonCommonConstants.NUM_CORES_DEFAULT_VAL);
-        model.numberOfCores = Integer.parseInt(CarbonCommonConstants.NUM_CORES_DEFAULT_VAL);
+            + CarbonCommonConstants.NUM_CORES_DEFAULT);
+        model.numberOfCores = Integer.parseInt(CarbonCommonConstants.NUM_CORES_DEFAULT);
       }
     } else {
       model.numberOfCores = CarbonProperties.getInstance().getNumberOfCores();

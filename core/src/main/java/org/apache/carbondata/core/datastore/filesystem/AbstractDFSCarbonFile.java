@@ -203,7 +203,7 @@ public abstract class AbstractDFSCarbonFile implements CarbonFile {
         CarbonCommonConstants.BYTE_TO_KB_CONVERSION_FACTOR :
         (int) validDataEndOffset;
     // temporary file name
-    String tempWriteFilePath = fileName + CarbonCommonConstants.TEMPWRITEFILEEXTENSION;
+    String tempWriteFilePath = fileName + CarbonCommonConstants.TEMP_WRITE_FILE_EXTENSION;
     FileFactory.FileType fileType = FileFactory.getFileType(fileName);
     try {
       CarbonFile tempFile;

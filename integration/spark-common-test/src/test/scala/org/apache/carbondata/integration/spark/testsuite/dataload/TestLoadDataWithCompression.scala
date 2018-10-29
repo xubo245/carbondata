@@ -67,9 +67,9 @@ class TestLoadDataWithCompression extends QueryTest with BeforeAndAfterEach with
     CarbonProperties.getInstance().addProperty(CarbonCommonConstants.ENABLE_OFFHEAP_SORT,
       CarbonCommonConstants.ENABLE_OFFHEAP_SORT_DEFAULT)
     CarbonProperties.getInstance().addProperty(CarbonCommonConstants.COMPRESSOR,
-      CarbonCommonConstants.DEFAULT_COMPRESSOR)
+      CarbonCommonConstants.COMPRESSOR_DEFAULT)
     CarbonProperties.getInstance().addProperty(CarbonCommonConstants.BLOCKLET_SIZE,
-      CarbonCommonConstants.BLOCKLET_SIZE_DEFAULT_VAL)
+      CarbonCommonConstants.BLOCKLET_SIZE_DEFAULT)
 
     try {
       sql(s"DROP TABLE IF EXISTS $tableName")

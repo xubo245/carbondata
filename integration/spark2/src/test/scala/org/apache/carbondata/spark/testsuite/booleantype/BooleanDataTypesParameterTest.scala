@@ -46,7 +46,7 @@ class BooleanDataTypesParameterTest extends QueryTest with BeforeAndAfterEach wi
   override def beforeAll(): Unit = {
     CarbonProperties.getInstance().
       addProperty(CarbonCommonConstants.COMPACTION_SEGMENT_LEVEL_THRESHOLD,
-        CarbonCommonConstants.DEFAULT_SEGMENT_LEVEL_THRESHOLD)
+        CarbonCommonConstants.SEGMENT_LEVEL_THRESHOLD_DEFAULT)
   }
 
   override def afterAll(): Unit = {
@@ -83,7 +83,7 @@ class BooleanDataTypesParameterTest extends QueryTest with BeforeAndAfterEach wi
     assert(!SegmentSequenceIds.contains("0.1"))
     assert(SegmentSequenceIds.length == 14)
     CarbonProperties.getInstance().addProperty(CarbonCommonConstants.ENABLE_AUTO_LOAD_MERGE,
-      CarbonCommonConstants.DEFAULT_ENABLE_AUTO_LOAD_MERGE)
+      CarbonCommonConstants.ENABLE_AUTO_LOAD_MERGE_DEFAULT)
   }
 
   test("ENABLE_AUTO_LOAD_MERGE: true, and Inserting and selecting table: one column boolean and many rows, should support") {
@@ -115,7 +115,7 @@ class BooleanDataTypesParameterTest extends QueryTest with BeforeAndAfterEach wi
     assert(SegmentSequenceIds.contains("0.1"))
     assert(SegmentSequenceIds.length == 18)
     CarbonProperties.getInstance().addProperty(CarbonCommonConstants.ENABLE_AUTO_LOAD_MERGE,
-      CarbonCommonConstants.DEFAULT_ENABLE_AUTO_LOAD_MERGE)
+      CarbonCommonConstants.ENABLE_AUTO_LOAD_MERGE_DEFAULT)
   }
 
   test("ENABLE_AUTO_LOAD_MERGE: false, and Loading table: support boolean and other data type") {
@@ -160,7 +160,7 @@ class BooleanDataTypesParameterTest extends QueryTest with BeforeAndAfterEach wi
     assert(!SegmentSequenceIds.contains("0.1"))
     assert(SegmentSequenceIds.length == 4)
     CarbonProperties.getInstance().addProperty(CarbonCommonConstants.ENABLE_AUTO_LOAD_MERGE,
-      CarbonCommonConstants.DEFAULT_ENABLE_AUTO_LOAD_MERGE)
+      CarbonCommonConstants.ENABLE_AUTO_LOAD_MERGE_DEFAULT)
   }
 
   test("ENABLE_AUTO_LOAD_MERGE: true, and Loading table: support boolean and other data type") {
@@ -205,7 +205,7 @@ class BooleanDataTypesParameterTest extends QueryTest with BeforeAndAfterEach wi
     assert(SegmentSequenceIds.contains("0.1"))
     assert(SegmentSequenceIds.length == 5)
     CarbonProperties.getInstance().addProperty(CarbonCommonConstants.ENABLE_AUTO_LOAD_MERGE,
-      CarbonCommonConstants.DEFAULT_ENABLE_AUTO_LOAD_MERGE)
+      CarbonCommonConstants.ENABLE_AUTO_LOAD_MERGE_DEFAULT)
   }
 
   test("ENABLE_AUTO_LOAD_MERGE: false, and sort_columns is boolean") {
@@ -244,7 +244,7 @@ class BooleanDataTypesParameterTest extends QueryTest with BeforeAndAfterEach wi
     assert(!SegmentSequenceIds.contains("0.1"))
     assert(SegmentSequenceIds.length == 14)
     CarbonProperties.getInstance().addProperty(CarbonCommonConstants.ENABLE_AUTO_LOAD_MERGE,
-      CarbonCommonConstants.DEFAULT_ENABLE_AUTO_LOAD_MERGE)
+      CarbonCommonConstants.ENABLE_AUTO_LOAD_MERGE_DEFAULT)
   }
 
   test("ENABLE_AUTO_LOAD_MERGE: true, and sort_columns is boolean") {
@@ -283,6 +283,6 @@ class BooleanDataTypesParameterTest extends QueryTest with BeforeAndAfterEach wi
     assert(SegmentSequenceIds.contains("0.1"))
     assert(SegmentSequenceIds.length == 18)
     CarbonProperties.getInstance().addProperty(CarbonCommonConstants.ENABLE_AUTO_LOAD_MERGE,
-      CarbonCommonConstants.DEFAULT_ENABLE_AUTO_LOAD_MERGE)
+      CarbonCommonConstants.ENABLE_AUTO_LOAD_MERGE_DEFAULT)
   }
 }
