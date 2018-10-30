@@ -55,7 +55,9 @@ public class CarbonSchemaReaderTest extends TestCase {
     CarbonWriter writer = CarbonWriter.builder()
         .outputPath(path)
         .withLoadOptions(map)
-        .withCsvInput(new Schema(fields)).build();
+        .withCsvInput(new Schema(fields))
+        .writtenBy("CarbonSchemaReaderTest")
+        .build();
 
     for (int i = 0; i < 10; i++) {
       String[] row2 = new String[]{
