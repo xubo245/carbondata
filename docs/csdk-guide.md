@@ -15,20 +15,20 @@
     limitations under the License.
 -->
 
-# CSDK Guide
+# C++ SDK Guide
 
-CarbonData CSDK provides C++ interface to write and read carbon file. 
+CarbonData C++ SDK provides C++ interface to write and read carbon file. 
 CSDK use JNI to invoke java SDK in C++ code.
 
 
-# CSDK Reader
-This CSDK reader reads CarbonData file and carbonindex file at a given path.
+# C++ SDK Reader
+This C++ SDK reader reads CarbonData file and carbonindex file at a given path.
 External client can make use of this reader to read CarbonData files in C++ 
 code and without CarbonSession.
 
 
 In the carbon jars package, there exist a carbondata-sdk.jar, 
-including SDK reader for CSDK.
+including SDK reader for C++ SDK.
 ## Quick example
 
 Please find example code at  [main.cpp](https://github.com/apache/carbondata/blob/master/store/CSDK/test/main.cpp) of CSDK module  
@@ -37,6 +37,8 @@ When users use C++ to read carbon files, users should init JVM first. Then users
 carbon reader and read data.There are some example code of read data from local disk  
 and read data from S3 at main.cpp of CSDK module.  Finally, users need to 
 release the memory and destroy JVM.
+
+C++ SDK support read batch row. User can set batch by using withBatch(int batch) before build, and read batch by using readNextBatchRow().
 
 ## API List
 ```
@@ -72,6 +74,14 @@ release the memory and destroy JVM.
      **/
     jobject withHadoopConf(int argc, char *argv[]);
 
+   /**
+     * set batch size
+     *
+     * @param batch batch size
+     * @return CarbonReaderBuilder object
+     */
+    void withBatch(int batch);
+
     /**
      * build carbonReader object for reading data
      * it support read data from load disk
@@ -92,6 +102,13 @@ release the memory and destroy JVM.
      * @return carbonRow object of one row
      */
      jobject readNextRow();
+
+    /**
+     * read Next Batch Row
+     *
+     * @return rows
+     */
+    jobjectArray readNextBatchRow();
 
     /**
      * close the carbon reader

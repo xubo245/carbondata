@@ -26,12 +26,13 @@ import org.apache.carbondata.common.annotations.InterfaceStability;
 import org.apache.carbondata.core.util.CarbonTaskInfo;
 import org.apache.carbondata.core.util.CarbonUtil;
 import org.apache.carbondata.core.util.ThreadLocalTaskInfo;
+import org.apache.carbondata.hadoop.CarbonRecordReader;
 
 import org.apache.hadoop.mapreduce.RecordReader;
 
 
 /**
- * Reader for carbondata file
+ * Reader for CarbonData file
  */
 @InterfaceAudience.User
 @InterfaceStability.Evolving
@@ -88,6 +89,18 @@ public class CarbonReader<T> {
   public T readNextRow() throws IOException, InterruptedException {
     validateReader();
     return currentReader.getCurrentValue();
+  }
+
+  /**
+   * Read and return next batch row objects
+   */
+  public Object[] readNextBatchRow() throws Exception {
+    validateReader();
+    if (currentReader instanceof CarbonRecordReader) {
+      return ((CarbonRecordReader) currentReader).getBatchValue().toArray();
+    } else {
+      throw new Exception("Didn't support read next batch row by this reader.");
+    }
   }
 
   /**

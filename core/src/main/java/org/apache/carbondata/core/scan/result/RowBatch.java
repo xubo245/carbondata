@@ -100,4 +100,19 @@ public class RowBatch extends CarbonIterator<Object[]> {
     counter++;
     return row;
   }
+
+  /**
+   * read next batch
+   *
+   * @return rows
+   */
+  public List<Object[]> nextBatch() {
+    if (!hasNext()) {
+      throw new NoSuchElementException();
+    }
+    List<Object[]> row;
+    row = rows.subList(counter, rows.size());
+    counter = counter + row.size();
+    return row;
+  }
 }
