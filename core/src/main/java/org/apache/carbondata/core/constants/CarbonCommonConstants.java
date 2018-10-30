@@ -1357,7 +1357,7 @@ public final class CarbonCommonConstants {
   /**
    * property to set is IS_DRIVER_INSTANCE
    */
-  @NonDynamicConfigurable
+  @DynamicConfigurable
   public static final String IS_DRIVER_INSTANCE = "is.driver.instance";
 
   @DefaultValue
