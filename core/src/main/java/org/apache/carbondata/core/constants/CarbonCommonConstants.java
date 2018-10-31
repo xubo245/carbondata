@@ -43,7 +43,7 @@ public final class CarbonCommonConstants {
   /**
    * blocklet size in carbon file
    */
-  @DynamicConfigurable
+  @NonDynamicConfigurable
   public static final String BLOCKLET_SIZE = "carbon.blocklet.size";
 
   /**
@@ -85,7 +85,7 @@ public final class CarbonCommonConstants {
   /**
    * carbon properties file path
    */
-  @DefaultValue
+  @NonDynamicConfigurable
   public static final String CARBON_PROPERTIES_FILE_PATH = "carbon.properties.filepath";
 
   /**
@@ -154,7 +154,7 @@ public final class CarbonCommonConstants {
   /**
    * compressor for writing/reading CarbonData file
    */
-  @DynamicConfigurable
+  @NonDynamicConfigurable
   public static final String COMPRESSOR = "carbon.column.compressor";
 
   /**
@@ -197,7 +197,7 @@ public final class CarbonCommonConstants {
   /**
    * xxhash algorithm property for hashMap
    */
-  @DynamicConfigurable
+  @NonDynamicConfigurable
   public static final String ENABLE_XXHASH = "carbon.enableXXHash";
 
   /**
@@ -209,13 +209,13 @@ public final class CarbonCommonConstants {
   /**
    * System property to enable or disable local dictionary generation
    */
-  @DynamicConfigurable
+  @NonDynamicConfigurable
   public static final String LOCAL_DICTIONARY_SYSTEM_ENABLE = "carbon.local.dictionary.enable";
 
   /**
    * System property to enable or disable decoder based local dictionary fallback
    */
-  @DynamicConfigurable
+  @NonDynamicConfigurable
   public static final String LOCAL_DICTIONARY_DECODER_BASED_FALLBACK =
       "carbon.local.dictionary.decoder.fallback";
 
@@ -228,13 +228,13 @@ public final class CarbonCommonConstants {
   /**
    * zookeeper url key
    */
-  @DynamicConfigurable
+  @NonDynamicConfigurable
   public static final String ZOOKEEPER_URL = "spark.deploy.zookeeper.url";
 
   /**
    * carbon data file version property
    */
-  @DynamicConfigurable
+  @NonDynamicConfigurable
   public static final String CARBON_DATA_FILE_VERSION = "carbon.data.file.version";
 
   @NonDynamicConfigurable
@@ -254,7 +254,7 @@ public final class CarbonCommonConstants {
   @DefaultValue
   public static final String CARBON_BAD_RECORDS_ACTION_DEFAULT = "FAIL";
 
-  @DynamicConfigurable
+  @NonDynamicConfigurable
   public static final String ENABLE_HIVE_SCHEMA_META_STORE = "spark.carbon.hive.schema.store";
 
   @DefaultValue
@@ -264,19 +264,19 @@ public final class CarbonCommonConstants {
    * There is more often that in production uses different drivers for load and queries. So in case
    * of load driver user should set this property to enable loader specific clean up.
    */
-  @DynamicConfigurable
+  @NonDynamicConfigurable
   public static final String DATA_MANAGEMENT_DRIVER = "spark.carbon.datamanagement.driver";
 
   @DefaultValue
   public static final String DATA_MANAGEMENT_DRIVER_DEFAULT = "true";
 
-  @DynamicConfigurable
+  @NonDynamicConfigurable
   public static final String CARBON_SESSIONSTATE_CLASSNAME = "spark.carbon.sessionstate.classname";
 
   /**
    * This property will be used to configure the sqlastbuilder class.
    */
-  @DynamicConfigurable
+  @NonDynamicConfigurable
   public static final String CARBON_SQLASTBUILDER_CLASSNAME =
       "spark.carbon.sqlastbuilder.classname";
 
@@ -297,7 +297,7 @@ public final class CarbonCommonConstants {
   @Threshold
   public static final int CARBON_LEASE_RECOVERY_RETRY_COUNT_MAX = 50;
 
-  @DynamicConfigurable
+  @NonDynamicConfigurable
   public static final String CARBON_LEASE_RECOVERY_RETRY_INTERVAL =
       "carbon.lease.recovery.retry.interval";
 
@@ -371,7 +371,7 @@ public final class CarbonCommonConstants {
   /**
    * System older location to store system level data like datamap schema and status files.
    */
-  @DynamicConfigurable
+  @NonDynamicConfigurable
   public static final String CARBON_SYSTEM_FOLDER_LOCATION = "carbon.system.folder.location";
 
   /**
@@ -389,7 +389,7 @@ public final class CarbonCommonConstants {
    * property to be used for specifying the max byte limit for string/varchar data type till
    * where storing min/max in data file will be considered
    */
-  @DynamicConfigurable
+  @NonDynamicConfigurable
   public static final String CARBON_MINMAX_ALLOWED_BYTE_COUNT =
       "carbon.minmax.allowed.byte.count";
 
@@ -530,7 +530,7 @@ public final class CarbonCommonConstants {
   /**
    * Number of cores to be used while alter partition
    */
-  @DynamicConfigurable
+  @NonDynamicConfigurable
   public static final String NUM_CORES_ALT_PARTITION = "carbon.number.of.cores.while.altPartition";
 
   /**
@@ -787,7 +787,7 @@ public final class CarbonCommonConstants {
   /**
    * space reserved for writing block meta data in carbon data file
    */
-  @DynamicConfigurable
+  @NonDynamicConfigurable
   public static final String CARBON_BLOCK_META_RESERVED_SPACE =
       "carbon.block.meta.size.reserved.percentage";
 
@@ -905,9 +905,8 @@ public final class CarbonCommonConstants {
 
   /**
    * This batch size is used to send rows from load step to another step in batches.
-   * TODO: check correct
    */
-  @DynamicConfigurable
+  @NonDynamicConfigurable
   public static final String DATA_LOAD_BATCH_SIZE = "DATA_LOAD_BATCH_SIZE";
 
   /**
@@ -920,7 +919,7 @@ public final class CarbonCommonConstants {
    * to determine to use the rdd persist or not.
    */
   @InterfaceStability.Evolving
-  @DynamicConfigurable
+  @NonDynamicConfigurable
   public static final String CARBON_UPDATE_PERSIST_ENABLE = "carbon.update.persist.enable";
 
   /**
@@ -967,9 +966,8 @@ public final class CarbonCommonConstants {
   /**
    * to enable unsafe column page
    */
-  @DynamicConfigurable
+  @NonDynamicConfigurable
   public static final String ENABLE_UNSAFE_COLUMN_PAGE = "enable.unsafe.columnpage";
-
 
   /**
    * default value of ENABLE_UNSAFE_COLUMN_PAGE
@@ -1007,13 +1005,13 @@ public final class CarbonCommonConstants {
   @DefaultValue
   public static final String ENABLE_INMEMORY_MERGE_SORT_DEFAULT = "false";
 
-  @DynamicConfigurable
+  @NonDynamicConfigurable
   public static final String OFFHEAP_SORT_CHUNK_SIZE_IN_MB = "offheap.sort.chunk.size.inmb";
 
   @DefaultValue
   public static final String OFFHEAP_SORT_CHUNK_SIZE_IN_MB_DEFAULT = "64";
 
-  @DynamicConfigurable
+  @NonDynamicConfigurable
   public static final String UNSAFE_WORKING_MEMORY_IN_MB = "carbon.unsafe.working.memory.in.mb";
 
   @DefaultValue
@@ -1228,7 +1226,7 @@ public final class CarbonCommonConstants {
    * compression mode used by lucene for index writing, this conf will be passed to lucene writer
    * while writing index files.
    */
-  @DynamicConfigurable
+  @NonDynamicConfigurable
   public static final String CARBON_LUCENE_COMPRESSION_MODE = "carbon.lucene.compression.mode";
 
   /**
@@ -1251,7 +1249,7 @@ public final class CarbonCommonConstants {
   @DefaultValue
   public static final String CARBON_LOAD_MIN_SIZE_INMB_DEFAULT = "0";
 
-  @DynamicConfigurable
+  @NonDynamicConfigurable
   public static final String IN_MEMORY_FOR_SORT_DATA_IN_MB = "sort.inmemory.size.inmb";
 
   @DefaultValue
@@ -1281,7 +1279,7 @@ public final class CarbonCommonConstants {
   /**
    * set the segment ids to query from the table
    */
-  @Constant
+  @DynamicConfigurable
   public static final String CARBON_INPUT_SEGMENTS = "carbon.input.segments.";
 
   /**
@@ -1357,7 +1355,7 @@ public final class CarbonCommonConstants {
   /**
    * property to set is IS_DRIVER_INSTANCE
    */
-  @DynamicConfigurable
+  @NonDynamicConfigurable
   public static final String IS_DRIVER_INSTANCE = "is.driver.instance";
 
   @DefaultValue
@@ -1418,7 +1416,7 @@ public final class CarbonCommonConstants {
    * this will be used to pass bitset value in filter to another filter for
    * faster execution of filter query
    */
-  @DynamicConfigurable
+  @NonDynamicConfigurable
   public static final String BITSET_PIPE_LINE = "carbon.use.bitset.pipe.line";
 
   @DefaultValue
@@ -1427,7 +1425,7 @@ public final class CarbonCommonConstants {
   /**
    * minimum required registered resource for starting block distribution
    */
-  @DynamicConfigurable
+  @NonDynamicConfigurable
   public static final String CARBON_SCHEDULER_MIN_REGISTERED_RESOURCES_RATIO =
       "carbon.scheduler.min.registered.resources.ratio";
 
@@ -1453,7 +1451,7 @@ public final class CarbonCommonConstants {
    * To define how much time scheduler should wait for the
    * resource in dynamic allocation.
    */
-  @DynamicConfigurable
+  @NonDynamicConfigurable
   public static final String CARBON_DYNAMIC_ALLOCATION_SCHEDULER_TIMEOUT =
       "carbon.dynamical.location.scheduler.timeout";
 
@@ -1487,7 +1485,7 @@ public final class CarbonCommonConstants {
    * It allows queries on hive metastore directly along with filter information, otherwise first
    * fetches all partitions from hive and apply filters on it.
    */
-  @DynamicConfigurable
+  @NonDynamicConfigurable
   public static final String CARBON_READ_PARTITION_HIVE_DIRECT =
       "carbon.read.partition.hive.direct";
 
@@ -1587,13 +1585,12 @@ public final class CarbonCommonConstants {
    * that the query on 'dbName.table' will not use the datamap 'dmName'
    */
   @InterfaceStability.Unstable
-  @Constant
+  @DynamicConfigurable
   public static final String CARBON_DATAMAP_VISIBLE = "carbon.datamap.visible.";
 
   /**
    * Fetch and validate the segments.
    * Used for aggregate table load as segment validation is not required.
-   * TODO: should be check
    */
   @DynamicConfigurable
   public static final String VALIDATE_CARBON_INPUT_SEGMENTS = "validate.carbon.input.segments.";
@@ -1602,13 +1599,13 @@ public final class CarbonCommonConstants {
    * Whether load/insert command is fired internally or by the user.
    * Used to block load/insert on pre-aggregate if fired by user
    */
-  @DynamicConfigurable
+  @NonDynamicConfigurable
   public static final String IS_INTERNAL_LOAD_CALL = "is.internal.load.call";
 
   @DefaultValue
   public static final String IS_INTERNAL_LOAD_CALL_DEFAULT = "false";
 
-  @DynamicConfigurable
+  @NonDynamicConfigurable
   public static final String USE_DISTRIBUTED_DATAMAP = "carbon.enable.distributed.datamap";
 
   @DefaultValue
@@ -1635,13 +1632,13 @@ public final class CarbonCommonConstants {
   public static final String CARBON_SHOW_DATAMAPS_DEFAULT = "true";
 
   // Property to enable parallel datamap loading for a table
-  @Constant
+  @DynamicConfigurable
   public static final String CARBON_LOAD_DATAMAPS_PARALLEL = "carbon.load.datamaps.parallel.";
 
   // by default lucene will not store or create index for stop words like "is","the", if this
   // property is set to true lucene will index for stop words also and gives result for the filter
   // with stop words(example: TEXT_MATCH('description':'the'))
-  @DynamicConfigurable
+  @NonDynamicConfigurable
   public static final String CARBON_LUCENE_INDEX_STOP_WORDS = "carbon.lucene.index.stop.words";
 
   @DefaultValue

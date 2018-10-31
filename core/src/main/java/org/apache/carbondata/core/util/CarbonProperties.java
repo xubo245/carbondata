@@ -36,6 +36,7 @@ import org.apache.carbondata.core.constants.CarbonV3DataFormatConstants;
 import org.apache.carbondata.core.datastore.impl.FileFactory;
 import org.apache.carbondata.core.metadata.ColumnarFormatVersion;
 import org.apache.carbondata.core.util.annotations.DynamicConfigurable;
+import org.apache.carbondata.core.util.annotations.NonDynamicConfigurable;
 
 import static org.apache.carbondata.core.constants.CarbonCommonConstants.BLOCKLET_SIZE;
 import static org.apache.carbondata.core.constants.CarbonCommonConstants.CARBON_CUSTOM_BLOCK_DISTRIBUTION;
@@ -493,19 +494,22 @@ public final class CarbonProperties {
   private void initPropertySet() throws IllegalAccessException {
     Field[] declaredFields = CarbonCommonConstants.class.getDeclaredFields();
     for (Field field : declaredFields) {
-      if (field.isAnnotationPresent(DynamicConfigurable.class)) {
+      if (field.isAnnotationPresent(DynamicConfigurable.class)
+          || field.isAnnotationPresent(NonDynamicConfigurable.class)) {
         propertySet.add(field.get(field.getName()).toString());
       }
     }
     declaredFields = CarbonV3DataFormatConstants.class.getDeclaredFields();
     for (Field field : declaredFields) {
-      if (field.isAnnotationPresent(DynamicConfigurable.class)) {
+      if (field.isAnnotationPresent(DynamicConfigurable.class)
+          || field.isAnnotationPresent(NonDynamicConfigurable.class)) {
         propertySet.add(field.get(field.getName()).toString());
       }
     }
     declaredFields = CarbonLoadOptionConstants.class.getDeclaredFields();
     for (Field field : declaredFields) {
-      if (field.isAnnotationPresent(DynamicConfigurable.class)) {
+      if (field.isAnnotationPresent(DynamicConfigurable.class)
+          || field.isAnnotationPresent(NonDynamicConfigurable.class)) {
         propertySet.add(field.get(field.getName()).toString());
       }
     }
