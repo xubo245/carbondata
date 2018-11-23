@@ -21,14 +21,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.*;
 
 import org.apache.carbondata.common.annotations.InterfaceAudience;
 import org.apache.carbondata.common.annotations.InterfaceStability;
 import org.apache.carbondata.core.constants.CarbonCommonConstants;
 import org.apache.carbondata.core.util.CarbonProperties;
-import org.apache.carbondata.core.util.CarbonTaskInfo;
-import org.apache.carbondata.core.util.CarbonUtil;
-import org.apache.carbondata.core.util.ThreadLocalTaskInfo;
 import org.apache.carbondata.hadoop.CarbonRecordReader;
 import org.apache.carbondata.hadoop.util.CarbonVectorizedRecordReader;
 
@@ -66,9 +64,6 @@ public class CarbonReader<T> {
     this.readers = readers;
     this.index = 0;
     this.currentReader = readers.get(0);
-    CarbonTaskInfo carbonTaskInfo = new CarbonTaskInfo();
-    carbonTaskInfo.setTaskId(CarbonUtil.generateUUID());
-    ThreadLocalTaskInfo.setCarbonTaskInfo(carbonTaskInfo);
   }
 
   /**
@@ -98,6 +93,44 @@ public class CarbonReader<T> {
   public T readNextRow() throws IOException, InterruptedException {
     validateReader();
     return currentReader.getCurrentValue();
+  }
+
+  /**
+   * alpha interface for read data parallel.
+   *
+   * @param numOfThreads number of threads parallel
+   * @return rows of data
+   * @throws InterruptedException
+   */
+  @InterfaceStability.Unstable
+  public Object[] readAllParallel(short numOfThreads) throws InterruptedException {
+    ExecutorService executorService = Executors.newFixedThreadPool(numOfThreads);
+    ArrayList<Object[]> rows = new ArrayList<Object[]>();
+    try {
+      CarbonReader[] multipleReaders = split(numOfThreads);
+      try {
+        List<ParallelReadLogic> tasks = new ArrayList<>();
+        List<Future<ArrayList<Object[]>>> results;
+
+        for (CarbonReader reader_i : multipleReaders) {
+          tasks.add(new ParallelReadLogic(reader_i));
+        }
+        results = executorService.invokeAll(tasks);
+        for (Future result_i : results) {
+          rows.addAll((ArrayList<Object[]>) result_i.get());
+        }
+      } catch (Exception e) {
+        e.printStackTrace();
+        throw new RuntimeException("run");
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new RuntimeException("run");
+    } finally {
+      executorService.shutdown();
+      executorService.awaitTermination(10, TimeUnit.MINUTES);
+    }
+    return rows.toArray();
   }
 
   /**
@@ -177,7 +210,7 @@ public class CarbonReader<T> {
    * @param maxSplits: Int
    * @return list of {@link CarbonReader} objects
    */
-  public List<CarbonReader> split(int maxSplits) throws IOException {
+  public CarbonReader[] split(int maxSplits) throws IOException {
     validateReader();
     if (maxSplits < 1) {
       throw new RuntimeException(
@@ -209,7 +242,7 @@ public class CarbonReader<T> {
     // over the files and forces user to only use the returned splits
     this.initialise = false;
 
-    return carbonReaders;
+    return carbonReaders.toArray(new CarbonReader[carbonReaders.size()]);
   }
 
   /**
@@ -233,6 +266,30 @@ public class CarbonReader<T> {
     if (!this.initialise) {
       throw new RuntimeException(this.getClass().getSimpleName() +
           " not initialise, please create it first.");
+    }
+  }
+
+  class ParallelReadLogic implements Callable<ArrayList<Object[]>> {
+    CarbonReader reader;
+
+    ParallelReadLogic(CarbonReader reader) {
+      this.reader = reader;
+    }
+
+    @Override
+    public ArrayList<Object[]> call() throws IOException {
+      ArrayList<Object[]> rows = new ArrayList<Object[]>();
+      try {
+        while (reader.hasNext()) {
+          rows.add((Object[]) reader.readNextRow());
+        }
+      } catch (Exception e) {
+        e.printStackTrace();
+        throw new RuntimeException("");
+      } finally {
+        reader.close();
+      }
+      return rows;
     }
   }
 }

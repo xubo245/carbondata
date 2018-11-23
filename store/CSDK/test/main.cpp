@@ -21,14 +21,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/time.h>
+#include <thread>
 #include <unistd.h>
-#include <sys/time.h>
+#include "../src/CarbonProperties.h"
 #include "../src/CarbonReader.h"
 #include "../src/CarbonRow.h"
-#include "../src/CarbonWriter.h"
 #include "../src/CarbonSchemaReader.h"
+#include "../src/CarbonWriter.h"
 #include "../src/Schema.h"
-#include "../src/CarbonProperties.h"
 
 using namespace std;
 
@@ -665,6 +665,60 @@ bool readFromS3(JNIEnv *env, char *path, char *argv[]) {
     printResult(env, reader);
 }
 
+void readTask(CarbonReader carbonReader){
+    printf("%s","readTask");
+    CarbonRow carbonRow(carbonReader.jniEnv);
+    int i=0;
+
+    while (carbonReader.hasNext()) {
+        jobject row = carbonReader.readNextRow();
+        i++;
+        carbonRow.setCarbonRow(row);
+        printf("%s\t%d\t%ld\t", carbonRow.getString(0), carbonRow.getInt(1), carbonRow.getLong(2));
+        jobjectArray array1 = carbonRow.getArray(3);
+        jsize length = carbonReader.jniEnv->GetArrayLength(array1);
+        int j = 0;
+        for (j = 0; j < length; j++) {
+            jobject element = carbonReader.jniEnv->GetObjectArrayElement(array1, j);
+            char *str = (char *) carbonReader.jniEnv->GetStringUTFChars((jstring) element, JNI_FALSE);
+            printf("%s\t", str);
+        }
+        printf("%d\t", carbonRow.getShort(4));
+        printf("%d\t", carbonRow.getInt(5));
+        printf("%ld\t", carbonRow.getLong(6));
+        printf("%lf\t", carbonRow.getDouble(7));
+        bool bool1 = carbonRow.getBoolean(8);
+        if (bool1) {
+            printf("true\t");
+        } else {
+            printf("false\t");
+        }
+        printf("%f\t\n", carbonRow.getFloat(9));
+        carbonReader.jniEnv->DeleteLocalRef(row);
+    }
+    carbonReader.close();
+}
+
+void readParallel(JNIEnv *env, char *path) {
+    try {
+        CarbonReader carbonReader;
+        carbonReader.builder(env, path);
+        carbonReader.build();
+
+        jobjectArray carbonReaders = carbonReader.split(4);
+        jsize length = env->GetArrayLength(carbonReaders);
+        for (int i = 0; i < 1; ++i) {
+            jobject jobject1 = env->GetObjectArrayElement(carbonReaders, i);
+            CarbonReader reader(env, jobject1);
+            thread thread1(readTask, reader);
+            thread1.join();
+        }
+    } catch (jthrowable ex) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+    }
+}
+
 /**
  * This a example for C++ interface to read carbon file
  * If you want to test read data fromS3, please input the parameter: ak sk endpoint
@@ -694,26 +748,62 @@ int main(int argc, char *argv[]) {
         testReadNextBatchRow(env, S3Path, 100000, 100000, argv, 4, false);
         testReadNextBatchRow(env, S3Path, 100000, 100000, argv, 4, true);
     } else {
-        tryCatchException(env);
-        tryCarbonRowException(env, smallFilePath);
-        testCarbonProperties(env);
-        testWriteData(env, "./data", 1, argv);
-        testWriteData(env, "./data", 1, argv);
-        readFromLocalWithoutProjection(env, smallFilePath);
-        readFromLocalWithProjection(env, smallFilePath);
-        readSchema(env, path, false);
-        readSchema(env, path, true);
+//        tryCatchException(env);
+//        tryCarbonRowException(env, smallFilePath);
 
-        int batch = 32000;
-        int printNum = 32000;
-        testReadNextRow(env, path, printNum, argv, 0, true);
-        testReadNextRow(env, path, printNum, argv, 0, false);
-        testReadNextBatchRow(env, path, batch, printNum, argv, 0, true);
-        testReadNextBatchRow(env, path, batch, printNum, argv, 0, false);
+        char *writePath = "./data";
+        readParallel(env, writePath);
+//        testWriteData(env, writePath, 1, argv);
+//        testWriteData(env, writePath, 1, argv);
+//        testCarbonProperties(env);
+//        readFromLocalWithoutProjection(env, smallFilePath);
+//        readFromLocalWithProjection(env, smallFilePath);
+//        readSchema(env, path, false);
+//        readSchema(env, path, true);
+//
+//        int batch = 32000;
+//        int printNum = 32000;
+//        testReadNextRow(env, path, printNum, argv, 0, true);
+//        testReadNextRow(env, path, printNum, argv, 0, false);
+//        testReadNextBatchRow(env, path, batch, printNum, argv, 0, true);
+//        testReadNextBatchRow(env, path, batch, printNum, argv, 0, false);
     }
     (jvm)->DestroyJavaVM();
 
     cout << "\nfinish destroy jvm";
     return 0;
 }
+
+//#include <iostream>
+//#include <thread>
+//
+//using namespace std;
+//
+//void task_one() {
+//    for (int i = 0; i < 10; i++) {
+//        cout << "\ntask_one:"<<this_thread::get_id() << '\t' << i << endl;
+//        this_thread::sleep_for(chrono::milliseconds(5));    // 休眠5ms
+//    }
+//}
+//
+//void task_two(int n, string name) {
+//    for (int i = 0; i < n; i++) {
+//        cout << "\n" << name << ":" << this_thread::get_id() << '\t' << i << endl;
+//        this_thread::sleep_for(chrono::milliseconds(10));   //休眠10ms
+//    }
+//}
+//
+//int main() {
+//    int n = 20;
+//
+//    thread t1(task_one);
+//    thread t2(task_two, n,"task_two");
+//
+//    t1.join();
+//    t2.join();
+//
+//    return 0;
+//}
+
+
 
