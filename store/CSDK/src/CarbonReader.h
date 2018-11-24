@@ -70,6 +70,7 @@ private:
      * @return true or throw exception
      */
     bool checkReader();
+
 public:
 
     /**
@@ -79,6 +80,11 @@ public:
 
     CarbonReader();
 
+    /**
+     * support create carbonReader object with carbonReader jobject
+     * @param env JNIEnv
+     * @param carbonReader  carbonReader jobject
+     */
     CarbonReader(JNIEnv *env, jobject carbonReader);
 
     /**

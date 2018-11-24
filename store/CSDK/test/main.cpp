@@ -665,7 +665,7 @@ bool readFromS3(JNIEnv *env, char *path, char *argv[]) {
     printResult(env, reader);
 }
 
-void readTask(jobject row, JavaVM *jvm2) {
+void readTask(jobject reader, JavaVM *jvm2) {
     printf("%s\n", "start read task in sub-thread:");
 
     JNIEnv *env(NULL);
@@ -673,7 +673,7 @@ void readTask(jobject row, JavaVM *jvm2) {
         jvm2->AttachCurrentThread((void **) &env, NULL);
     }
 
-    CarbonReader carbonReader(env, row);
+    CarbonReader carbonReader(env, reader);
     CarbonRow carbonRow(env);
     try {
         int i = 0;
@@ -723,8 +723,8 @@ void readParallel(JNIEnv *env, char *path) {
         jobjectArray carbonReaders = carbonReader.split(4);
         jsize length = env->GetArrayLength(carbonReaders);
         for (int i = 0; i < length; ++i) {
-            jobject row = env->GetObjectArrayElement(carbonReaders, i);
-            thread thread1(&readTask, row, jvm);
+            jobject carbonReader = env->GetObjectArrayElement(carbonReaders, i);
+            thread thread1(&readTask, carbonReader, jvm);
             thread1.detach();
         }
     } catch (jthrowable ex) {
