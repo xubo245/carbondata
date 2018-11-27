@@ -540,6 +540,39 @@
               </sourceDirectories>
             </configuration>
           </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+              <excludes>
+                <exclude>src/main/spark2.2</exclude>
+                <exclude>src/main/spark2.3</exclude>
+                <exclude>src/main/commonTo2.2And2.3</exclude>
+                <exclude>src/main/spark2.3plus</exclude>
+              </excludes>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>build-helper-maven-plugin</artifactId>
+            <version>3.0.0</version>
+            <executions>
+              <execution>
+                <id>add-source</id>
+                <phase>generate-sources</phase>
+                <goals>
+                  <goal>add-source</goal>
+                </goals>
+                <configuration>
+                  <sources>
+                    <source>src/main/spark2.1</source>
+                    <source>src/main/commonTo2.1And2.2</source>
+                    <source>src/main/spark2.1andspark2.2</source>
+                  </sources>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
         </plugins>
       </build>
     </profile>
@@ -601,6 +634,39 @@
               </sourceDirectories>
             </configuration>
           </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+              <excludes>
+                <exclude>src/main/spark2.1</exclude>
+                <exclude>src/main/spark2.3</exclude>
+                <exclude>src/main/spark2.3plus</exclude>
+              </excludes>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>build-helper-maven-plugin</artifactId>
+            <version>3.0.0</version>
+            <executions>
+              <execution>
+                <id>add-source</id>
+                <phase>generate-sources</phase>
+                <goals>
+                  <goal>add-source</goal>
+                </goals>
+                <configuration>
+                  <sources>
+                    <source>src/main/spark2.2</source>
+                    <source>src/main/commonTo2.2And2.3</source>
+                    <source>src/main/commonTo2.1And2.2</source>
+                    <source>src/main/spark2.1andspark2.2</source>
+                  </sources>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
         </plugins>
       </build>
     </profile>
@@ -657,6 +723,39 @@
                 <sourceDirectory>${basedir}/datamap/lucene/src/main/java</sourceDirectory>
               </sourceDirectories>
             </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+              <excludes>
+                <exclude>src/main/spark2.1</exclude>
+                <exclude>src/main/spark2.2</exclude>
+                <exclude>src/main/commonTo2.1And2.2</exclude>
+                <exclude>src/main/spark2.1andspark2.2</exclude>
+              </excludes>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>build-helper-maven-plugin</artifactId>
+            <version>3.0.0</version>
+            <executions>
+              <execution>
+                <id>add-source</id>
+                <phase>generate-sources</phase>
+                <goals>
+                  <goal>add-source</goal>
+                </goals>
+                <configuration>
+                  <sources>
+                    <source>src/main/spark2.3</source>
+                    <source>src/main/commonTo2.2And2.3</source>
+                    <source>src/main/spark2.3plus</source>
+                  </sources>
+                </configuration>
+              </execution>
+            </executions>
           </plugin>
         </plugins>
       </build>
