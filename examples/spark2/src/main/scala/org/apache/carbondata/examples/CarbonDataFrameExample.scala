@@ -58,12 +58,13 @@ object CarbonDataFrameExample {
     // Reads carbondata to dataframe
     val carbondf = spark.read
       .format("carbondata")
-      .schema(customSchema)
+//      .schema(customSchema)
       // .option("dbname", "db_name") the system will use "default" as dbname if not set this option
       .option("tableName", "carbon_df_table")
       .load()
 
     // Dataframe operations
+    println("testscahem\n")
     carbondf.printSchema()
     carbondf.select($"c1", $"number" + 10).show()
     carbondf.filter($"number" > 31).show()

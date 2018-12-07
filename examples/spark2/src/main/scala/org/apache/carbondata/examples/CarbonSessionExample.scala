@@ -135,6 +135,6 @@ object CarbonSessionExample {
        """.stripMargin).show()
 
     // Drop table
-    spark.sql("DROP TABLE IF EXISTS source")
+//    spark.sql("DROP TABLE IF EXISTS source")
   }
 }
