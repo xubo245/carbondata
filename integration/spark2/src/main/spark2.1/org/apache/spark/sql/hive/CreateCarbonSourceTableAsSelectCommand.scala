@@ -143,7 +143,7 @@ case class CreateCarbonSourceTableAsSelectCommand(
       catalogTable = Some(table))
 
     val result = try {
-      dataSource.write(mode, df)
+      dataSource.writeAndRead(mode, df)
     } catch {
       case ex: AnalysisException =>
         logError(s"Failed to write to table $tableName in $mode mode", ex)
