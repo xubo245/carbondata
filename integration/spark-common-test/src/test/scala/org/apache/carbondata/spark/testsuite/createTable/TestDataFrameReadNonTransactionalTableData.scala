@@ -57,9 +57,9 @@ import org.apache.carbondata.sdk.file._
 class TestDataFrameReadNonTransactionalTableData extends QueryTest with BeforeAndAfterAll {
 
   var writerPath = new File(this.getClass.getResource("/").getPath
-                            +
-                            "../." +
-                            "./target/SparkCarbonFileFormat/WriterOutput/")
+    +
+    "../." +
+    "./target/SparkCarbonFileFormat/WriterOutput/")
     .getCanonicalPath
   //getCanonicalPath gives path with \, but the code expects /.
   writerPath = writerPath.replace("\\", "/")
@@ -119,8 +119,8 @@ class TestDataFrameReadNonTransactionalTableData extends QueryTest with BeforeAn
 
   // prepare sdk writer output
   def buildTestData(rows: Int,
-      options: util.Map[String, String],
-      sortColumns: List[String]): Any = {
+                    options: util.Map[String, String],
+                    sortColumns: List[String]): Any = {
     val schema = new StringBuilder()
       .append("[ \n")
       .append("   {\"NaMe\":\"string\"},\n")
@@ -149,7 +149,7 @@ class TestDataFrameReadNonTransactionalTableData extends QueryTest with BeforeAn
       while (i < rows) {
         if ((options != null) && (i < 3)) {
           // writing a bad record
-          writer.write(Array[String]( "robot" + i, String.valueOf(i.toDouble / 2), "robot"))
+          writer.write(Array[String]("robot" + i, String.valueOf(i.toDouble / 2), "robot"))
         } else {
           writer.write(Array[String]("robot" + i, String.valueOf(i), String.valueOf(i.toDouble / 2)))
         }
@@ -192,8 +192,8 @@ class TestDataFrameReadNonTransactionalTableData extends QueryTest with BeforeAn
 
   // prepare sdk writer output
   def buildTestDataWithSameUUID(rows: Int,
-      options: util.Map[String, String],
-      sortColumns: List[String]): Any = {
+                                options: util.Map[String, String],
+                                sortColumns: List[String]): Any = {
     val schema = new StringBuilder()
       .append("[ \n")
       .append("   {\"name\":\"string\"},\n")
@@ -252,11 +252,12 @@ class TestDataFrameReadNonTransactionalTableData extends QueryTest with BeforeAn
   }
 
   test("test create external table with sort columns") {
-    buildTestDataWithSortColumns(List("age","name"))
+    buildTestDataWithSortColumns(List("age", "name"))
     assert(new File(writerPath).exists())
 
-    val df = sqlContext.read.format("carbon").load(writerPath)
-        df.show()
+    val path2 = "/Users/xubo/Desktop/xubo/git/carbondata2/examples/spark2/target/store/default"
+    val df = sqlContext.read.format("carbon").load(path2)
+    df.show()
 
     df.write
       .format("carbondata")
@@ -268,7 +269,7 @@ class TestDataFrameReadNonTransactionalTableData extends QueryTest with BeforeAn
     //    cleanTestData()
   }
   test("test create external table with sort columns2") {
-    buildTestDataWithSortColumns(List("age","name"))
+    buildTestDataWithSortColumns(List("age", "name"))
     assert(new File(writerPath).exists())
 
     val df = sqlContext
@@ -279,41 +280,44 @@ class TestDataFrameReadNonTransactionalTableData extends QueryTest with BeforeAn
 
     df.write
       .format("carbondata")
-      .option("tableName","test")
+      .option("tableName", "test")
       .mode(SaveMode.Overwrite)
-      .save(writerPath+"test3")
-    println(writerPath+"test3")
+      .save(writerPath + "test3")
+    println(writerPath + "test3")
 
     //    cleanTestData()
   }
 
   test("test create external table with sort columns3") {
-    buildTestDataWithSortColumns(List("age","name"))
+    buildTestDataWithSortColumns(List("age", "name"))
     assert(new File(writerPath).exists())
 
+    val path2 = "/Users/xubo/Desktop/xubo/git/carbondata2/examples/spark2/target/store/default/source"
     val df = sqlContext
       .read
-      .format("carbondata")
-      .option("tableName", "test")
-      .load("/Users/xubo/Desktop/xubo/git/carbondata1/examples/spark2/target/store/default/source")
+      .format("carbon")
+      .load(path2)
     df.show()
 
-    df.write
-      .format("carbondata")
-      .option("tableName","test")
-      .mode(SaveMode.Overwrite)
-      .save(writerPath+"test")
-
-    //    cleanTestData()
+    println(path2)
   }
 
 
+  test("test create external table with sort columns4") {
+
+    sql("drop table if exists testUsingCarbon")
+    val path2 = "/Users/xubo/Desktop/xubo/git/carbondata2/examples/spark2/target/store/default/source/Fact/Part0/Segment_0/"
+    sql(s"""create table testUsingCarbon using carbon options(path '$path2')""")
+    sql("select * from testUsingCarbon").show()
+
+    println(path2)  
+  }
 
 
   // --------------------------------------------- AVRO test cases ---------------------------
   def WriteFilesWithAvroWriter(rows: Int,
-      mySchema: String,
-      json: String) = {
+                               mySchema: String,
+                               json: String) = {
     // conversion to GenericData.Record
     val nn = new avro.Schema.Parser().parse(mySchema)
     val record = testUtil.jsonToAvro(json, mySchema)
@@ -368,31 +372,32 @@ class TestDataFrameReadNonTransactionalTableData extends QueryTest with BeforeAn
   def buildAvroTestDataArrayType(rows: Int, options: util.Map[String, String]): Any = {
     FileUtils.deleteDirectory(new File(writerPath))
 
-    val mySchema = """ {
-                     |      "name": "address",
-                     |      "type": "record",
-                     |      "fields": [
-                     |      {
-                     |      "name": "name",
-                     |      "type": "string"
-                     |      },
-                     |      {
-                     |      "name": "age",
-                     |      "type": "int"
-                     |      },
-                     |      {
-                     |      "name": "address",
-                     |      "type": {
-                     |      "type": "array",
-                     |      "items": {
-                     |      "name": "street",
-                     |      "type": "string"
-                     |      }
-                     |      }
-                     |      }
-                     |      ]
-                     |  }
-                   """.stripMargin
+    val mySchema =
+      """ {
+        |      "name": "address",
+        |      "type": "record",
+        |      "fields": [
+        |      {
+        |      "name": "name",
+        |      "type": "string"
+        |      },
+        |      {
+        |      "name": "age",
+        |      "type": "int"
+        |      },
+        |      {
+        |      "name": "address",
+        |      "type": {
+        |      "type": "array",
+        |      "items": {
+        |      "name": "street",
+        |      "type": "string"
+        |      }
+        |      }
+        |      }
+        |      ]
+        |  }
+      """.stripMargin
 
     val json: String = """ {"name": "bob","age": 10,"address": ["abc", "defg"]} """
 
@@ -408,7 +413,8 @@ class TestDataFrameReadNonTransactionalTableData extends QueryTest with BeforeAn
   def buildAvroTestDataStructWithArrayType(rows: Int, options: util.Map[String, String]): Any = {
     FileUtils.deleteDirectory(new File(writerPath))
 
-    val mySchema = """
+    val mySchema =
+      """
                      {
                      |     "name": "address",
                      |     "type": "record",
@@ -454,40 +460,41 @@ class TestDataFrameReadNonTransactionalTableData extends QueryTest with BeforeAn
   def buildAvroTestDataArrayOfStruct(rows: Int, options: util.Map[String, String]): Any = {
     FileUtils.deleteDirectory(new File(writerPath))
 
-    val mySchema = """ {
-                     |	"name": "address",
-                     |	"type": "record",
-                     |	"fields": [
-                     |		{
-                     |			"name": "name",
-                     |			"type": "string"
-                     |		},
-                     |		{
-                     |			"name": "age",
-                     |			"type": "int"
-                     |		},
-                     |		{
-                     |			"name": "doorNum",
-                     |			"type": {
-                     |				"type": "array",
-                     |				"items": {
-                     |					"type": "record",
-                     |					"name": "my_address",
-                     |					"fields": [
-                     |						{
-                     |							"name": "street",
-                     |							"type": "string"
-                     |						},
-                     |						{
-                     |							"name": "city",
-                     |							"type": "string"
-                     |						}
-                     |					]
-                     |				}
-                     |			}
-                     |		}
-                     |	]
-                     |} """.stripMargin
+    val mySchema =
+      """ {
+        |	"name": "address",
+        |	"type": "record",
+        |	"fields": [
+        |		{
+        |			"name": "name",
+        |			"type": "string"
+        |		},
+        |		{
+        |			"name": "age",
+        |			"type": "int"
+        |		},
+        |		{
+        |			"name": "doorNum",
+        |			"type": {
+        |				"type": "array",
+        |				"items": {
+        |					"type": "record",
+        |					"name": "my_address",
+        |					"fields": [
+        |						{
+        |							"name": "street",
+        |							"type": "string"
+        |						},
+        |						{
+        |							"name": "city",
+        |							"type": "string"
+        |						}
+        |					]
+        |				}
+        |			}
+        |		}
+        |	]
+        |} """.stripMargin
     val json =
       """ {"name":"bob","age":10,"doorNum" :
         |[{"street":"abc","city":"city1"},
@@ -508,63 +515,65 @@ class TestDataFrameReadNonTransactionalTableData extends QueryTest with BeforeAn
   def buildAvroTestDataStructOfArray(rows: Int, options: util.Map[String, String]): Any = {
     FileUtils.deleteDirectory(new File(writerPath))
 
-    val mySchema = """ {
-                     |	"name": "address",
-                     |	"type": "record",
-                     |	"fields": [
-                     |		{
-                     |			"name": "name",
-                     |			"type": "string"
-                     |		},
-                     |		{
-                     |			"name": "age",
-                     |			"type": "int"
-                     |		},
-                     |		{
-                     |			"name": "address",
-                     |			"type": {
-                     |				"type": "record",
-                     |				"name": "my_address",
-                     |				"fields": [
-                     |					{
-                     |						"name": "street",
-                     |						"type": "string"
-                     |					},
-                     |					{
-                     |						"name": "city",
-                     |						"type": "string"
-                     |					},
-                     |					{
-                     |						"name": "doorNum",
-                     |						"type": {
-                     |							"type": "array",
-                     |							"items": {
-                     |								"name": "EachdoorNums",
-                     |								"type": "int",
-                     |								"default": -1
-                     |							}
-                     |						}
-                     |					}
-                     |				]
-                     |			}
-                     |		}
-                     |	]
-                     |} """.stripMargin
+    val mySchema =
+      """ {
+        |	"name": "address",
+        |	"type": "record",
+        |	"fields": [
+        |		{
+        |			"name": "name",
+        |			"type": "string"
+        |		},
+        |		{
+        |			"name": "age",
+        |			"type": "int"
+        |		},
+        |		{
+        |			"name": "address",
+        |			"type": {
+        |				"type": "record",
+        |				"name": "my_address",
+        |				"fields": [
+        |					{
+        |						"name": "street",
+        |						"type": "string"
+        |					},
+        |					{
+        |						"name": "city",
+        |						"type": "string"
+        |					},
+        |					{
+        |						"name": "doorNum",
+        |						"type": {
+        |							"type": "array",
+        |							"items": {
+        |								"name": "EachdoorNums",
+        |								"type": "int",
+        |								"default": -1
+        |							}
+        |						}
+        |					}
+        |				]
+        |			}
+        |		}
+        |	]
+        |} """.stripMargin
 
-    val json = """ {
-                 |	"name": "bob",
-                 |	"age": 10,
-                 |	"address": {
-                 |		"street": "abc",
-                 |		"city": "bang",
-                 |		"doorNum": [
-                 |			1,
-                 |			2,
-                 |			3,
-                 |			4
-                 |		]
-                 |	}
-                 |} """.stripMargin
+    val json =
+      """ {
+        |	"name": "bob",
+        |	"age": 10,
+        |	"address": {
+        |		"street": "abc",
+        |		"city": "bang",
+        |		"doorNum": [
+        |			1,
+        |			2,
+        |			3,
+        |			4
+        |		]
+        |	}
+        |} """.stripMargin
 
     WriteFilesWithAvroWriter(rows, mySchema, json)
   }
@@ -578,40 +587,41 @@ class TestDataFrameReadNonTransactionalTableData extends QueryTest with BeforeAn
   def buildAvroTestDataArrayOfStructWithNoSortCol(rows: Int, options: util.Map[String, String]): Any = {
     FileUtils.deleteDirectory(new File(writerPath))
 
-    val mySchema = """ {
-                     |	"name": "address",
-                     |	"type": "record",
-                     |	"fields": [
-                     |		{
-                     |			"name": "exp",
-                     |			"type": "int"
-                     |		},
-                     |		{
-                     |			"name": "age",
-                     |			"type": "int"
-                     |		},
-                     |		{
-                     |			"name": "doorNum",
-                     |			"type": {
-                     |				"type": "array",
-                     |				"items": {
-                     |					"type": "record",
-                     |					"name": "my_address",
-                     |					"fields": [
-                     |						{
-                     |							"name": "street",
-                     |							"type": "string"
-                     |						},
-                     |						{
-                     |							"name": "city",
-                     |							"type": "string"
-                     |						}
-                     |					]
-                     |				}
-                     |			}
-                     |		}
-                     |	]
-                     |} """.stripMargin
+    val mySchema =
+      """ {
+        |	"name": "address",
+        |	"type": "record",
+        |	"fields": [
+        |		{
+        |			"name": "exp",
+        |			"type": "int"
+        |		},
+        |		{
+        |			"name": "age",
+        |			"type": "int"
+        |		},
+        |		{
+        |			"name": "doorNum",
+        |			"type": {
+        |				"type": "array",
+        |				"items": {
+        |					"type": "record",
+        |					"name": "my_address",
+        |					"fields": [
+        |						{
+        |							"name": "street",
+        |							"type": "string"
+        |						},
+        |						{
+        |							"name": "city",
+        |							"type": "string"
+        |						}
+        |					]
+        |				}
+        |			}
+        |		}
+        |	]
+        |} """.stripMargin
     val json =
       """ {"exp":5,"age":10,"doorNum" :
         |[{"street":"abc","city":"city1"},
@@ -623,7 +633,7 @@ class TestDataFrameReadNonTransactionalTableData extends QueryTest with BeforeAn
   }
 
   test("Read sdk writer Avro output Record Type with no sort columns") {
-    buildAvroTestDataArrayOfStructWithNoSortCol(3,null)
+    buildAvroTestDataArrayOfStructWithNoSortCol(3, null)
     assert(new File(writerPath).exists())
     sql("DROP TABLE IF EXISTS sdkOutputTable")
     sql(
@@ -656,9 +666,9 @@ class TestDataFrameReadNonTransactionalTableData extends QueryTest with BeforeAn
          |'$writerPath' """.stripMargin)
 
     checkAnswer(sql("select * from sdkOutputTable"), Seq(
-      Row("bob", 10.24f, Row("abc","bang")),
-      Row("bob", 10.24f, Row("abc","bang")),
-      Row("bob", 10.24f, Row("abc","bang"))))
+      Row("bob", 10.24f, Row("abc", "bang")),
+      Row("bob", 10.24f, Row("abc", "bang")),
+      Row("bob", 10.24f, Row("abc", "bang"))))
 
     sql("DROP TABLE sdkOutputTable")
     // drop table should not delete the files
@@ -673,7 +683,7 @@ class TestDataFrameReadNonTransactionalTableData extends QueryTest with BeforeAn
       s"""CREATE EXTERNAL TABLE sdkOutputTable STORED BY 'carbondata' LOCATION
          |'$writerPath' """.stripMargin)
 
-    sql("select * from sdkOutputTable").show(200,false)
+    sql("select * from sdkOutputTable").show(200, false)
 
     checkAnswer(sql("select * from sdkOutputTable"), Seq(
       Row("bob", 10, new mutable.WrappedArray.ofRef[String](Array("abc", "defg"))),
@@ -690,29 +700,30 @@ class TestDataFrameReadNonTransactionalTableData extends QueryTest with BeforeAn
   def buildAvroTestDataArrayDefaultType(rows: Int, options: util.Map[String, String]): Any = {
     FileUtils.deleteDirectory(new File(writerPath))
 
-    val mySchema = """ {
-                     |      "name": "address",
-                     |      "type": "record",
-                     |      "fields": [
-                     |      {
-                     |      "name": "name",
-                     |      "type": "string"
-                     |      },
-                     |      {
-                     |      "name": "age",
-                     |      "type": "int"
-                     |      },
-                     |      {
-                     |      "name": "address",
-                     |      "type": {
-                     |      "type": "array",
-                     |      "items": "string"
-                     |      },
-                     |      "default": ["sc","ab"]
-                     |      }
-                     |      ]
-                     |  }
-                   """.stripMargin
+    val mySchema =
+      """ {
+        |      "name": "address",
+        |      "type": "record",
+        |      "fields": [
+        |      {
+        |      "name": "name",
+        |      "type": "string"
+        |      },
+        |      {
+        |      "name": "age",
+        |      "type": "int"
+        |      },
+        |      {
+        |      "name": "address",
+        |      "type": {
+        |      "type": "array",
+        |      "items": "string"
+        |      },
+        |      "default": ["sc","ab"]
+        |      }
+        |      ]
+        |  }
+      """.stripMargin
 
     // skip giving array value to take default values
     val json: String = "{\"name\": \"bob\",\"age\": 10}"
@@ -771,9 +782,9 @@ class TestDataFrameReadNonTransactionalTableData extends QueryTest with BeforeAn
     * */
 
     checkAnswer(sql("select * from sdkOutputTable"), Seq(
-      Row("bob", 10, Row("abc","bang"), mutable.WrappedArray.newBuilder[Int].+=(1,2,3,4)),
-      Row("bob", 10, Row("abc","bang"), mutable.WrappedArray.newBuilder[Int].+=(1,2,3,4)),
-      Row("bob", 10, Row("abc","bang"), mutable.WrappedArray.newBuilder[Int].+=(1,2,3,4))))
+      Row("bob", 10, Row("abc", "bang"), mutable.WrappedArray.newBuilder[Int].+=(1, 2, 3, 4)),
+      Row("bob", 10, Row("abc", "bang"), mutable.WrappedArray.newBuilder[Int].+=(1, 2, 3, 4)),
+      Row("bob", 10, Row("abc", "bang"), mutable.WrappedArray.newBuilder[Int].+=(1, 2, 3, 4))))
     sql("DROP TABLE sdkOutputTable")
     // drop table should not delete the files
     cleanTestData()
@@ -842,50 +853,51 @@ class TestDataFrameReadNonTransactionalTableData extends QueryTest with BeforeAn
   def buildAvroTestDataMultiLevel3(rows: Int, options: util.Map[String, String]): Any = {
     FileUtils.deleteDirectory(new File(writerPath))
 
-    val mySchema = """ {
-                     |	"name": "address",
-                     |	"type": "record",
-                     |	"fields": [
-                     |		{
-                     |			"name": "name",
-                     |			"type": "string"
-                     |		},
-                     |		{
-                     |			"name": "age",
-                     |			"type": "int"
-                     |		},
-                     |		{
-                     |			"name": "doorNum",
-                     |			"type": {
-                     |				"type": "array",
-                     |				"items": {
-                     |					"type": "record",
-                     |					"name": "my_address",
-                     |					"fields": [
-                     |						{
-                     |							"name": "street",
-                     |							"type": "string"
-                     |						},
-                     |						{
-                     |							"name": "city",
-                     |							"type": "string"
-                     |						},
-                     |						{
-                     |							"name": "FloorNum",
-                     |							"type": {
-                     |								"type": "array",
-                     |								"items": {
-                     |									"name": "floor",
-                     |									"type": "int"
-                     |								}
-                     |							}
-                     |						}
-                     |					]
-                     |				}
-                     |			}
-                     |		}
-                     |	]
-                     |} """.stripMargin
+    val mySchema =
+      """ {
+        |	"name": "address",
+        |	"type": "record",
+        |	"fields": [
+        |		{
+        |			"name": "name",
+        |			"type": "string"
+        |		},
+        |		{
+        |			"name": "age",
+        |			"type": "int"
+        |		},
+        |		{
+        |			"name": "doorNum",
+        |			"type": {
+        |				"type": "array",
+        |				"items": {
+        |					"type": "record",
+        |					"name": "my_address",
+        |					"fields": [
+        |						{
+        |							"name": "street",
+        |							"type": "string"
+        |						},
+        |						{
+        |							"name": "city",
+        |							"type": "string"
+        |						},
+        |						{
+        |							"name": "FloorNum",
+        |							"type": {
+        |								"type": "array",
+        |								"items": {
+        |									"name": "floor",
+        |									"type": "int"
+        |								}
+        |							}
+        |						}
+        |					]
+        |				}
+        |			}
+        |		}
+        |	]
+        |} """.stripMargin
     val json =
       """ {
         |	"name": "bob",
@@ -957,57 +969,58 @@ class TestDataFrameReadNonTransactionalTableData extends QueryTest with BeforeAn
   def buildAvroTestDataMultiLevel3_1(rows: Int, options: util.Map[String, String]): Any = {
     FileUtils.deleteDirectory(new File(writerPath))
 
-    val mySchema = """ {
-                     |	"name": "address",
-                     |	"type": "record",
-                     |	"fields": [
-                     |		{
-                     |			"name": "name",
-                     |			"type": "string"
-                     |		},
-                     |		{
-                     |			"name": "age",
-                     |			"type": "int"
-                     |		},
-                     |		{
-                     |			"name": "doorNum",
-                     |			"type": {
-                     |				"type": "array",
-                     |				"items": {
-                     |					"type": "record",
-                     |					"name": "my_address",
-                     |					"fields": [
-                     |						{
-                     |							"name": "street",
-                     |							"type": "string"
-                     |						},
-                     |						{
-                     |							"name": "city",
-                     |							"type": "string"
-                     |						},
-                     |						{
-                     |							"name": "FloorNum",
-                     |                			"type": {
-                     |                				"type": "record",
-                     |                				"name": "Floor",
-                     |                				"fields": [
-                     |                					{
-                     |                						"name": "wing",
-                     |                						"type": "string"
-                     |                					},
-                     |                					{
-                     |                						"name": "number",
-                     |                						"type": "int"
-                     |                					}
-                     |                				]
-                     |                			}
-                     |						}
-                     |					]
-                     |				}
-                     |			}
-                     |		}
-                     |	]
-                     |} """.stripMargin
+    val mySchema =
+      """ {
+        |	"name": "address",
+        |	"type": "record",
+        |	"fields": [
+        |		{
+        |			"name": "name",
+        |			"type": "string"
+        |		},
+        |		{
+        |			"name": "age",
+        |			"type": "int"
+        |		},
+        |		{
+        |			"name": "doorNum",
+        |			"type": {
+        |				"type": "array",
+        |				"items": {
+        |					"type": "record",
+        |					"name": "my_address",
+        |					"fields": [
+        |						{
+        |							"name": "street",
+        |							"type": "string"
+        |						},
+        |						{
+        |							"name": "city",
+        |							"type": "string"
+        |						},
+        |						{
+        |							"name": "FloorNum",
+        |                			"type": {
+        |                				"type": "record",
+        |                				"name": "Floor",
+        |                				"fields": [
+        |                					{
+        |                						"name": "wing",
+        |                						"type": "string"
+        |                					},
+        |                					{
+        |                						"name": "number",
+        |                						"type": "int"
+        |                					}
+        |                				]
+        |                			}
+        |						}
+        |					]
+        |				}
+        |			}
+        |		}
+        |	]
+        |} """.stripMargin
 
 
     val json =
@@ -1072,40 +1085,41 @@ class TestDataFrameReadNonTransactionalTableData extends QueryTest with BeforeAn
   def buildAvroTestDataMultiLevel3_2(rows: Int, options: util.Map[String, String]): Any = {
     FileUtils.deleteDirectory(new File(writerPath))
 
-    val mySchema = """ {
-                     |	"name": "address",
-                     |	"type": "record",
-                     |	"fields": [
-                     |		{
-                     |			"name": "name",
-                     |			"type": "string"
-                     |		},
-                     |		{
-                     |			"name": "age",
-                     |			"type": "int"
-                     |		},
-                     |		{
-                     |			"name": "BuildNum",
-                     |			"type": {
-                     |				"type": "array",
-                     |				"items": {
-                     |					"name": "FloorNum",
-                     |					"type": "array",
-                     |					"items": {
-                     |						"name": "doorNum",
-                     |						"type": "array",
-                     |						"items": {
-                     |							"name": "EachdoorNums",
-                     |							"type": "int",
-                     |              "logicalType": "date",
-                     |							"default": -1
-                     |						}
-                     |					}
-                     |				}
-                     |			}
-                     |		}
-                     |	]
-                     |} """.stripMargin
+    val mySchema =
+      """ {
+        |	"name": "address",
+        |	"type": "record",
+        |	"fields": [
+        |		{
+        |			"name": "name",
+        |			"type": "string"
+        |		},
+        |		{
+        |			"name": "age",
+        |			"type": "int"
+        |		},
+        |		{
+        |			"name": "BuildNum",
+        |			"type": {
+        |				"type": "array",
+        |				"items": {
+        |					"name": "FloorNum",
+        |					"type": "array",
+        |					"items": {
+        |						"name": "doorNum",
+        |						"type": "array",
+        |						"items": {
+        |							"name": "EachdoorNums",
+        |							"type": "int",
+        |              "logicalType": "date",
+        |							"default": -1
+        |						}
+        |					}
+        |				}
+        |			}
+        |		}
+        |	]
+        |} """.stripMargin
 
     val json =
       """   {
@@ -1151,53 +1165,53 @@ class TestDataFrameReadNonTransactionalTableData extends QueryTest with BeforeAn
   }
 
 
-
   // test multi level -- 4 levels [array of array of array of struct]
   def buildAvroTestDataMultiLevel4(rows: Int, options: util.Map[String, String]): Any = {
     FileUtils.deleteDirectory(new File(writerPath))
 
-    val mySchema =  """ {
-                      |	"name": "address",
-                      |	"type": "record",
-                      |	"fields": [
-                      |		{
-                      |			"name": "name",
-                      |			"type": "string"
-                      |		},
-                      |		{
-                      |			"name": "age",
-                      |			"type": "int"
-                      |		},
-                      |		{
-                      |			"name": "BuildNum",
-                      |			"type": {
-                      |				"type": "array",
-                      |				"items": {
-                      |					"name": "FloorNum",
-                      |					"type": "array",
-                      |					"items": {
-                      |						"name": "doorNum",
-                      |						"type": "array",
-                      |						"items": {
-                      |							"name": "my_address",
-                      |							"type": "record",
-                      |							"fields": [
-                      |								{
-                      |									"name": "street",
-                      |									"type": "string"
-                      |								},
-                      |								{
-                      |									"name": "city",
-                      |									"type": "string"
-                      |								}
-                      |							]
-                      |						}
-                      |					}
-                      |				}
-                      |			}
-                      |		}
-                      |	]
-                      |} """.stripMargin
+    val mySchema =
+      """ {
+        |	"name": "address",
+        |	"type": "record",
+        |	"fields": [
+        |		{
+        |			"name": "name",
+        |			"type": "string"
+        |		},
+        |		{
+        |			"name": "age",
+        |			"type": "int"
+        |		},
+        |		{
+        |			"name": "BuildNum",
+        |			"type": {
+        |				"type": "array",
+        |				"items": {
+        |					"name": "FloorNum",
+        |					"type": "array",
+        |					"items": {
+        |						"name": "doorNum",
+        |						"type": "array",
+        |						"items": {
+        |							"name": "my_address",
+        |							"type": "record",
+        |							"fields": [
+        |								{
+        |									"name": "street",
+        |									"type": "string"
+        |								},
+        |								{
+        |									"name": "city",
+        |									"type": "string"
+        |								}
+        |							]
+        |						}
+        |					}
+        |				}
+        |			}
+        |		}
+        |	]
+        |} """.stripMargin
 
     val json =
       """ {
@@ -1258,8 +1272,7 @@ class TestDataFrameReadNonTransactionalTableData extends QueryTest with BeforeAn
   }
 
   test(
-    "test if exception is thrown when a column which is not in schema is specified in sort columns")
-  {
+    "test if exception is thrown when a column which is not in schema is specified in sort columns") {
     val schema1 =
       """{
         |	"namespace": "com.apache.schema",
@@ -1379,8 +1392,7 @@ class TestDataFrameReadNonTransactionalTableData extends QueryTest with BeforeAn
 
   test(
     "test is dataload is successful if childcolumn has same name as one of the other fields(not " +
-    "complex)")
-  {
+      "complex)") {
     val schema =
       """{
         |	"type": "record",
@@ -1606,7 +1618,7 @@ class TestDataFrameReadNonTransactionalTableData extends QueryTest with BeforeAn
       .uniqueIdentifier(System.currentTimeMillis).taskNo(System.nanoTime).outputPath(writerPath).writtenBy("TestNonTransactionalCarbonTable")
     generateCarbonData(builder)
     assert(FileFactory.getCarbonFile(writerPath).exists())
-    assert(testUtil.checkForLocalDictionary(testUtil.getDimRawChunk(0,writerPath)))
+    assert(testUtil.checkForLocalDictionary(testUtil.getDimRawChunk(0, writerPath)))
     sql("DROP TABLE IF EXISTS sdkTable")
     sql(
       s"""CREATE EXTERNAL TABLE sdkTable STORED BY 'carbondata' LOCATION
@@ -1632,7 +1644,7 @@ class TestDataFrameReadNonTransactionalTableData extends QueryTest with BeforeAn
       .uniqueIdentifier(System.currentTimeMillis).taskNo(System.nanoTime).outputPath(writerPath).writtenBy("TestNonTransactionalCarbonTable")
     generateCarbonData(builder)
     assert(FileFactory.getCarbonFile(writerPath).exists())
-    assert(testUtil.checkForLocalDictionary(testUtil.getDimRawChunk(0,writerPath)))
+    assert(testUtil.checkForLocalDictionary(testUtil.getDimRawChunk(0, writerPath)))
     sql("DROP TABLE IF EXISTS sdkTable")
     sql(
       s"""CREATE EXTERNAL TABLE sdkTable STORED BY 'carbondata' LOCATION
@@ -1651,7 +1663,7 @@ class TestDataFrameReadNonTransactionalTableData extends QueryTest with BeforeAn
       .uniqueIdentifier(System.currentTimeMillis).taskNo(System.nanoTime).outputPath(writerPath).writtenBy("TestNonTransactionalCarbonTable")
     generateCarbonData(builder)
     assert(FileFactory.getCarbonFile(writerPath).exists())
-    assert(!testUtil.checkForLocalDictionary(testUtil.getDimRawChunk(0,writerPath)))
+    assert(!testUtil.checkForLocalDictionary(testUtil.getDimRawChunk(0, writerPath)))
     sql("DROP TABLE IF EXISTS sdkTable")
     sql(
       s"""CREATE EXTERNAL TABLE sdkTable STORED BY 'carbondata' LOCATION
@@ -1669,7 +1681,7 @@ class TestDataFrameReadNonTransactionalTableData extends QueryTest with BeforeAn
       .uniqueIdentifier(System.currentTimeMillis).taskNo(System.nanoTime).outputPath(writerPath).writtenBy("TestNonTransactionalCarbonTable")
     generateCarbonData(builder)
     assert(FileFactory.getCarbonFile(writerPath).exists())
-    assert(testUtil.checkForLocalDictionary(testUtil.getDimRawChunk(0,writerPath)))
+    assert(testUtil.checkForLocalDictionary(testUtil.getDimRawChunk(0, writerPath)))
     sql("DROP TABLE IF EXISTS sdkTable")
     sql(
       s"""CREATE EXTERNAL TABLE sdkTable STORED BY 'carbondata' LOCATION
@@ -1677,7 +1689,7 @@ class TestDataFrameReadNonTransactionalTableData extends QueryTest with BeforeAn
     FileUtils.deleteDirectory(new File(writerPath))
     sql("insert into sdkTable select 's1','s2',23 ")
     assert(FileFactory.getCarbonFile(writerPath).exists())
-    assert(testUtil.checkForLocalDictionary(testUtil.getDimRawChunk(0,writerPath)))
+    assert(testUtil.checkForLocalDictionary(testUtil.getDimRawChunk(0, writerPath)))
     val df = sql("describe formatted sdkTable")
     checkExistence(df, true, "Local Dictionary Enabled true")
     checkAnswer(sql("select count(*) from sdkTable"), Seq(Row(1)))
@@ -1703,7 +1715,7 @@ class TestDataFrameReadNonTransactionalTableData extends QueryTest with BeforeAn
     FileUtils.deleteDirectory(new File(writerPath))
   }
 
-  def generateCarbonData(builder :CarbonWriterBuilder): Unit ={
+  def generateCarbonData(builder: CarbonWriterBuilder): Unit = {
     val fields = new Array[Field](3)
     fields(0) = new Field("name", DataTypes.STRING)
     fields(1) = new Field("surname", DataTypes.STRING)
@@ -1715,7 +1727,9 @@ class TestDataFrameReadNonTransactionalTableData extends QueryTest with BeforeAn
         carbonWriter
           .write(Array[String]("robot" + (i % 10), "robot_surname" + (i % 10), String.valueOf(i)))
       }
-      { i += 1; i - 1 }
+      {
+        i += 1; i - 1
+      }
     }
     carbonWriter.close()
   }

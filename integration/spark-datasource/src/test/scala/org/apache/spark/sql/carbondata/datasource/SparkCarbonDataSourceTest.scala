@@ -905,6 +905,7 @@ class SparkCarbonDataSourceTest extends FunSuite with BeforeAndAfterAll {
               s"string," +
               s"salary long, floatField float, bytefield byte) using carbon options (path='$warehouse1/sdk1')")
     checkAnswer(spark.sql("select * from par_table"), spark.sql("select * from sdkout"))
+    spark.sql("select * from par_table").show()
     checkAnswer(spark.sql("select floatfield from par_table"), spark.sql("select floatfield from sdkout"))
   }
 
