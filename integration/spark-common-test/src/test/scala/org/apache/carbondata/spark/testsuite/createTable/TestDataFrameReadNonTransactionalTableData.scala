@@ -310,7 +310,7 @@ class TestDataFrameReadNonTransactionalTableData extends QueryTest with BeforeAn
     sql(s"""create table testUsingCarbon using carbon options(path '$path2')""")
     sql("select * from testUsingCarbon").show()
 
-    println(path2)  
+    println(path2)
   }
 
 
