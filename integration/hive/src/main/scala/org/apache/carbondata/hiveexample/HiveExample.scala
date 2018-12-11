@@ -90,8 +90,8 @@ object HiveExample {
     statement
       .execute(
         "ALTER TABLE HIVE_CARBON_EXAMPLE SET FILEFORMAT INPUTFORMAT \"org.apache.carbondata." +
-        "hive.MapredCarbonInputFormat\"OUTPUTFORMAT \"org.apache.carbondata.hive." +
-        "MapredCarbonOutputFormat\"SERDE \"org.apache.carbondata.hive." +
+        "hive.MapredCarbonInputFormat\" OUTPUTFORMAT \"org.apache.carbondata.hive." +
+        "MapredCarbonOutputFormat\" SERDE \"org.apache.carbondata.hive." +
         "CarbonHiveSerDe\" ")
 
     statement
@@ -129,7 +129,7 @@ object HiveExample {
       }
       rowsFetched = rowsFetched + 1
     }
-    println(s"******Total Number Of Rows Fetched ****** $rowsFetched")
+    println(s"\n\n\n******Total Number Of Rows Fetched ****** $rowsFetched")
 
     logger.info("Fetching the Individual Columns ")
 
@@ -158,7 +158,7 @@ object HiveExample {
       }
       individualColRowsFetched = individualColRowsFetched + 1
     }
-    println(" ********** Total Rows Fetched When Quering The Individual Column **********" +
+    println(" \n\n\n********** Total Rows Fetched When Quering The Individual Column **********" +
             s"$individualColRowsFetched")
 
     logger.info("Fetching the Out Of Order Columns ")
