@@ -130,7 +130,7 @@ object S3UsingSDKExample {
   }
 
   def getS3EndPoint(args: Array[String]): String = {
-    if (args.length >= 4 && args(3).contains(".com")) args(3)
+    if (args.length >= 3 && args(2).contains(".com")) args(2)
     else ""
   }
 

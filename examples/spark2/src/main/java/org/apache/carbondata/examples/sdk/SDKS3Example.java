@@ -52,7 +52,7 @@ public class SDKS3Example {
         CarbonProperties.getInstance()
             .addProperty(CarbonLoadOptionConstants.ENABLE_CARBON_LOAD_DIRECT_WRITE_TO_STORE_PATH, "true");
 
-        String path = "s3a://sdk/WriterOutput";
+        String path = "s3a://xubo/sdk/test";
         if (args.length > 3) {
             path=args[3];
         }
