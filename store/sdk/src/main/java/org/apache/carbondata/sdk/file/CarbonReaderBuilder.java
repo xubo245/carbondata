@@ -287,6 +287,7 @@ public class CarbonReaderBuilder {
           throw e;
         }
       }
+      System.out.println("print before java build");
       return new CarbonReader<>(readers);
     } catch (Exception ex) {
       // Clear the datamap cache as it can get added in getSplits() method

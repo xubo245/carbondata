@@ -52,10 +52,17 @@ public class BinaryFieldConverterImpl implements FieldConverter {
     this.isEmptyBadRecord = isEmptyBadRecord;
     this.dataField = dataField;
   }
+
   @Override
   public void convert(CarbonRow row, BadRecordLogHolder logHolder)
       throws CarbonDataLoadingException {
-    row.update(convert(row.getString(index), logHolder), index);
+    if (row.getObject(index) instanceof String) {
+      row.update(convert(row.getString(index), logHolder), index);
+    } else if (row.getObject(index) instanceof byte[]) {
+      row.update(row.getObject(index), index);
+    } else {
+      throw new CarbonDataLoadingException("Binary only support String and byte[] data type");
+    }
   }
 
   @Override
