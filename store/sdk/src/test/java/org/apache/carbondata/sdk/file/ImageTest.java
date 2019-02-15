@@ -585,13 +585,13 @@ public class ImageTest extends TestCase {
     reader.close();
   }
 
-  public void testRead() throws IOException, InterruptedException {
+  public void testRead() throws Exception {
 
     CarbonProperties.getInstance()
         .addProperty(CarbonCommonConstants.UNSAFE_WORKING_MEMORY_IN_MB, "22120")
         .addProperty(CarbonCommonConstants.UNSAFE_DRIVER_WORKING_MEMORY_IN_MB, "12120");
 
-   int i=0;
+    int i = 0;
     CarbonReader reader2 = CarbonReader
         .builder()
         .withFile("/Users/xubo/Desktop/xubo/git/carbondata1/store/sdk/target/VOCImageAndAnnotation/part-0-111576882027515_batchno0-0-null-111575920499138.carbondata")
@@ -610,7 +610,7 @@ public class ImageTest extends TestCase {
       byte[] outputBinary = (byte[]) row[4];
 
       String txt = row[2].toString();
-      System.out.println(i+":"+row[0] + " " + row[1] +
+      System.out.println(i + ":" + row[0] + " " + row[1] +
           " image size:" + outputBinary.length + " txt size:" + txt.length());
 
       // save image, user can compare the save image and original image
@@ -622,6 +622,43 @@ public class ImageTest extends TestCase {
     }
     assert (3 == i);
     System.out.println("\nFinished");
+  }
+
+
+  public void testReadPerformance() throws Exception {
+
+    CarbonProperties.getInstance()
+        .addProperty(CarbonCommonConstants.UNSAFE_WORKING_MEMORY_IN_MB, "22120")
+        .addProperty(CarbonCommonConstants.UNSAFE_DRIVER_WORKING_MEMORY_IN_MB, "12120");
+
+    long start = System.nanoTime();
+    int i = 0;
+    CarbonReader reader2 = CarbonReader
+        .builder()
+        .withFile("/Users/xubo/Desktop/xubo/git/carbondata1/store/sdk/target/flowers/part-0-69194464707979_batchno0-0-null-69193536591188.carbondata")
+        .build();
+
+    System.out.println("\nData2:");
+    i = 0;
+    while (reader2.hasNext()) {
+      Object[] rows = reader2.readNextBatchRow();
+
+      for (int j = 0; j < rows.length; j++) {
+        Object[] row = (Object[]) rows[j];
+        i++;
+        if (0 == i % 1000) {
+          System.out.println(i);
+        }
+        for (int k = 0; k < row.length; k++) {
+          Object column = row[k];
+        }
+      }
+    }
+
+    System.out.println(i);
     reader2.close();
+    long end = System.nanoTime();
+    System.out.println("all time is " + (end - start) / 1000000000.0);
+    System.out.println("\nFinished");
   }
 }
