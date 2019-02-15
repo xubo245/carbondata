@@ -28,8 +28,12 @@ import org.apache.carbondata.common.annotations.InterfaceStability;
 import org.apache.carbondata.core.constants.CarbonCommonConstants;
 import org.apache.carbondata.core.datamap.DataMapStoreManager;
 import org.apache.carbondata.core.datastore.impl.FileFactory;
+import org.apache.carbondata.core.metadata.datatype.DataTypes;
 import org.apache.carbondata.core.metadata.schema.table.CarbonTable;
+import org.apache.carbondata.core.scan.expression.ColumnExpression;
 import org.apache.carbondata.core.scan.expression.Expression;
+import org.apache.carbondata.core.scan.expression.LiteralExpression;
+import org.apache.carbondata.core.scan.expression.conditional.EqualToExpression;
 import org.apache.carbondata.core.scan.model.ProjectionDimension;
 import org.apache.carbondata.core.scan.model.QueryModel;
 import org.apache.carbondata.core.util.CarbonProperties;
@@ -151,6 +155,14 @@ public class CarbonReaderBuilder {
   public CarbonReaderBuilder filter(Expression filterExpression) {
     Objects.requireNonNull(filterExpression);
     this.filterExpression = filterExpression;
+    return this;
+  }
+
+  public CarbonReaderBuilder filterEqual(String columnName, String value) {
+    EqualToExpression equalToExpression = new EqualToExpression(
+        new ColumnExpression(columnName, DataTypes.STRING),
+        new LiteralExpression(value, DataTypes.STRING));
+    this.filterExpression = equalToExpression;
     return this;
   }
 
@@ -287,7 +299,6 @@ public class CarbonReaderBuilder {
           throw e;
         }
       }
-      System.out.println("print before java build");
       return new CarbonReader<>(readers);
     } catch (Exception ex) {
       // Clear the datamap cache as it can get added in getSplits() method

@@ -486,7 +486,7 @@ public class ImageTest extends TestCase {
   @Test
   public void testWriteWithByteArrayDataTypeAndManyImagesXml()
       throws InvalidLoadOptionException, InterruptedException, IOException {
-    String sourceImageFolder = "./src/main/resources/image/voc";
+    String sourceImageFolder = "/Users/xubo/Desktop/xubo/data/VOCdevkit/VOCImageAndAnnotation";
     String outputPath = "./target/voc";
     String preDestPath = "./target/voc/image";
     String sufAnnotation = ".xml";
@@ -635,6 +635,7 @@ public class ImageTest extends TestCase {
     int i = 0;
     CarbonReader reader2 = CarbonReader
         .builder()
+        //        .filterEqual("txtContent","roses")
         .withFile("/Users/xubo/Desktop/xubo/git/carbondata1/store/sdk/target/flowers/part-0-69194464707979_batchno0-0-null-69193536591188.carbondata")
         .build();
 

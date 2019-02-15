@@ -26,6 +26,10 @@ class CarbonReader(object):
         self.CarbonReaderBuilder.projection(projection_list)
         return self
 
+    def filterEqual(self, columnName, value):
+        self.CarbonReaderBuilder.filterEqual(columnName, value)
+        return self
+
     def withHadoopConf(self, key, value):
         self.CarbonReaderBuilder.withHadoopConf(key, value)
         return self

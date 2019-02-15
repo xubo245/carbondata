@@ -20,6 +20,8 @@ package org.apache.carbondata.sdk.file.util;
 import org.apache.carbondata.sdk.file.CarbonReader;
 import org.apache.carbondata.sdk.file.CarbonReaderBuilder;
 
+import org.apache.carbondata.sdk.file.CarbonWriter;
+import org.apache.carbondata.sdk.file.CarbonWriterBuilder;
 import org.apache.hadoop.conf.Configuration;
 import py4j.GatewayServer;
 
@@ -27,6 +29,10 @@ public class CarbonPythonGatewayServer {
 
   public CarbonReaderBuilder createCarbonReaderBuilder() {
     return CarbonReader.builder();
+  }
+
+  public CarbonWriterBuilder createCarbonWriterBuilder() {
+    return CarbonWriter.builder();
   }
 
   public Configuration createConfiguration() {

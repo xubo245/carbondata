@@ -23,3 +23,4 @@ store/PYSDK/obs/
 store/.DS_Store
 store/sdk/src/main/resources/image/.DS_Store
 store/PYSDK/obspython/
+store/PYSDK/data/
