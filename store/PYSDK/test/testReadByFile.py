@@ -26,10 +26,10 @@ def main(argv):
             if 0 == i % 1000:
                 print(i)
             # print(i)
-            row[0];
-            row[1];
-            row[2];
-            row[3];
+            # row[0];
+            # row[1];
+            # row[2];
+            # row[3];
             # row[4];
             # for row in rows:
             # #     # j = j + 1
