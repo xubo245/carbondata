@@ -476,7 +476,7 @@ public class ImageTest extends TestCase {
   @Test
   public void testWriteWithByteArrayDataTypeAndManyImagesTxt2()
       throws InvalidLoadOptionException, InterruptedException, IOException {
-    String sourceImageFolder = "/huawei/xubo/data/modelarts/flowers";
+    String sourceImageFolder = "/Users/xubo/Desktop/xubo/data/ModelArts/flowers";
     String outputPath = "./target/flowers";
     String preDestPath = "./target/flowers/image";
     String sufAnnotation = ".txt";
