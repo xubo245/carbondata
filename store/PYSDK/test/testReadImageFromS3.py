@@ -16,7 +16,7 @@ def main(argv):
     start = time.time()
     file_path='obs-aab3/test3'
     bucket='modelartscarbon/flowers/'
-    s3 = connect_obs()
+    s3 = connect_obs(argv)
     num = 0
     for file in s3.ls(bucket):
        num += 1
@@ -27,11 +27,9 @@ def main(argv):
     print(end-start)
     print(num)
 
-def connect_obs():
-    # access_key = '3HESOBTN6UWUCAJWDGIH'
-    # secret_key = 'W8veV8dXYJwSekPHfi5IjQVpoLObSc5jXxAH5aqZ'
-    access_key = 'GYLW3KJVB7IFHNF5W3JV'
-    secret_key = '6KYRbqkodxzk9xIka743Z5E1Y3nm9KnGsHPuZqPT'
+def connect_obs(argv):
+    access_key = argv[1]
+    secret_key = argv[2]
     end_point = 'https://obs.myhwclouds.com'
     s3 = s3fs.S3FileSystem(key=access_key, secret=secret_key, client_kwargs={'endpoint_url':end_point})
     return s3
