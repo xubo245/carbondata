@@ -20,6 +20,7 @@ package org.apache.carbondata.sdk.file;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import org.apache.carbondata.common.annotations.InterfaceAudience;
@@ -146,7 +147,6 @@ public class CarbonReaderBuilder {
   public CarbonReaderBuilder withHadoopConf(String key, String value) {
     if (this.hadoopConf == null) {
       this.hadoopConf = new Configuration();
-
     }
     this.hadoopConf.set(key, value);
     return this;
@@ -233,6 +233,120 @@ public class CarbonReaderBuilder {
           CarbonUtil.closeStreams(readers.toArray(new RecordReader[0]));
           throw e;
         }
+      }
+      return new CarbonReader<>(readers);
+    } catch (Exception ex) {
+      // Clear the datamap cache as it can get added in getSplits() method
+      DataMapStoreManager.getInstance()
+          .clearDataMaps(table.getAbsoluteTableIdentifier());
+      throw ex;
+    }
+  }
+
+  /**
+   * gets an array of blocklet level CarbonInputSplits
+   * @return
+   * @throws IOException
+   */
+  public InputSplit[] getSplits() throws IOException {
+    if (hadoopConf == null) {
+      hadoopConf = FileFactory.getConfiguration();
+    }
+    CarbonTable table;
+    table = CarbonTable.buildTable(tablePath, tableName, hadoopConf);
+    final CarbonFileInputFormat format = new CarbonFileInputFormat();
+    final Job job = new Job(hadoopConf);
+    // set cache level to blockletlevel
+    Map<String, String> tableProperties = table.getTableInfo().getFactTable().getTableProperties();
+    tableProperties.put(CarbonCommonConstants.CACHE_LEVEL,"BLOCKLET");
+    table.getTableInfo().getFactTable().setTableProperties(tableProperties);
+    format.setTableInfo(job.getConfiguration(), table.getTableInfo());
+    format.setTablePath(job.getConfiguration(), table.getTablePath());
+    format.setTableName(job.getConfiguration(), table.getTableName());
+    format.setDatabaseName(job.getConfiguration(), table.getDatabaseName());
+    if (filterExpression != null) {
+      format.setFilterPredicates(job.getConfiguration(), filterExpression);
+    }
+    if (projectionColumns != null) {
+      // set the user projection
+      int len = projectionColumns.length;
+      for (int i = 0; i < len; i++) {
+        if (projectionColumns[i].contains(".")) {
+          throw new UnsupportedOperationException(
+              "Complex child columns projection NOT supported through CarbonReader");
+        }
+      }
+      format.setColumnProjection(job.getConfiguration(), projectionColumns);
+    }
+    List<InputSplit> splits =
+        format.getSplits(new JobContextImpl(job.getConfiguration(), new JobID()));
+    return splits.toArray(new InputSplit[splits.size()]);
+  }
+
+  /**
+   * build the carbon reader with specified split.
+   * @param inputSplit
+   * @param <T>
+   * @return
+   * @throws IOException
+   * @throws InterruptedException
+   */
+  public <T> CarbonReader<T> buildWithSplits(InputSplit inputSplit)
+      throws IOException, InterruptedException {
+    if (hadoopConf == null) {
+      hadoopConf = FileFactory.getConfiguration();
+    }
+    CarbonTable table;
+    // now always infer schema. TODO:Refactor in next version.
+    table = CarbonTable.buildTable(tablePath, tableName, hadoopConf);
+    final CarbonFileInputFormat format = new CarbonFileInputFormat();
+    final Job job = new Job(hadoopConf);
+    format.setTableInfo(job.getConfiguration(), table.getTableInfo());
+    format.setTablePath(job.getConfiguration(), table.getTablePath());
+    format.setTableName(job.getConfiguration(), table.getTableName());
+    format.setDatabaseName(job.getConfiguration(), table.getDatabaseName());
+    if (filterExpression != null) {
+      format.setFilterPredicates(job.getConfiguration(), filterExpression);
+    }
+    if (projectionColumns != null) {
+      // set the user projection
+      int len = projectionColumns.length;
+      for (int i = 0; i < len; i++) {
+        if (projectionColumns[i].contains(".")) {
+          throw new UnsupportedOperationException(
+              "Complex child columns projection NOT supported through CarbonReader");
+        }
+      }
+      format.setColumnProjection(job.getConfiguration(), projectionColumns);
+    }
+    try {
+      if (filterExpression == null) {
+        job.getConfiguration().set("filter_blocks", "false");
+      }
+      List<RecordReader<Void, T>> readers = new ArrayList<>(1);
+      TaskAttemptContextImpl attempt =
+          new TaskAttemptContextImpl(job.getConfiguration(), new TaskAttemptID());
+      RecordReader reader;
+      QueryModel queryModel = format.createQueryModel(inputSplit, attempt);
+      boolean hasComplex = false;
+      for (ProjectionDimension projectionDimension : queryModel.getProjectionDimensions()) {
+        if (projectionDimension.getDimension().isComplex()) {
+          hasComplex = true;
+          break;
+        }
+      }
+      if (useVectorReader && !hasComplex) {
+        queryModel.setDirectVectorFill(filterExpression == null);
+        reader = new CarbonVectorizedRecordReader(queryModel);
+      } else {
+        reader = format.createRecordReader(inputSplit, attempt);
+      }
+      try {
+        reader.initialize(inputSplit, attempt);
+        readers.add(reader);
+      } catch (Exception e) {
+        CarbonUtil.closeStreams(readers.toArray(new RecordReader[0]));
+        throw e;
       }
       return new CarbonReader<>(readers);
     } catch (Exception ex) {
