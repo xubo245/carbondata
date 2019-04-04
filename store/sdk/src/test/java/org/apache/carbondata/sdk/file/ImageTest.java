@@ -620,6 +620,7 @@ public class ImageTest extends TestCase {
     String preDestPath = "./target/voc/image";
     String sufAnnotation = ".xml";
     writeAndRead(sourceImageFolder, outputPath, preDestPath, sufAnnotation, ".jpg");
+    ReadPerformance();
   }
 
   public void writeAndRead(String sourceImageFolder, String outputPath,
@@ -697,8 +698,7 @@ public class ImageTest extends TestCase {
     reader.close();
   }
 
-  public void testReadPerformance() throws Exception {
-
+  public void ReadPerformance() throws Exception {
     CarbonProperties.getInstance()
         .addProperty(CarbonCommonConstants.UNSAFE_WORKING_MEMORY_IN_MB, "2048");
 
