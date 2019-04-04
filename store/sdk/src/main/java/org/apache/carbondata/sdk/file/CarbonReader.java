@@ -56,33 +56,49 @@ public class CarbonReader<T> {
    * Call {@link #builder(String)} to construct an instance
    */
   CarbonReader(List<RecordReader<Void, T>> readers) {
-    if (readers.size() == 0) {
-      throw new IllegalArgumentException("no reader");
-    }
+
     this.initialise = true;
     this.readers = readers;
     this.index = 0;
-    this.currentReader = readers.get(0);
+    if (0 == readers.size()) {
+      this.currentReader = null;
+    } else {
+      this.currentReader = readers.get(0);
+    }
   }
 
   /**
    * Return true if has next row
    */
   public boolean hasNext() throws IOException, InterruptedException {
+    if (0 == readers.size()) {
+      return false;
+    }
     validateReader();
     if (currentReader.nextKeyValue()) {
       return true;
     } else {
-      if (index == readers.size() - 1) {
-        // no more readers
-        return false;
-      } else {
-        index++;
-        // current reader is closed
-        currentReader.close();
-        currentReader = readers.get(index);
-        return currentReader.nextKeyValue();
+      for (int i = index; i < readers.size(); i++) {
+        if (index == readers.size() - 1) {
+          // no more readers
+          return false;
+        } else {
+          // current reader is closed
+          currentReader.close();
+          // no need to keep a reference to CarbonVectorizedRecordReader,
+          // until all the readers are processed.
+          // If readers count is very high,
+          // we get OOM as GC not happened for any of the content in CarbonVectorizedRecordReader
+          readers.set(index, null);
+          index++;
+          currentReader = readers.get(index);
+          boolean result = currentReader.nextKeyValue();
+          if (result) {
+            return result;
+          }
+        }
       }
+      return false;
     }
   }
 
@@ -144,7 +160,6 @@ public class CarbonReader<T> {
 
   /**
    * Return a new {@link CarbonReaderBuilder} instance
-   * Default value of table name is table + tablePath + time
    *
    * @param tablePath table path
    * @return CarbonReaderBuilder object
@@ -153,6 +168,17 @@ public class CarbonReader<T> {
     UUID uuid = UUID.randomUUID();
     String tableName = "UnknownTable" + uuid;
     return builder(tablePath, tableName);
+  }
+
+  /**
+   * Return a new {@link CarbonReaderBuilder} instance
+   *
+   * @return CarbonReaderBuilder object
+   */
+  public static CarbonReaderBuilder builder() {
+    UUID uuid = UUID.randomUUID();
+    String tableName = "UnknownTable" + uuid;
+    return new CarbonReaderBuilder(tableName);
   }
 
   /**
@@ -216,7 +242,9 @@ public class CarbonReader<T> {
     CarbonProperties.getInstance()
         .addProperty(CarbonCommonConstants.DETAIL_QUERY_BATCH_SIZE,
             String.valueOf(CarbonCommonConstants.DETAIL_QUERY_BATCH_SIZE_DEFAULT));
-    this.currentReader.close();
+    if (null != this.currentReader) {
+      this.currentReader.close();
+    }
     this.initialise = false;
   }
 

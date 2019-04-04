@@ -172,6 +172,7 @@ abstract class CarbonDDLSqlParser extends AbstractCarbonSparkSQLParser {
   protected val BOOLEAN = carbonKeyWord("BOOLEAN")
   protected val LONG = carbonKeyWord("LONG")
   protected val BIGINT = carbonKeyWord("BIGINT")
+  protected val BINARY = carbonKeyWord("BINARY")
   protected val ARRAY = carbonKeyWord("ARRAY")
   protected val STRUCT = carbonKeyWord("STRUCT")
   protected val MAP = carbonKeyWord("MAP")
@@ -877,8 +878,9 @@ abstract class CarbonDDLSqlParser extends AbstractCarbonSparkSQLParser {
         dimFields += field
       } else if (isDetectAsDimentionDataType(field.dataType.get)) {
         dimFields += field
-        // consider all String cols as noDicitonaryDims by default
-        if (DataTypes.STRING.getName.equalsIgnoreCase(field.dataType.get)) {
+        // consider all String and binary cols as noDicitonaryDims by default
+        if ((DataTypes.STRING.getName.equalsIgnoreCase(field.dataType.get)) ||
+            (DataTypes.BINARY.getName.equalsIgnoreCase(field.dataType.get))) {
           noDictionaryDims :+= field.column
         }
       } else if (sortKeyDimsTmp.exists(x => x.equalsIgnoreCase(field.column)) &&
@@ -943,7 +945,14 @@ abstract class CarbonDDLSqlParser extends AbstractCarbonSparkSQLParser {
    * @param dimensionDatatype
    */
   def isDetectAsDimentionDataType(dimensionDatatype: String): Boolean = {
-    val dimensionType = Array("string", "array", "struct", "map", "timestamp", "date", "char")
+    val dimensionType = Array("string",
+      "array",
+      "struct",
+      "map",
+      "timestamp",
+      "date",
+      "char",
+      "binary")
     dimensionType.exists(x => dimensionDatatype.toLowerCase.contains(x))
   }
 
@@ -967,7 +976,8 @@ abstract class CarbonDDLSqlParser extends AbstractCarbonSparkSQLParser {
    * detects whether datatype is part of dictionary_exclude
    */
   def isDataTypeSupportedForDictionary_Exclude(columnDataType: String): Boolean = {
-    val dataTypes = Array("string", "timestamp", "int", "long", "bigint", "struct", "array", "map")
+    val dataTypes =
+      Array("string", "timestamp", "int", "long", "bigint", "struct", "array", "map", "binary")
     dataTypes.exists(x => x.equalsIgnoreCase(columnDataType))
   }
 
@@ -1296,6 +1306,8 @@ abstract class CarbonDDLSqlParser extends AbstractCarbonSparkSQLParser {
     INT ^^^ "int" | DOUBLE ^^^ "double" | FLOAT ^^^ "double" | decimalType |
     DATE ^^^ "date" | charType
 
+  protected lazy val miscType = BINARY ^^^ "binary"
+
   /**
    * Matching the char data type and returning the same.
    */
@@ -1318,7 +1330,7 @@ abstract class CarbonDDLSqlParser extends AbstractCarbonSparkSQLParser {
   }
 
   protected lazy val nestedType: Parser[Field] = structFieldType | arrayFieldType | mapFieldType |
-                                                 primitiveFieldType
+                                                 primitiveFieldType | miscFieldType
 
   lazy val anyFieldDef: Parser[Field] =
     (ident | stringLit) ~ (":".? ~> nestedType) ~ (IN ~> (ident | stringLit)).? ^^ {
@@ -1340,6 +1352,12 @@ abstract class CarbonDDLSqlParser extends AbstractCarbonSparkSQLParser {
 
   protected lazy val primitiveFieldType: Parser[Field] =
     primitiveTypes ^^ {
+      case e1 =>
+        Field("unknown", Some(e1), Some("unknown"), Some(null))
+    }
+
+  protected lazy val miscFieldType: Parser[Field] =
+    miscType ^^ {
       case e1 =>
         Field("unknown", Some(e1), Some("unknown"), Some(null))
     }

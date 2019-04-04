@@ -388,6 +388,38 @@ class TestNonTransactionalCarbonTable extends QueryTest with BeforeAndAfterAll {
     cleanTestData()
   }
 
+  test("test direct sql read carbon") {
+    checkAnswer(
+      sql("select count(*) FROM carbon.`/Users/xubo/Desktop/xubo/data/VOCdevkit/carbon/voc`"),
+      Seq(Row(17121)))
+  }
+
+  test("test read image carbon with spark") {
+    sql("drop table if exists readcarbon")
+    sql("drop table if exists readcarbon3")
+    val path = "/Users/xubo/Desktop/xubo/data/VOCdevkit/carbon/voc"
+    val path3 = "/Users/xubo/Desktop/xubo/data/VOCdevkit/carbon/voc3"
+    sql(s"create table readcarbon using carbon location '$path'")
+    sql("select * from readcarbon").show()
+    checkAnswer(sql("select count(*) from readcarbon"),
+      Seq(Row(17121)))
+    sql(s"create table readcarbon3 using carbon location '$path3'" + " as select * from readcarbon")
+    sql("select * from readcarbon3").show()
+    sql("select count(*) from readcarbon3").show()
+  }
+
+  test("test read image carbon with spark2") {
+    sql("drop table if exists readcarbon")
+    sql("drop table if exists readcarbon3")
+    val path = "/Users/xubo/Desktop/xubo/git/carbondata1/store/sdk/target/flowers"
+    val path3 = "/Users/xubo/Desktop/xubo/git/carbondata1/store/sdk/target/flowers3"
+    sql(s"create table readcarbon using carbon location '$path'")
+    sql("select * from readcarbon").show()
+    sql(s"create table readcarbon3 using carbon location '$path3'" + " as select * from readcarbon")
+    sql("select * from readcarbon3").show()
+    sql("select count(*) from readcarbon3").show()
+  }
+
   test("test create external table with sort columns") {
     buildTestDataWithSortColumns(List("age","name"))
     assert(new File(writerPath).exists())
