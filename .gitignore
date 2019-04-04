@@ -17,12 +17,3 @@ store/CSDK/cmake-build-debug/*
 .classpath
 metastore_db/
 derby.log
-store/PYSDK/venv/*
-store/PYSDK/.DS_Store
-store/PYSDK/obs/
-store/.DS_Store
-store/sdk/src/main/resources/image/.DS_Store
-store/PYSDK/obspython/
-store/PYSDK/data/
-.DS_Store
-store/PYSDK/venv1/
