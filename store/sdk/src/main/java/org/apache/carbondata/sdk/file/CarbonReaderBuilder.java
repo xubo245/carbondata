@@ -216,53 +216,6 @@ public class CarbonReaderBuilder {
     return this;
   }
 
-  public InputSplit[] getSplits() throws IOException {
-    if (hadoopConf == null) {
-      hadoopConf = FileFactory.getConfiguration();
-    }
-    CarbonTable table;
-    // now always infer schema. TODO:Refactor in next version.
-    table = CarbonTable.buildTable(tablePath, tableName, hadoopConf, false);
-    final CarbonFileInputFormat format = new CarbonFileInputFormat();
-    final Job job = new Job(hadoopConf);
-    Map<String, String> tableProperties = table.getTableInfo().getFactTable().getTableProperties();
-    tableProperties.put(CarbonCommonConstants.CACHE_LEVEL, "BLOCKLET");
-    table.getTableInfo().getFactTable().setTableProperties(tableProperties);
-    format.setTableInfo(job.getConfiguration(), table.getTableInfo());
-    format.setTablePath(job.getConfiguration(), table.getTablePath());
-    format.setTableName(job.getConfiguration(), table.getTableName());
-    format.setDatabaseName(job.getConfiguration(), table.getDatabaseName());
-    if (filterExpression != null) {
-      format.setFilterPredicates(job.getConfiguration(), filterExpression);
-    }
-
-    if (projectionColumns != null) {
-      // set the user projection
-      int len = projectionColumns.length;
-      //      TODO : Handle projection of complex child columns
-      for (int i = 0; i < len; i++) {
-        if (projectionColumns[i].contains(".")) {
-          throw new UnsupportedOperationException(
-              "Complex child columns projection NOT supported through CarbonReader");
-        }
-      }
-      format.setColumnProjection(job.getConfiguration(), projectionColumns);
-    }
-
-    try {
-      if (filterExpression == null) {
-        job.getConfiguration().set("filter_blocks", "true");
-      }
-      List<InputSplit> splits =
-          format.getSplits(new JobContextImpl(job.getConfiguration(), new JobID()));
-      return splits.toArray(new InputSplit[splits.size()]);
-    } catch (Exception ex) {
-      // Clear the datamap cache as it can get added in getSplits() method
-      DataMapStoreManager.getInstance().clearDataMaps(table.getAbsoluteTableIdentifier());
-      throw ex;
-    }
-  }
-
   /**
    * Build CarbonReader
    *
@@ -287,7 +240,6 @@ public class CarbonReaderBuilder {
       table = CarbonTable.buildTable(tablePath, tableName, hadoopConf, false);
     }
     Map<String, String> tableProperties = table.getTableInfo().getFactTable().getTableProperties();
-    //    tableProperties.put(CarbonCommonConstants.CACHE_LEVEL,"BLOCKLET");
     table.getTableInfo().getFactTable().setTableProperties(tableProperties);
 
     final CarbonFileInputFormat format = new CarbonFileInputFormat();

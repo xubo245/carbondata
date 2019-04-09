@@ -27,19 +27,27 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 
+import org.apache.carbondata.util.ImageUtil;
+
 import static org.apache.carbondata.sdk.file.utils.SDKUtil.getSplitList;
 
 /**
  * multi-thread Test suite for {@link CarbonReader}
  */
 public class ConcurrentMultiSdkReaderTest {
-  public static void main(String[] args) throws InterruptedException {
+  public static void main(String[] args) throws Exception {
 
     long startTime = System.nanoTime();
     short numThreads = 1;
     long count = 0;
-    //    String path = "/Users/xubo/Desktop/xubo/data/VOCdevkit/carbon/voc";
-    String path = "/Users/xubo/Desktop/xubo/git/carbondata1/store/sdk/target/flowers";
+
+    ImageUtil imageUtil = new ImageUtil();
+
+    String sourceImageFolder = "./src/main/resources/image/flowers";
+    String outputPath = "./target/flowers2";
+    String sufAnnotation = ".txt";
+
+    imageUtil.writeAndRead(sourceImageFolder, outputPath, sufAnnotation, ".jpg");
 
     // Concurrent Reading
     ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
@@ -54,7 +62,7 @@ public class ConcurrentMultiSdkReaderTest {
         conf.set(Constants.ENDPOINT, args[3]);
       }
 
-      Object[] splitList = getSplitList(path, ".carbondata", numThreads, conf);
+      Object[] splitList = getSplitList(outputPath, ".carbondata", numThreads, conf);
       for (int i = 0; i < splitList.length; i++) {
         tasks.add(new ReadLogic((List) splitList[i]));
       }
