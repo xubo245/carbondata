@@ -64,6 +64,8 @@ class NonDictionaryVectorFillerFactory {
       return new IntVectorFiller(numberOfRows);
     } else if (type == DataTypes.LONG) {
       return new LongVectorFiller(numberOfRows);
+    } else if (type == DataTypes.BINARY) {
+      return new BinaryVectorFiller(numberOfRows);
     } else {
       throw new UnsupportedOperationException("Not supported datatype : " + type);
     }
@@ -164,6 +166,31 @@ class LongStringVectorFiller extends AbstractNonDictionaryVectorFiller {
         localOffset += length;
       }
       vector.putAllByteArray(data, 0, actualDataLength);
+    }
+  }
+}
+
+class BinaryVectorFiller extends AbstractNonDictionaryVectorFiller {
+
+  public BinaryVectorFiller(int numberOfRows) {
+    super(numberOfRows);
+  }
+
+  @Override public void fillVector(byte[] data, CarbonColumnVector vector) {
+    // start position will be used to store the current data position
+    int localOffset = 0;
+    ByteUtil.UnsafeComparer comparator = ByteUtil.UnsafeComparer.INSTANCE;
+    for (int i = 0; i < numberOfRows; i++) {
+      int length = (((data[localOffset] & 0xFF) << 24) | ((data[localOffset + 1] & 0xFF) << 16) | (
+          (data[localOffset + 2] & 0xFF) << 8) | (data[localOffset + 3] & 0xFF));
+      localOffset += 4;
+      if (comparator.equals(CarbonCommonConstants.MEMBER_DEFAULT_VAL_ARRAY, 0,
+          CarbonCommonConstants.MEMBER_DEFAULT_VAL_ARRAY.length, data, localOffset, length)) {
+        vector.putNull(i);
+      } else {
+        vector.putByteArray(i, localOffset, length, data);
+      }
+      localOffset += length;
     }
   }
 }
