@@ -73,14 +73,14 @@ class SparkCarbonDataSourceBinaryTest extends FunSuite with BeforeAndAfterAll {
         sql("DROP TABLE IF EXISTS sdkOutputTable")
     }
 
-    test("test direct sql read carbon") {
+    test("Test direct sql read carbon") {
         assert(new File(writerPath).exists())
         checkAnswer(
             sql(s"SELECT COUNT(*) FROM carbon.`$writerPath`"),
             Seq(Row(3)))
     }
 
-    test("test read image carbon with spark carbon file format, generate by sdk, CTAS") {
+    test("Test read image carbon with spark carbon file format, generate by sdk, CTAS") {
         sql("DROP TABLE IF EXISTS binaryCarbon")
         sql("DROP TABLE IF EXISTS binaryCarbon3")
         if (SparkUtil.isSparkVersionEqualTo("2.1")) {
@@ -138,7 +138,7 @@ class SparkCarbonDataSourceBinaryTest extends FunSuite with BeforeAndAfterAll {
         assert(exception.getCause.getMessage.contains("long string column : image is not supported for data type: BINARY"))
     }
 
-    test("desc formatted fot binary column") {
+    test("Desc formatted fot binary column") {
         sql("DROP TABLE IF EXISTS binaryCarbon")
         sql("DROP TABLE IF EXISTS binaryCarbon3")
         if (SparkUtil.isSparkVersionXandAbove("2.2")) {
@@ -184,7 +184,7 @@ class SparkCarbonDataSourceBinaryTest extends FunSuite with BeforeAndAfterAll {
     }
 
     //TODO: support insert into
-    test("test partition") {
+    test("Test partition") {
         sql("DROP TABLE IF EXISTS binaryCarbon")
         sql("DROP TABLE IF EXISTS binaryCarbon3")
         if (SparkUtil.isSparkVersionXandAbove("2.2")) {
@@ -212,7 +212,7 @@ class SparkCarbonDataSourceBinaryTest extends FunSuite with BeforeAndAfterAll {
         sql("DROP TABLE IF EXISTS binaryCarbon3")
     }
 
-    test("test unsafe as false") {
+    test("Test unsafe as false") {
         CarbonProperties.getInstance()
                 .addProperty(CarbonCommonConstants.ENABLE_UNSAFE_COLUMN_PAGE, "false")
         sql("DROP TABLE IF EXISTS binaryCarbon")

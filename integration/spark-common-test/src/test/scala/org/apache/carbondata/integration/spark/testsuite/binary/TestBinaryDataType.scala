@@ -35,7 +35,7 @@ class TestBinaryDataType extends QueryTest with BeforeAndAfterAll {
     override def beforeAll {
     }
 
-    test("create table and load data with binary column") {
+    test("Create table and load data with binary column") {
         sql("DROP TABLE IF EXISTS binaryTable")
         sql(
             s"""
@@ -119,7 +119,7 @@ class TestBinaryDataType extends QueryTest with BeforeAndAfterAll {
         "3.png" -> Array[Byte](-119, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 1, 54)
     )
 
-    test("create no sort table and load data with binary column") {
+    test("Create no sort table and load data with binary column") {
         sql("DROP TABLE IF EXISTS binaryTable")
         sql(
             s"""
@@ -225,7 +225,7 @@ class TestBinaryDataType extends QueryTest with BeforeAndAfterAll {
         checkAnswer(sql("SELECT COUNT(*) FROM binaryTable"), Seq(Row(3)))
     }
 
-    test("test carbon.column.compressor=zstd") {
+    test("Test carbon.column.compressor=zstd") {
         sql("DROP TABLE IF EXISTS binaryTable")
         sql(
             s"""
@@ -269,8 +269,9 @@ class TestBinaryDataType extends QueryTest with BeforeAndAfterAll {
         checkAnswer(sql("SELECT COUNT(*) FROM binaryTable where id =1"), Seq(Row(1)))
     }
 
-    test("test create table with buckets unsafe") {
+    test("Test create table with buckets unsafe") {
         CarbonProperties.getInstance().addProperty(CarbonCommonConstants.ENABLE_UNSAFE_SORT, "true")
+        sql("DROP TABLE IF EXISTS binaryTable")
         sql(
             s"""
                | CREATE TABLE IF NOT EXISTS binaryTable (
