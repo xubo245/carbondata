@@ -968,7 +968,7 @@ abstract class CarbonDDLSqlParser extends AbstractCarbonSparkSQLParser {
    * detects whether datatype is part of sort_column
    */
   private def isDataTypeSupportedForSortColumn(columnDataType: String): Boolean = {
-    val dataTypes = Array("array", "struct", "map", "double", "float", "decimal")
+    val dataTypes = Array("array", "struct", "map", "double", "float", "decimal", "binary")
     dataTypes.exists(x => x.equalsIgnoreCase(columnDataType))
   }
 

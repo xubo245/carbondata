@@ -367,5 +367,31 @@ class TestQueryWithColumnMetCacheAndCacheLevelProperty extends QueryTest with Be
     sql("DROP table IF EXISTS carbonCahe")
   }
 
+  // TODO: support insert and query with filter
+  ignore("Test For Cache set but Min/Max exceeds for Binary") {
+    CarbonProperties.getInstance()
+            .addProperty(CarbonCommonConstants.CARBON_MINMAX_ALLOWED_BYTE_COUNT, "30")
+    sql("DROP TABLE IF EXISTS carbonCache")
+    sql(
+      s"""
+         | CREATE TABLE carbonCache (
+         | name STRING,
+         | age STRING,
+         | desc STRING,
+         | image BINARY
+         | )
+         | STORED BY 'carbondata'
+         | TBLPROPERTIES('COLUMN_META_CACHE'='image')
+       """.stripMargin)
+    sql(
+      "INSERT INTO carbonCache values('Manish Nalla','24'," +
+              "'gvsahgvsahjvcsahjgvavacavkjvaskjvsahgsvagkjvkjgvsackjg','gvsahgvsahjvcsahjgvavacavkjvaskjvsahgsvagkjvkjgvsackjg')")
+    checkAnswer(sql(
+      "SELECT count(*) FROM carbonCache where " +
+              "image='gvsahgvsahjvcsahjgvavacavkjvaskjvsahgsvagkjvkjgvsackjg'"),
+      Row(1))
+    sql("DROP table IF EXISTS carbonCahe")
+  }
+
 
 }

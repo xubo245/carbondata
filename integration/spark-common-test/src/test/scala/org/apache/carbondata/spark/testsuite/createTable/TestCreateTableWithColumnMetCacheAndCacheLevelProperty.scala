@@ -127,6 +127,12 @@ class TestCreateTableWithColumnMetCacheAndCacheLevelProperty extends QueryTest w
     assert(isExpectedValueValid("default", "column_meta_cache", "column_meta_cache", "c1,c3"))
   }
 
+  test("validate for binary - COLUMN_META_CACHE_13") {
+    sql("drop table if exists column_meta_cache")
+    sql("create table column_meta_cache(c1 String, c2 String, c3 int, c4 double, c5 binary) stored by 'carbondata' TBLPROPERTIES('COLUMN_meta_CachE'='c5')")
+    assert(isExpectedValueValid("default", "column_meta_cache", "column_meta_cache", "c5"))
+  }
+
   test("validate cache_level with only empty spaces - CACHE_LEVEL_01") {
     sql("drop table if exists cache_level")
     intercept[MalformedCarbonCommandException] {

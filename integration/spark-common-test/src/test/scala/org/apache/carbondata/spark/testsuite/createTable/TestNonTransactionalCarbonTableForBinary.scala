@@ -73,27 +73,23 @@ class TestNonTransactionalCarbonTableForBinary extends QueryTest with BeforeAndA
         sql("DROP TABLE IF EXISTS sdkOutputTable")
     }
 
-
-    test("test direct sql read carbon") {
-        assert(new File(writerPath).exists())
-        checkAnswer(
-            sql(s"SELECT COUNT(*) FROM carbon.`$writerPath`"),
-            Seq(Row(3)))
-    }
-
-    test("test read image carbon with spark carbon file format, generate by sdk") {
+    test("test read image carbon with external table, generate by sdk, CTAS") {
         sql("DROP TABLE IF EXISTS binaryCarbon")
         sql("DROP TABLE IF EXISTS binaryCarbon3")
         if (SparkUtil.isSparkVersionEqualTo("2.1")) {
-            sql(s"CREATE TABLE binaryCarbon USING CARBON OPTIONS(PATH '$writerPath')")
-            sql(s"CREATE TABLE binaryCarbon3 USING CARBON OPTIONS(PATH '$outputPath')" + " AS SELECT * FROM binaryCarbon")
+            sql(s"CREATE EXTERNAL TABLE binaryCarbon STORED BY 'carbondata' OPTIONS(PATH '$writerPath')")
+            val exception = intercept[Exception] {
+                sql(s"CREATE TABLE binaryCarbon3 STORED BY 'carbondata' OPTIONS(PATH '$outputPath')" + " AS SELECT * FROM binaryCarbon")
+            }
+            assert(exception.getMessage.contains("DataLoad failure: Error while initializing data handler"))
         } else {
-            sql(s"CREATE TABLE binaryCarbon USING CARBON LOCATION '$writerPath'")
-            sql(s"CREATE TABLE binaryCarbon3 USING CARBON LOCATION '$outputPath'" + " AS SELECT * FROM binaryCarbon")
+            sql(s"CREATE EXTERNAL TABLE binaryCarbon STORED BY 'carbondata'LOCATION '$writerPath'")
+            val exception = intercept[Exception] {
+                sql(s"CREATE TABLE binaryCarbon3 STORED BY 'carbondata' LOCATION '$outputPath'" + " AS SELECT * FROM binaryCarbon")
+            }
+            assert(exception.getMessage.contains("DataLoad failure: Error while initializing data handler : Failed for table"))
         }
         checkAnswer(sql("SELECT COUNT(*) FROM binaryCarbon"),
-            Seq(Row(3)))
-        checkAnswer(sql("SELECT COUNT(*) FROM binaryCarbon3"),
             Seq(Row(3)))
         sql("DROP TABLE IF EXISTS binaryCarbon")
         sql("DROP TABLE IF EXISTS binaryCarbon3")
