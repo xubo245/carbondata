@@ -38,6 +38,7 @@ import javax.imageio.ImageReader;
 import javax.imageio.ImageTypeSpecifier;
 import javax.imageio.stream.FileImageInputStream;
 import javax.imageio.stream.ImageInputStream;
+import javax.sound.midi.SysexMessage;
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -605,21 +606,28 @@ public class ImageTest extends TestCase {
   @Test
   public void testWriteWithByteArrayDataTypeAndManyImagesTxt()
       throws Exception {
+    long startWrite = System.nanoTime();
     String sourceImageFolder = "./src/main/resources/image/flowers";
     String outputPath = "./target/flowers";
     String preDestPath = "./target/flowers/image";
     String sufAnnotation = ".txt";
     writeAndRead(sourceImageFolder, outputPath, preDestPath, sufAnnotation, ".jpg");
+    long endWrite = System.nanoTime();
+    System.out.println("write time is " + (endWrite - startWrite) / 1000000000.0 + "s");
   }
 
   @Test
   public void testWriteWithByteArrayDataTypeAndManyImagesXml()
       throws Exception {
+    long startWrite = System.nanoTime();
     String sourceImageFolder = "./src/main/resources/image/voc";
+
     String outputPath = "./target/voc";
     String preDestPath = "./target/voc/image";
     String sufAnnotation = ".xml";
     writeAndRead(sourceImageFolder, outputPath, preDestPath, sufAnnotation, ".jpg");
+    long endWrite = System.nanoTime();
+    System.out.println("write time is " + (endWrite - startWrite) / 1000000000.0 + "s");
     ReadPerformance();
   }
 

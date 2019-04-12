@@ -343,13 +343,6 @@ public abstract class ColumnPage {
     return fixLengthByteArrayPage;
   }
 
-  private static ColumnPage newBinaryPage(TableSpec.ColumnSpec columnSpec,
-      byte[] lvEncodedByteArray, int offset, int length, String compressorName)
-      throws MemoryException {
-    return VarLengthColumnPageBase.newBinaryColumnPage(
-        columnSpec, lvEncodedByteArray, offset, length, compressorName);
-  }
-
   /**
    * Set byte values to page
    */
@@ -863,8 +856,6 @@ public abstract class ColumnPage {
       byte[] lvVarBytes = compressor.unCompressByte(compressedData, offset, length);
       return newLVBytesPage(columnSpec, lvVarBytes,
           CarbonCommonConstants.INT_SIZE_IN_BYTE, meta.getCompressorName());
-    } else if (storeDataType == DataTypes.BINARY) {
-      return newBinaryPage(columnSpec, compressedData, offset, length, meta.getCompressorName());
     } else {
       throw new UnsupportedOperationException(
           "unsupported uncompress column page: " + meta.getStoreDataType());

@@ -116,15 +116,7 @@ public class DirectCompressCodec implements ColumnPageCodec {
             CompressorFactory.getInstance().getCompressor(meta.getCompressorName());
         int uncompressedLength;
         byte[] unCompressData;
-        if (DataTypes.BINARY.getName().equalsIgnoreCase(meta.getStoreDataType().getName())) {
-          ColumnPage columnPage = ColumnPage.decompress(meta, input, offset, length, isLVEncoded);
-          MeasureDataVectorProcessor.MeasureVectorFiller measureVectorFiller =
-              MeasureDataVectorProcessor.MeasureVectorFillerFactory
-                  .getMeasureVectorFiller(dataType);
-          measureVectorFiller.fillMeasureVector(columnPage, vectorInfo);
-          columnPage.freeMemory();
-          return;
-        } else if (null != reusableDataBuffer && compressor.supportReusableBuffer()) {
+        if (null != reusableDataBuffer && compressor.supportReusableBuffer()) {
           uncompressedLength = compressor.unCompressedLength(input, offset, length);
           unCompressData = reusableDataBuffer.getDataBuffer(uncompressedLength);
           compressor.rawUncompress(input, offset, length, unCompressData);

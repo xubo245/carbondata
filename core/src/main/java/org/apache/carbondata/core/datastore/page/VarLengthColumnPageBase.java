@@ -153,13 +153,6 @@ public abstract class VarLengthColumnPageBase extends ColumnPage {
         lvLength, compressorName);
   }
 
-  static ColumnPage newBinaryColumnPage(TableSpec.ColumnSpec columnSpec, byte[] lvEncodedBytes,
-      int offset, int length, String compressorName)
-      throws MemoryException {
-    return getBinaryColumnPage(columnSpec,
-        lvEncodedBytes, DataTypes.BINARY, offset, length, compressorName);
-  }
-
   /**
    * Create a new column page based on the LV (Length Value) encoded bytes
    */
@@ -293,49 +286,6 @@ public abstract class VarLengthColumnPageBase extends ColumnPage {
       length = rowOffset.getInt(i + 1) - rowOffset.getInt(i);
       page.putBytes(i, lvEncodedBytes, lvEncodedOffset + lvLength, length);
       lvEncodedOffset += lvLength + length;
-    }
-    return page;
-  }
-
-  private static ColumnPage getBinaryColumnPage(TableSpec.ColumnSpec columnSpec,
-      byte[] lvEncodedBytes, DataType dataType, int start, int len, String compressorName)
-      throws MemoryException {
-
-    ColumnPage rowOffset = ColumnPage.newPage(
-        new ColumnPageEncoderMeta(columnSpec, dataType, compressorName),
-        CarbonV3DataFormatConstants.NUMBER_OF_ROWS_PER_BLOCKLET_COLUMN_PAGE_DEFAULT);
-
-    List<Integer> rowLength = new ArrayList<>();
-    int length;
-    int offset;
-    int lvEncodedOffset = start;
-
-    // extract Length field in input and calculate total length
-    for (offset = 0; lvEncodedOffset < len; offset += length) {
-      length = ByteUtil.toInt(lvEncodedBytes, lvEncodedOffset);
-      rowOffset.putInt(rowLength.size(), offset);
-      rowLength.add(length);
-      lvEncodedOffset += 4 + length;
-    }
-    rowOffset.putInt(rowLength.size(), offset);
-    VarLengthColumnPageBase page;
-    if (unsafe) {
-      page = new UnsafeVarLengthColumnPage(new ColumnPageEncoderMeta(columnSpec,
-          dataType, compressorName), rowLength.size());
-    } else {
-      page = new SafeVarLengthColumnPage(new ColumnPageEncoderMeta(columnSpec,
-          dataType, compressorName), rowLength.size());
-    }
-    // set total length and rowOffset in page
-    page.totalLength = offset;
-    page.rowOffset = rowOffset;
-
-    // set data in page
-    lvEncodedOffset = start;
-    for (int i = 0; i < rowLength.size(); i++) {
-      length = rowLength.get(i);
-      page.putBytes(i, lvEncodedBytes, lvEncodedOffset + 4, length);
-      lvEncodedOffset += 4 + length;
     }
     return page;
   }
