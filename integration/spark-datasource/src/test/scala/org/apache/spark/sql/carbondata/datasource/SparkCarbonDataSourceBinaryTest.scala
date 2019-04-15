@@ -20,7 +20,7 @@ import java.io.File
 
 import org.apache.carbondata.core.constants.CarbonCommonConstants
 import org.apache.carbondata.core.util.CarbonProperties
-import org.apache.carbondata.util.ImageUtil
+import org.apache.carbondata.test.util.BinaryUtil
 import org.apache.commons.io.FileUtils
 
 import org.apache.spark.sql.Row
@@ -43,13 +43,11 @@ class SparkCarbonDataSourceBinaryTest extends FunSuite with BeforeAndAfterAll {
 
     def buildTestBinaryData(): Any = {
         FileUtils.deleteDirectory(new File(writerPath))
-        val imageUtil = new ImageUtil()
 
-        val sourceImageFolder = sdkPath + "/src/main/resources/image/flowers"
+        val sourceImageFolder = sdkPath + "/src/test/resources/image/flowers"
         val sufAnnotation = ".txt"
-        imageUtil.writeAndRead(sourceImageFolder, writerPath, sufAnnotation, ".jpg")
+        BinaryUtil.binaryToCarbon(sourceImageFolder, writerPath, sufAnnotation, ".jpg")
     }
-
 
     def cleanTestData() = {
         FileUtils.deleteDirectory(new File(writerPath))
@@ -168,11 +166,11 @@ class SparkCarbonDataSourceBinaryTest extends FunSuite with BeforeAndAfterAll {
             sql(
                 s"""
                    | CREATE TABLE binaryCarbon(
-                   |    imageId INT,
-                   |    imageName STRING,
-                   |    imageBinary BINARY,
-                   |    txtName STRING,
-                   |    txtContent STRING
+                   |    binaryId INT,
+                   |    binaryName STRING,
+                   |    binary BINARY,
+                   |    labelName STRING,
+                   |    labelContent STRING
                    |) USING CARBON  """.stripMargin)
 
             val exception = intercept[Exception] {
@@ -192,15 +190,15 @@ class SparkCarbonDataSourceBinaryTest extends FunSuite with BeforeAndAfterAll {
             sql(
                 s"""
                    | CREATE TABLE binaryCarbon3(
-                   |    imageId INT,
-                   |    imageName STRING,
-                   |    imageBinary BINARY,
-                   |    txtName STRING,
-                   |    txtContent STRING
-                   |) USING CARBON partitioned by (imageBinary) """.stripMargin)
-            sql("select * from binaryCarbon  where imageid=0 ").show()
+                   |    binaryId INT,
+                   |    binaryName STRING,
+                   |    binary BINARY,
+                   |    labelName STRING,
+                   |    labelContent STRING
+                   |) USING CARBON partitioned by (binary) """.stripMargin)
+            sql("select * from binaryCarbon  where binaryId=0 ").show()
             try {
-                sql("insert into binaryCarbon3 select imageId,imageName,imageBinary,txtName,txtContent from binaryCarbon where imageid=0 ")
+                sql("insert into binaryCarbon3 select binaryId,binaryName,binary,labelName,labelContent from binaryCarbon where binaryId=0 ")
                 assert(false)
             } catch {
                 case e: Exception =>

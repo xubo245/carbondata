@@ -17,6 +17,7 @@
 
 package org.apache.carbondata.sdk.file;
 
+import org.apache.carbondata.test.util.BinaryUtil;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.s3a.Constants;
 
@@ -27,27 +28,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 
-import org.apache.carbondata.util.ImageUtil;
-
 import static org.apache.carbondata.sdk.file.utils.SDKUtil.getSplitList;
 
 /**
  * multi-thread Test suite for {@link CarbonReader}
  */
 public class ConcurrentMultiSdkReaderTest {
+  String classPath = this.getClass().getClassLoader().getResource("").getPath();
+
   public static void main(String[] args) throws Exception {
 
     long startTime = System.nanoTime();
     short numThreads = 1;
     long count = 0;
 
-    ImageUtil imageUtil = new ImageUtil();
-
-    String sourceImageFolder = "./src/main/resources/image/flowers";
-    String outputPath = "./target/flowers2";
+    String sourceImageFolder = new ConcurrentMultiSdkReaderTest().classPath + "/image/flowers";
+    String outputPath = new ConcurrentMultiSdkReaderTest().classPath + "/flowers2";
     String sufAnnotation = ".txt";
 
-    imageUtil.writeAndRead(sourceImageFolder, outputPath, sufAnnotation, ".jpg");
+    BinaryUtil.binaryToCarbon(sourceImageFolder, outputPath, sufAnnotation, ".jpg");
 
     // Concurrent Reading
     ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
@@ -97,7 +96,7 @@ public class ConcurrentMultiSdkReaderTest {
     public Long call() throws IOException, InterruptedException {
 
       CarbonReader reader = CarbonReader.builder().withFileLists(this.fileList)
-          .filterEqual("txtcontent", "daisy")
+          .filterEqual("labelContent", "daisy")
           .build();
       long count = 0;
       try {

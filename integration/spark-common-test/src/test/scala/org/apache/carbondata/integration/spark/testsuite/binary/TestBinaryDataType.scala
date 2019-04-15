@@ -65,8 +65,8 @@ class TestBinaryDataType extends QueryTest with BeforeAndAfterAll {
                 assert(each(2).toString.contains(".png"))
 
                 val bytes20 = each.getAs[Array[Byte]](3).slice(0, 20)
-                val imageName = each(2).toString
-                val expectedBytes = firstBytes20.get(imageName).get
+                val binaryName = each(2).toString
+                val expectedBytes = firstBytes20.get(binaryName).get
                 assert(Arrays.equals(expectedBytes, bytes20), "incorrect numeric value for flattened image")
 
                 assert(each(4).toString.equalsIgnoreCase("false") || (each(4).toString.equalsIgnoreCase("true")))
@@ -102,9 +102,9 @@ class TestBinaryDataType extends QueryTest with BeforeAndAfterAll {
             assert(3 == df.length)
             df.foreach { each =>
                 assert(2 == each.length)
-                val imageName = each(0).toString
+                val binaryName = each(0).toString
                 val bytes20 = each.getAs[Array[Byte]](1).slice(0, 20)
-                val expectedBytes = firstBytes20.get(imageName).get
+                val expectedBytes = firstBytes20.get(binaryName).get
                 assert(Arrays.equals(expectedBytes, bytes20), "incorrect numeric value for flattened image")
             }
         } catch {

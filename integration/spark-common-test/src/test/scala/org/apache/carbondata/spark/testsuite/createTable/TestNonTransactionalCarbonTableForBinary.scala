@@ -18,16 +18,13 @@
 package org.apache.carbondata.spark.testsuite.createTable
 
 import java.io._
-
 import org.apache.carbondata.core.constants.CarbonCommonConstants
 import org.apache.carbondata.core.util.CarbonProperties
-import org.apache.carbondata.util.ImageUtil
-
+import org.apache.carbondata.test.util.BinaryUtil
 import org.apache.commons.io.FileUtils
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.test.util.QueryTest
 import org.apache.spark.util.SparkUtil
-
 import org.scalatest.BeforeAndAfterAll
 
 
@@ -45,13 +42,11 @@ class TestNonTransactionalCarbonTableForBinary extends QueryTest with BeforeAndA
 
     def buildTestBinaryData(): Any = {
         FileUtils.deleteDirectory(new File(writerPath))
-        val imageUtil = new ImageUtil()
 
-        val sourceImageFolder = sdkPath + "/src/main/resources/image/flowers"
+        val sourceImageFolder = sdkPath + "/src/test/resources/image/flowers"
         val sufAnnotation = ".txt"
-        imageUtil.writeAndRead(sourceImageFolder, writerPath, sufAnnotation, ".jpg")
+        BinaryUtil.binaryToCarbon(sourceImageFolder, writerPath, sufAnnotation, ".jpg")
     }
-
 
     def cleanTestData() = {
         FileUtils.deleteDirectory(new File(writerPath))
@@ -83,7 +78,7 @@ class TestNonTransactionalCarbonTableForBinary extends QueryTest with BeforeAndA
             }
             assert(exception.getMessage.contains("DataLoad failure: Error while initializing data handler"))
         } else {
-            sql(s"CREATE EXTERNAL TABLE binaryCarbon STORED BY 'carbondata'LOCATION '$writerPath'")
+            sql(s"CREATE EXTERNAL TABLE binaryCarbon STORED BY 'carbondata' LOCATION '$writerPath'")
             val exception = intercept[Exception] {
                 sql(s"CREATE TABLE binaryCarbon3 STORED BY 'carbondata' LOCATION '$outputPath'" + " AS SELECT * FROM binaryCarbon")
             }
