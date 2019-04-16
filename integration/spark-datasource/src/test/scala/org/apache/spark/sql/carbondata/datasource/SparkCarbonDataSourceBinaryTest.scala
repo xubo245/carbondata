@@ -172,8 +172,9 @@ class SparkCarbonDataSourceBinaryTest extends FunSuite with BeforeAndAfterAll {
                    |    labelName STRING,
                    |    labelContent STRING
                    |) USING CARBON partitioned by (binary) """.stripMargin)
-            sql("select * from binaryCarbon  where binaryId=0 ").show()
+            sql("select binaryId,binaryName,binary,labelName,labelContent from binaryCarbon where binaryId=0").show()
             try {
+                // TODO: query should show string, not object
                 sql("insert into binaryCarbon3 select binaryId,binaryName,binary,labelName,labelContent from binaryCarbon where binaryId=0 ")
                 assert(false)
             } catch {
@@ -208,5 +209,96 @@ class SparkCarbonDataSourceBinaryTest extends FunSuite with BeforeAndAfterAll {
         CarbonProperties.getInstance()
                 .addProperty(CarbonCommonConstants.ENABLE_UNSAFE_COLUMN_PAGE,
                     CarbonCommonConstants.ENABLE_UNSAFE_COLUMN_PAGE_DEFAULT)
+    }
+
+    test("insert into for hive and carbon") {
+        sql("DROP TABLE IF EXISTS hiveTable")
+        sql("DROP TABLE IF EXISTS carbontable")
+
+        sql(
+            s"""
+               | CREATE TABLE IF NOT EXISTS hivetable (
+               |    id int,
+               |    label boolean,
+               |    name string,
+               |    image binary,
+               |    autoLabel boolean)
+               | row format delimited fields terminated by ','
+             """.stripMargin)
+        sql("insert into hivetable values(1,true,'Bob','binary',false)")
+        sql("insert into hivetable values(2,false,'Xu','test',true)")
+        val hiveResult = sql("SELECT * FROM hivetable")
+
+        sql(
+            s"""
+               | CREATE TABLE IF NOT EXISTS carbontable (
+               |    id int,
+               |    label boolean,
+               |    name string,
+               |    image binary,
+               |    autoLabel boolean)
+               | using carbon
+             """.stripMargin)
+        sql("insert into carbontable values(1,true,'Bob','binary',false)")
+        sql("insert into carbontable values(2,false,'Xu','test',true)")
+        val carbonResult = sql("SELECT * FROM carbontable")
+        checkAnswer(hiveResult, carbonResult)
+        carbonResult.collect().foreach { each =>
+            if (1 == each.get(0)) {
+                "binary".equals(new String(each.getAs[Array[Byte]](3)))
+            } else if (2 == each.get(0)) {
+                "test".equals(new String(each.getAs[Array[Byte]](3)))
+            } else {
+                assert(false)
+            }
+        }
+    }
+
+    // TODO: support filter
+    ignore("filter for hive and carbon") {
+        sql("DROP TABLE IF EXISTS hiveTable")
+        sql("DROP TABLE IF EXISTS carbontable")
+
+        sql(
+            s"""
+               | CREATE TABLE IF NOT EXISTS hivetable (
+               |    id int,
+               |    label boolean,
+               |    name string,
+               |    image binary,
+               |    autoLabel boolean)
+               | row format delimited fields terminated by ','
+             """.stripMargin)
+        sql("insert into hivetable values(1,true,'Bob','binary',false)")
+        sql("insert into hivetable values(2,false,'Xu','test',true)")
+        val hiveResult = sql("SELECT * FROM hivetable where image='binary'")
+
+        sql(
+            s"""
+               | CREATE TABLE IF NOT EXISTS carbontable (
+               |    id int,
+               |    label boolean,
+               |    name string,
+               |    image binary,
+               |    autoLabel boolean)
+               | using carbon
+             """.stripMargin)
+        sql("insert into carbontable values(1,true,'Bob','binary',false)")
+        sql("insert into carbontable values(2,false,'Xu','test',true)")
+        val carbonResult = sql("SELECT * FROM carbontable where image='binary'")
+        hiveResult.show()
+        carbonResult.show()
+        checkAnswer(hiveResult, carbonResult)
+        carbonResult.collect().foreach { each =>
+            println(each)
+            if (1 == each.get(0)) {
+                "binary".equals(new String(each.getAs[Array[Byte]](3)))
+            } else if (2 == each.get(0)) {
+                "test".equals(new String(each.getAs[Array[Byte]](3)))
+            } else {
+                assert(false)
+            }
+            println(each)
+        }
     }
 }

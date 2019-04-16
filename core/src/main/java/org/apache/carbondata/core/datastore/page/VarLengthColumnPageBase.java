@@ -308,21 +308,8 @@ public abstract class VarLengthColumnPageBase extends ColumnPage {
 
   @Override
   public void putInt(int rowId, int value) {
-    try {
-      ensureMemory(ByteUtil.SIZEOF_INT);
-    } catch (MemoryException e) {
-      throw new RuntimeException(e);
-    }
-    long offset = ((long) rowId) << intBits;
-    CarbonUnsafe.getUnsafe().putInt(baseAddress, baseOffset + offset, value);
-    totalLength += ByteUtil.SIZEOF_INT;
-    updatePageSize(rowId);
-  }
-
-  private void updatePageSize(int rowId) {
-    if (pageSize < rowId) {
-      pageSize = rowId;
-    }
+    throw new UnsupportedOperationException(
+        "invalid data type: " + columnPageEncoderMeta.getStoreDataType());
   }
 
   @Override
@@ -363,8 +350,8 @@ public abstract class VarLengthColumnPageBase extends ColumnPage {
 
   @Override
   public byte getByte(int rowId) {
-    long offset = ((long) rowId) << byteBits;
-    return CarbonUnsafe.getUnsafe().getByte(baseAddress, baseOffset + offset);
+    throw new UnsupportedOperationException(
+        "invalid data type: " + columnPageEncoderMeta.getStoreDataType());
   }
 
   @Override
@@ -381,8 +368,8 @@ public abstract class VarLengthColumnPageBase extends ColumnPage {
 
   @Override
   public int getInt(int rowId) {
-    long offset = ((long) rowId) << intBits;
-    return CarbonUnsafe.getUnsafe().getInt(baseAddress, baseOffset + offset);
+    throw new UnsupportedOperationException(
+        "invalid data type: " + columnPageEncoderMeta.getStoreDataType());
   }
 
   @Override

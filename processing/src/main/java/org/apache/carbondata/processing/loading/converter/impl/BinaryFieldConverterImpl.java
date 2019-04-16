@@ -78,7 +78,8 @@ public class BinaryFieldConverterImpl implements FieldConverter {
         return Hex.decodeHex(literalValue.toCharArray());
       } catch (DecoderException e) {
         if (LOGGER.isDebugEnabled()) {
-          LOGGER.debug("Can not convert value to Binary type value. Value considered as null.");
+          LOGGER.debug("Can not convert value to Binary type value. " +
+              "Value considered as null. value is " + value);
         }
         logHolder.setReason(
             CarbonDataProcessorUtil.prepareFailureReason(dimension.getColName(), dataType));

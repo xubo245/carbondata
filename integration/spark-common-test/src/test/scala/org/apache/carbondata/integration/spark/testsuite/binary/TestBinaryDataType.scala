@@ -258,6 +258,89 @@ class TestBinaryDataType extends QueryTest with BeforeAndAfterAll {
         }
     }
 
+    test("insert into for hive and carbon") {
+        sql("DROP TABLE IF EXISTS hiveTable")
+        sql("DROP TABLE IF EXISTS carbontable")
+
+        sql(
+            s"""
+               | CREATE TABLE IF NOT EXISTS hivetable (
+               |    id int,
+               |    label boolean,
+               |    name string,
+               |    image binary,
+               |    autoLabel boolean)
+               | row format delimited fields terminated by ','
+             """.stripMargin)
+        sql("insert into hivetable values(1,true,'Bob','binary',false)")
+        sql("insert into hivetable values(2,false,'Xu','test',true)")
+        val hiveResult = sql("SELECT * FROM hivetable")
+
+        sql(
+            s"""
+               | CREATE TABLE IF NOT EXISTS carbontable (
+               |    id int,
+               |    label boolean,
+               |    name string,
+               |    image binary,
+               |    autoLabel boolean)
+               | STORED BY 'carbondata'
+             """.stripMargin)
+        sql("insert into carbontable values(1,true,'Bob','binary',false)")
+        sql("insert into carbontable values(2,false,'Xu','test',true)")
+
+        val carbonResult = sql("SELECT * FROM carbontable")
+        checkAnswer(hiveResult, carbonResult)
+    }
+
+    // TODO: support filter
+    ignore("Support filter for hive and carbon") {
+        sql("DROP TABLE IF EXISTS hiveTable")
+        sql("DROP TABLE IF EXISTS carbontable")
+
+        sql(
+            s"""
+               | CREATE TABLE IF NOT EXISTS hivetable (
+               |    id int,
+               |    label boolean,
+               |    name string,
+               |    image binary,
+               |    autoLabel boolean)
+               | row format delimited fields terminated by ','
+             """.stripMargin)
+        sql("insert into hivetable values(1,true,'Bob','binary',false)")
+        sql("insert into hivetable values(2,false,'Xu','test',true)")
+        val hiveResult = sql("SELECT * FROM hivetable where image='binary'")
+
+        sql(
+            s"""
+               | CREATE TABLE IF NOT EXISTS carbontable (
+               |    id int,
+               |    label boolean,
+               |    name string,
+               |    image binary,
+               |    autoLabel boolean)
+               | STORED BY 'carbondata'
+             """.stripMargin)
+        sql("insert into carbontable values(1,true,'Bob','binary',false)")
+        sql("insert into carbontable values(2,false,'Xu','test',true)")
+        val carbonResult = sql("SELECT * FROM carbontable where image='binary'")
+        hiveResult.show()
+        carbonResult.show()
+        checkAnswer(hiveResult, carbonResult)
+        carbonResult.collect().foreach { each =>
+            println(each)
+            if (1 == each.get(0)) {
+                "binary".equals(new String(each.getAs[Array[Byte]](3)))
+            } else if (2 == each.get(0)) {
+                "test".equals(new String(each.getAs[Array[Byte]](3)))
+            } else {
+                assert(false)
+            }
+            println(each)
+        }
+    }
+
     // TODO
     test("Create table and load data with binary column for hive") {
         sql("DROP TABLE IF EXISTS hiveTable")
