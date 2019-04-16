@@ -422,7 +422,7 @@ abstract class CarbonDDLSqlParser extends AbstractCarbonSparkSQLParser {
               s"$column is a complex type column and complex type is not allowed for " +
               s"the option(s): ${ CarbonCommonConstants.COLUMN_META_CACHE }"
             throw new MalformedCarbonCommandException(errorMessage)
-          } else if (DataTypes.BINARY.getName
+          } else if (dimFieldToBeCached.nonEmpty && DataTypes.BINARY.getName
                   .equalsIgnoreCase(dimFieldToBeCached(0).dataType.get)) {
             val errorMessage =
               s"$column is a binary data type column and binary data type is not allowed for " +
