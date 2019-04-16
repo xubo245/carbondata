@@ -329,7 +329,6 @@ class TestBinaryDataType extends QueryTest with BeforeAndAfterAll {
         carbonResult.show()
         checkAnswer(hiveResult, carbonResult)
         carbonResult.collect().foreach { each =>
-            println(each)
             if (1 == each.get(0)) {
                 "binary".equals(new String(each.getAs[Array[Byte]](3)))
             } else if (2 == each.get(0)) {
@@ -337,13 +336,12 @@ class TestBinaryDataType extends QueryTest with BeforeAndAfterAll {
             } else {
                 assert(false)
             }
-            println(each)
         }
     }
 
-    // TODO
     test("Create table and load data with binary column for hive") {
-        sql("DROP TABLE IF EXISTS hiveTable")
+        sql("DROP TABLE IF EXISTS hivetable")
+        sql("DROP TABLE IF EXISTS carbontable")
         sql(
             s"""
                | CREATE TABLE IF NOT EXISTS hivetable (
@@ -352,19 +350,54 @@ class TestBinaryDataType extends QueryTest with BeforeAndAfterAll {
                |    name string,
                |    image binary,
                |    autoLabel boolean)
-               | row format delimited fields terminated by ','
+               | row format delimited fields terminated by '|'
              """.stripMargin)
-        // TODO
-        //        sql("insert into hivetable values(1,true,'Bob','binary',false)")
-        //        sql("SELECT * FROM hivetable").show()
         sql(
             s"""
-               | LOAD DATA LOCAL INPATH '$resourcesPath/binarydata.csv'
+               | LOAD DATA LOCAL INPATH '$resourcesPath/binarystringdata.csv'
                | INTO TABLE hivetable
              """.stripMargin)
+
+        sql(
+            s"""
+               | CREATE TABLE IF NOT EXISTS carbontable (
+               |    id int,
+               |    label boolean,
+               |    name string,
+               |    image binary,
+               |    autoLabel boolean)
+               | STORED BY 'carbondata'
+             """.stripMargin)
+        sql(
+            s"""
+               | LOAD DATA LOCAL INPATH '$resourcesPath/binarystringdata.csv'
+               | INTO TABLE carbontable
+               | OPTIONS('header'='false','DELIMITER'='|')
+             """.stripMargin)
+
+        val hiveResult = sql("SELECT * FROM hivetable")
+        val carbonResult = sql("SELECT * FROM carbontable")
+        hiveResult.show()
+        carbonResult.show()
+        checkAnswer(hiveResult, carbonResult)
+
         checkAnswer(sql("SELECT COUNT(*) FROM hivetable"), Seq(Row(3)))
         try {
-            val df = sql("SELECT * FROM hivetable").collect()
+            val carbonDF = carbonResult.collect()
+            assert(3 == carbonDF.length)
+            carbonDF.foreach { each =>
+                assert(5 == each.length)
+
+                assert(Integer.valueOf(each(0).toString) > 0)
+                assert(each(1).toString.equalsIgnoreCase("false") || (each(1).toString.equalsIgnoreCase("true")))
+                assert(each(2).toString.contains(".png"))
+
+                val value = new String(each.getAs[Array[Byte]](3))
+                assert("\u0001history\u0002".equals(value) || "\u0001biology\u0002".equals(value) || "\u0001education\u0002".equals(value))
+                assert(each(4).toString.equalsIgnoreCase("false") || (each(4).toString.equalsIgnoreCase("true")))
+            }
+
+            val df = hiveResult.collect()
             assert(3 == df.length)
             df.foreach { each =>
                 assert(5 == each.length)
@@ -373,15 +406,9 @@ class TestBinaryDataType extends QueryTest with BeforeAndAfterAll {
                 assert(each(1).toString.equalsIgnoreCase("false") || (each(1).toString.equalsIgnoreCase("true")))
                 assert(each(2).toString.contains(".png"))
 
-                val bytes20 = each.getAs[Array[Byte]](3).slice(0, 20)
-                val binaryName = each(2).toString
-                val expectedBytes = firstBytes20.get(binaryName).get
-                val value = each(3)
-                val str = new String(each.getAs[Array[Byte]](3))
-                // TODO
-                //  val hex = Hex.decodeHex(str.toCharArray())
-                //  assert(Arrays.equals(expectedBytes, bytes20), "incorrect numeric value for flattened image")
 
+                val value = new String(each.getAs[Array[Byte]](3))
+                assert("\u0001history\u0002".equals(value) || "\u0001biology\u0002".equals(value) || "\u0001education\u0002".equals(value))
                 assert(each(4).toString.equalsIgnoreCase("false") || (each(4).toString.equalsIgnoreCase("true")))
             }
         } catch {
