@@ -136,30 +136,6 @@ class SparkCarbonDataSourceBinaryTest extends FunSuite with BeforeAndAfterAll {
         assert(exception.getCause.getMessage.contains("long string column : image is not supported for data type: BINARY"))
     }
 
-    test("Desc formatted fot binary column") {
-        sql("DROP TABLE IF EXISTS binaryCarbon")
-        sql("DROP TABLE IF EXISTS binaryCarbon3")
-        if (SparkUtil.isSparkVersionXandAbove("2.2")) {
-            sql(s"CREATE TABLE binaryCarbon USING CARBON LOCATION '$writerPath'")
-            sql(s"CREATE TABLE binaryCarbon3 USING CARBON LOCATION '$outputPath'" + " AS SELECT * FROM binaryCarbon")
-        }
-        val result = sql("desc formatted binaryCarbon").collect()
-        var flag = false
-        result.foreach { each =>
-            print(each)
-            if ("binary".equals(each.get(1))) {
-                flag = true
-            }
-        }
-        assert(flag)
-        checkAnswer(sql("SELECT COUNT(*) FROM binaryCarbon"),
-            Seq(Row(3)))
-        checkAnswer(sql("SELECT COUNT(*) FROM binaryCarbon3"),
-            Seq(Row(3)))
-        sql("DROP TABLE IF EXISTS binaryCarbon")
-        sql("DROP TABLE IF EXISTS binaryCarbon3")
-    }
-
     test("Don't support load for datasource") {
         sql("DROP TABLE IF EXISTS binaryCarbon")
         if (SparkUtil.isSparkVersionXandAbove("2.2")) {

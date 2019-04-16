@@ -79,6 +79,15 @@ class TestNonTransactionalCarbonTableForBinary extends QueryTest with BeforeAndA
             Seq(Row(3)))
         checkAnswer(sql("SELECT COUNT(*) FROM binaryCarbon3"),
             Seq(Row(3)))
+
+        val result = sql("desc formatted binaryCarbon").collect()
+        var flag = false
+        result.foreach { each =>
+            if ("binary".equals(each.get(1))) {
+                flag = true
+            }
+        }
+        assert(flag)
         val value = sql("SELECT * FROM binaryCarbon").collect()
         assert(3 == value.length)
         value.foreach { each =>

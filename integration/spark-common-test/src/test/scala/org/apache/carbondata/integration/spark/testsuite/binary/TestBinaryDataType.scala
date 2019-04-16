@@ -53,8 +53,17 @@ class TestBinaryDataType extends QueryTest with BeforeAndAfterAll {
                | INTO TABLE binaryTable
                | OPTIONS('header'='false')
              """.stripMargin)
+
+        val result = sql("desc formatted binaryTable").collect()
+        var flag = false
+        result.foreach { each =>
+            if ("binary".equals(each.get(1))) {
+                flag = true
+            }
+        }
+        assert(flag)
+
         checkAnswer(sql("SELECT COUNT(*) FROM binaryTable"), Seq(Row(3)))
-        sql("SELECT * FROM binaryTable").show()
         try {
             val df = sql("SELECT * FROM binaryTable").collect()
             assert(3 == df.length)
