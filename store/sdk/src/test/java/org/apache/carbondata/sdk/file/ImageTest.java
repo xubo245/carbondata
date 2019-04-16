@@ -51,7 +51,7 @@ import static org.apache.carbondata.sdk.file.utils.SDKUtil.listFiles;
 public class ImageTest extends TestCase {
 
   @Test
-  public void testBinaryWithFilter() throws IOException, InvalidLoadOptionException, InterruptedException, DecoderException {
+  public void testBinaryWithOrWithoutFilter() throws IOException, InvalidLoadOptionException, InterruptedException, DecoderException {
     String imagePath = "./src/test/resources/image/carbondatalogo.jpg";
     int num = 1;
     int rows = 1;
@@ -121,60 +121,15 @@ public class ImageTest extends TestCase {
     }
     System.out.println("\nFinished");
     reader.close();
-  }
 
-  @Test
-  public void testBinaryWithoutFilter() throws IOException, InvalidLoadOptionException, InterruptedException, DecoderException {
-
-    String imagePath = "./src/test/resources/image/carbondatalogo.jpg";
-    int num = 1;
-    int rows = 10;
-    String path = "./target/binary";
-    try {
-      FileUtils.deleteDirectory(new File(path));
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-
-    Field[] fields = new Field[3];
-    fields[0] = new Field("name", DataTypes.STRING);
-    fields[1] = new Field("age", DataTypes.INT);
-    fields[2] = new Field("image", DataTypes.BINARY);
-
-    byte[] originBinary = null;
-
-    // read and write image data
-    for (int j = 0; j < num; j++) {
-      CarbonWriter writer = CarbonWriter
-          .builder()
-          .outputPath(path)
-          .withCsvInput(new Schema(fields))
-          .writtenBy("SDKS3Example").withPageSizeInMb(1)
-          .build();
-
-      for (int i = 0; i < rows; i++) {
-        // read image and encode to Hex
-        BufferedInputStream bis = new BufferedInputStream(new FileInputStream(imagePath));
-        char[] hexValue = null;
-        originBinary = new byte[bis.available()];
-        while ((bis.read(originBinary)) != -1) {
-          hexValue = Hex.encodeHex(originBinary);
-        }
-        // write data
-        writer.write(new String[]{"robot" + (i % 10), String.valueOf(i), String.valueOf(hexValue)});
-        bis.close();
-      }
-      writer.close();
-    }
-
-    CarbonReader reader = CarbonReader
+    CarbonReader reader2 = CarbonReader
         .builder(path, "_temp")
         .build();
 
     System.out.println("\nData:");
-    int i = 0;
-    while (i < 20 && reader.hasNext()) {
-      Object[] row = (Object[]) reader.readNextRow();
+    i = 0;
+    while (i < 20 && reader2.hasNext()) {
+      Object[] row = (Object[]) reader2.readNextRow();
 
       byte[] outputBinary = Hex.decodeHex(new String((byte[]) row[1]).toCharArray());
       System.out.println(row[0] + " " + row[2] + " image size:" + outputBinary.length);
@@ -192,7 +147,7 @@ public class ImageTest extends TestCase {
       bos.close();
       i++;
     }
-    reader.close();
+    reader2.close();
     try {
       FileUtils.deleteDirectory(new File(path));
     } catch (IOException e) {
