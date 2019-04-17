@@ -69,7 +69,8 @@ public class ImageTest extends TestCase {
           .builder()
           .outputPath(path)
           .withCsvInput(new Schema(fields))
-          .writtenBy("SDKS3Example").withPageSizeInMb(1)
+          .writtenBy("SDKS3Example")
+          .withPageSizeInMb(1)
           .build();
 
       for (int i = 0; i < rows; i++) {
@@ -177,7 +178,8 @@ public class ImageTest extends TestCase {
           .builder()
           .outputPath(path)
           .withCsvInput(new Schema(fields))
-          .writtenBy("SDKS3Example").withPageSizeInMb(1)
+          .writtenBy("SDKS3Example")
+          .withPageSizeInMb(1)
           .build();
       File file = new File(imageFolder);
       File[] files = file.listFiles(new FilenameFilter() {
@@ -267,7 +269,8 @@ public class ImageTest extends TestCase {
           .builder()
           .outputPath(path)
           .withCsvInput(new Schema(fields))
-          .writtenBy("SDKS3Example").withPageSizeInMb(1)
+          .writtenBy("SDKS3Example")
+          .withPageSizeInMb(1)
           .build();
 
       for (int i = 0; i < rows; i++) {
@@ -340,7 +343,8 @@ public class ImageTest extends TestCase {
           .builder()
           .outputPath(path)
           .withCsvInput(new Schema(fields))
-          .writtenBy("SDKS3Example").withPageSizeInMb(1)
+          .writtenBy("SDKS3Example")
+          .withPageSizeInMb(1)
           .build();
 
       for (int i = 0; i < files.length; i++) {
@@ -520,7 +524,8 @@ public class ImageTest extends TestCase {
             .outputPath(outputPath)
             .withCsvInput(new Schema(fields))
             .withBlockSize(256)
-            .writtenBy("SDKS3Example").withPageSizeInMb(1)
+            .writtenBy("SDKS3Example")
+            .withPageSizeInMb(1)
             .build();
 
         for (int i = 0; i < files.length; i++) {
@@ -531,7 +536,8 @@ public class ImageTest extends TestCase {
                 .outputPath(outputPath)
                 .withCsvInput(new Schema(fields))
                 .withBlockSize(256)
-                .writtenBy("SDKS3Example").withPageSizeInMb(1)
+                .writtenBy("SDKS3Example")
+                .withPageSizeInMb(1)
                 .build();
           }
           index++;

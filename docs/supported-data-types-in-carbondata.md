@@ -51,4 +51,5 @@
 
   * Other Types
     * BOOLEAN
+    * [BINARY](./supported-binary-in-carbondata.md)
 

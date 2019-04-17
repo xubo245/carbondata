@@ -41,7 +41,8 @@ public class BinaryUtil {
         .outputPath(outputPath)
         .withCsvInput(new Schema(fields))
         .withBlockSize(256)
-        .writtenBy("SDKS3Example").withPageSizeInMb(1)
+        .writtenBy("binaryExample")
+        .withPageSizeInMb(1)
         .build();
     binaryToCarbon(sourceImageFolder, writer, sufAnnotation, sufImage);
   }
