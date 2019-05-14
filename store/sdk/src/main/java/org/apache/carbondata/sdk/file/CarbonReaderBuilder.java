@@ -213,7 +213,6 @@ public class CarbonReaderBuilder {
 
   private CarbonFileInputFormat prepareFileInputFormat(Job job, boolean enableBlockletDistribution,
       boolean disableLoadBlockDataMap) throws IOException {
-//    CarbonTable table = CarbonTable.buildTable(tablePath, tableName, hadoopConf);
 
     CarbonTable table;
     // now always infer schema. TODO:Refactor in next version.
@@ -363,12 +362,12 @@ public class CarbonReaderBuilder {
    * @return
    * @throws IOException
    */
-  public InputSplit[] getSplits() throws IOException {
+  public InputSplit[] getSplits(boolean disableLoadBlockDataMap) throws IOException {
     if (hadoopConf == null) {
       hadoopConf = FileFactory.getConfiguration();
     }
     final Job job = new Job(new JobConf(hadoopConf));
-    CarbonFileInputFormat format = prepareFileInputFormat(job, true, false);
+    CarbonFileInputFormat format = prepareFileInputFormat(job, true, disableLoadBlockDataMap);
     List<InputSplit> splits =
         format.getSplits(new JobContextImpl(job.getConfiguration(), new JobID()));
     return splits.toArray(new InputSplit[splits.size()]);

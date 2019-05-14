@@ -2437,14 +2437,14 @@ public class CarbonReaderTest extends TestCase {
 
     TestUtil.writeFilesAndVerify(1000 * 1000, new Schema(fields), path, null, 1, 100);
 
-    InputSplit[] splits = CarbonReader.builder(path).getSplits();
+    InputSplit[] splits = CarbonReader.builder(path).getSplits(false);
     // check for 3 blocklet count (as only one carbon file will be created)
     Assert.assertEquals(splits.length, 3);
 
     int totalCount = 0;
     for (int k = 0; k < splits.length; k++) {
       CarbonReader reader = CarbonReader
-          .builder(path, "_temp")
+          .builder()
           .buildWithSplits(splits[k]);
       int i = 0;
       while (reader.hasNext()) {

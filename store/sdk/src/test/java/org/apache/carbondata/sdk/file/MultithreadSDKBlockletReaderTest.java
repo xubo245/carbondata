@@ -82,7 +82,7 @@ public class MultithreadSDKBlockletReaderTest {
     writeDataMultipleFiles(numFiles, numRowsPerFile);
     long count;
 
-    InputSplit[] splits = CarbonReader.builder(dataDir).getSplits();
+    InputSplit[] splits = CarbonReader.builder(dataDir).getSplits(false);
     Assert.assertEquals(splits.length, 8);
     numThreads = (short) splits.length;
     // Concurrent Reading

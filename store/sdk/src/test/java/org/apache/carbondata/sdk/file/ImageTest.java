@@ -32,6 +32,7 @@ import org.apache.carbondata.util.BinaryUtil;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.FileUtils;
+import org.apache.hadoop.mapreduce.InputSplit;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -975,6 +976,15 @@ public class ImageTest extends TestCase {
         .withFileLists(fileLists.subList(0,2))
         .projection(projectionLists)
         .build();
+
+    InputSplit[]  splits = CarbonReader
+        .builder()
+        .withFileLists(fileLists.subList(0,2))
+        .getSplits(true);
+//    splits[0].getLocations()
+    InputSplit[]  splits2 = CarbonReader
+        .builder(path)
+        .getSplits(true);
 
     System.out.println("\nData:");
     int i = 0;
