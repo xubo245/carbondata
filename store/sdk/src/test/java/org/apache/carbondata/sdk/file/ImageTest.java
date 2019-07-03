@@ -49,6 +49,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import static org.apache.carbondata.core.scan.filter.FilterUtil.prepareEqualToExpression;
 import static org.apache.carbondata.sdk.file.utils.SDKUtil.listFiles;
 
 public class ImageTest extends TestCase {
@@ -317,6 +318,7 @@ public class ImageTest extends TestCase {
     fields[2] = new Field("image", DataTypes.BINARY);
 
     byte[] originBinary = null;
+    String binaryValue=null;
 
     // read and write image data
     for (int j = 0; j < num; j++) {
@@ -337,7 +339,8 @@ public class ImageTest extends TestCase {
           hexValue = Hex.encodeHex(originBinary);
         }
         // write data
-        writer.write(new String[]{"robot" + (i % 10), String.valueOf(i), String.valueOf(hexValue)});
+        binaryValue = String.valueOf(hexValue);
+        writer.write(new String[]{"robot" + (i % 10), String.valueOf(i), binaryValue});
         bis.close();
       }
       writer.close();
@@ -404,6 +407,55 @@ public class ImageTest extends TestCase {
       i++;
     }
     reader2.close();
+
+
+    // Read data with filter for binary
+
+    CarbonReader reader3 = CarbonReader
+        .builder(path, "_temp")
+        .filter(prepareEqualToExpression("image", "binary", binaryValue))
+        .build();
+
+    System.out.println("\nData:");
+    i = 0;
+    while (i < 20 && reader3.hasNext()) {
+      Object[] row = (Object[]) reader3.readNextRow();
+
+      byte[] outputBinary = Hex.decodeHex(new String((byte[]) row[1]).toCharArray());
+      System.out.println(row[0] + " " + row[2] + " image size:" + outputBinary.length);
+
+      // validate output binary data and origin binary data
+      assert (originBinary.length == outputBinary.length);
+      for (int j = 0; j < originBinary.length; j++) {
+        assert (originBinary[j] == outputBinary[j]);
+      }
+      String value = new String(outputBinary);
+      Assert.assertTrue(value.startsWith("�PNG"));
+      // save image, user can compare the save image and original image
+      String destString = "./target/binary/image" + i + ".jpg";
+      BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(destString));
+      bos.write(outputBinary);
+      bos.close();
+      i++;
+    }
+    assert (1 == i);
+    System.out.println("\nFinished");
+    reader3.close();
+
+
+    CarbonReader reader4 = CarbonReader
+        .builder(path, "_temp")
+        .filter(prepareEqualToExpression("image", "binary", "hello"))
+        .build();
+
+    System.out.println("\nData:");
+    i = 0;
+    while (i < 20 && reader4.hasNext()) {
+      Object[] row = (Object[]) reader4.readNextRow();
+      assert (null == row[1]);
+    }
+    System.out.println("\nFinished");
+    reader4.close();
     try {
       FileUtils.deleteDirectory(new File(path));
     } catch (IOException e) {

@@ -332,6 +332,73 @@ public class AvroCarbonWriterTest {
     }
   }
 
+  private void WriteAvroComplexDataAndRead(String mySchema)
+      throws IOException, InvalidLoadOptionException, InterruptedException {
+
+    // conversion to GenericData.Record
+    Schema nn = new Schema.Parser().parse(mySchema);
+    try {
+      CarbonWriter writer =
+          CarbonWriter.builder()
+              .outputPath(path)
+              .withAvroInput(mySchema)
+              .writtenBy("AvroCarbonWriterTest")
+              .build();
+      int numOfRows = 100000/100;
+      int numOfWrite = 20000;
+      int arrayLength = 300;
+      for (int i = 0; i < numOfRows; i++) {
+        StringBuffer aa1 = new StringBuffer();
+        StringBuffer bb1 = new StringBuffer();
+        StringBuffer cc1 = new StringBuffer();
+        aa1.append("[0.1234567,0.2,-0.3,0.4]");
+        bb1.append("[0.2123456]");
+        cc1.append("[0.3123456]");
+        for (int j = 1; j < arrayLength; j++) {
+          aa1.append(",[1" + i + "" + j + ".1234567,1" + i + "" + j + ".2,-1" + i + "" + j + ".3,1" + i + "" + j + ".4]");
+          bb1.append(",[2" + i + "" + j + ".2123456,-2" + i + "" + j + ".2]");
+          cc1.append(",[3" + i + "" + j + ".3123456]");
+        }
+        String json = "{\"fileName\":\"bob\", \"id\":10, "
+            + "   \"aa1\" : [" + aa1 + "], "
+            + "\"bb1\" : [" + bb1 + "], " +
+            "\"cc1\" : [" + cc1 + "]}";
+
+        writer.write(json);
+        if (i > 0 && i % numOfWrite == 0) {
+          writer.close();
+          writer =
+              CarbonWriter.builder()
+                  .outputPath(path)
+                  .withAvroInput(mySchema)
+                  .writtenBy("AvroCarbonWriterTest")
+                  .build();
+        }
+      }
+      writer.close();
+      String[] projection = new String[nn.getFields().size()];
+      for (int j = 0; j < nn.getFields().size(); j++) {
+        projection[j] = nn.getFields().get(j).name();
+      }
+      CarbonReader carbonReader = CarbonReader.builder().projection(projection).withFolder(path).build();
+      int sum = 0;
+      while (carbonReader.hasNext()) {
+        sum++;
+        Object[] row = (Object[]) carbonReader.readNextRow();
+        Assert.assertTrue(row.length == 5);
+        Object[] aa1 = (Object[]) row[2];
+        Assert.assertTrue(aa1.length == arrayLength);
+        Object[] aa2 = (Object[]) aa1[1];
+        Assert.assertTrue(aa2.length == 4 || aa2.length == 2 || aa2.length == 1);
+      }
+      Assert.assertTrue(sum == numOfRows);
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw e;
+    }
+  }
+
+
 
   @Test
   public void testWriteComplexRecord() throws IOException, InvalidLoadOptionException {
@@ -427,7 +494,61 @@ public class AvroCarbonWriterTest {
   }
 
   @Test
-  public void testExceptionForDuplicateColumns() throws IOException, InvalidLoadOptionException {
+  public void testWriteArrayArrayFloat() throws IOException {
+    FileUtils.deleteDirectory(new File(path));
+
+    String mySchema =
+        "{" +
+            "  \"name\": \"address\", " +
+            "   \"type\": \"record\", " +
+            "    \"fields\": [  " +
+            "  { \"name\": \"fileName\", \"type\": \"string\"}, " +
+            "  { \"name\": \"id\", \"type\": \"int\"}, " +
+            "  {\"name\" :\"aa1\", " +
+            "   \"type\" : { " +
+            "   \"type\" :\"array\", " +
+            "   \"items\":{ " +
+            "   \"name\" :\"aa2\", " +
+            "   \"type\" :\"array\", " +
+            "   \"items\":{ " +
+            "   \"name\" :\"f1\", " +
+            "   \"type\" : \"float\", " +
+            "   \"default\":-1}}}}," +
+            "  {\"name\" :\"bb1\", " +
+            "   \"type\" : { " +
+            "   \"type\" :\"array\", " +
+            "   \"items\":{ " +
+            "   \"name\" :\"bb2\", " +
+            "   \"type\" :\"array\", " +
+            "   \"items\":{ " +
+            "   \"name\" :\"f2\", " +
+            "   \"type\" : \"float\", " +
+            "   \"default\":-1}}}}," +
+            "  {\"name\" :\"cc1\", " +
+            "   \"type\" : { " +
+            "   \"type\" :\"array\", " +
+            "   \"items\":{ " +
+            "   \"name\" :\"cc2\", " +
+            "   \"type\" :\"array\", " +
+            "   \"items\":{ " +
+            "   \"name\" :\"f3\", " +
+            "   \"type\" : \"float\", " +
+            "   \"default\":-1}}}}" +
+            "] " +
+            "}";
+
+    try {
+      WriteAvroComplexDataAndRead(mySchema);
+      Assert.assertTrue(true);
+    } catch (Exception e) {
+      e.printStackTrace();
+      Assert.fail();
+    }
+    FileUtils.deleteDirectory(new File(path));
+  }
+
+  @Test
+  public void testExceptionForDuplicateColumns() throws IOException {
     Field[] field = new Field[2];
     field[0] = new Field("name", DataTypes.STRING);
     field[1] = new Field("name", DataTypes.STRING);
