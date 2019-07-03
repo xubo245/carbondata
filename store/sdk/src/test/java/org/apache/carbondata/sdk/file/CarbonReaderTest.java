@@ -377,6 +377,124 @@ public class CarbonReaderTest extends TestCase {
   }
 
   @Test
+  public void testReadWithFilterEqualSet() throws IOException, InterruptedException {
+    String path = "./testWriteFiles";
+    FileUtils.deleteDirectory(new File(path));
+    DataMapStoreManager.getInstance()
+        .clearDataMaps(AbsoluteTableIdentifier.from(path), false);
+    Field[] fields = new Field[3];
+    fields[0] = new Field("name", DataTypes.STRING);
+    fields[1] = new Field("age", DataTypes.INT);
+    fields[2] = new Field("doubleField", DataTypes.DOUBLE);
+
+    TestUtil.writeFilesAndVerify(200, new Schema(fields), path);
+
+    List<String> values = new ArrayList<>();
+    values.add("robot7");
+    values.add("robot1");
+
+    CarbonReader reader = CarbonReader
+        .builder(path, "_temp")
+        .projection(new String[]{"name", "age", "doubleField"})
+        .filter("name", values)
+        .build();
+
+    int i = 0;
+    while (reader.hasNext()) {
+      Object[] row = (Object[]) reader.readNextRow();
+      if (((String) row[0]).contains("robot7")) {
+        assert (7 == ((int) (row[1]) % 10));
+        assert (0.5 == ((double) (row[2]) % 1));
+      } else if (((String) row[0]).contains("robot1")) {
+        assert (1 == ((int) (row[1]) % 10));
+        assert (0.5 == ((double) (row[2]) % 1));
+      } else {
+        Assert.assertTrue(false);
+      }
+      i++;
+    }
+    Assert.assertEquals(i, 40);
+
+    reader.close();
+
+    List<Object> values2 = new ArrayList<>();
+    values2.add(1);
+    values2.add(7);
+
+    CarbonReader reader2 = CarbonReader
+        .builder(path, "_temp")
+        .projection(new String[]{"name", "age", "doubleField"})
+        .filter("age", "int", values2)
+        .build();
+
+    i = 0;
+    while (reader2.hasNext()) {
+      Object[] row = (Object[]) reader2.readNextRow();
+      if (((String) row[0]).contains("robot7")) {
+        assert (7 == ((int) (row[1]) % 10));
+        assert (0.5 == ((double) (row[2]) % 1));
+      } else if (((String) row[0]).contains("robot1")) {
+        assert (1 == ((int) (row[1]) % 10));
+        assert (0.5 == ((double) (row[2]) % 1));
+      } else {
+        Assert.assertTrue(false);
+      }
+      i++;
+    }
+    Assert.assertEquals(i, 2);
+    reader2.close();
+
+
+    List<Object> values3 = new ArrayList<>();
+    values3.add(0.5);
+    values3.add(3.5);
+    CarbonReader reader3 = CarbonReader
+        .builder(path, "_temp")
+        .projection(new String[]{"name", "age", "doubleField"})
+        .filter("doubleField", "double", values3)
+        .build();
+
+    i = 0;
+    while (reader3.hasNext()) {
+      Object[] row = (Object[]) reader3.readNextRow();
+      if (((String) row[0]).contains("robot7")) {
+        assert (7 == ((int) (row[1]) % 10));
+        assert (0.5 == ((double) (row[2]) % 1));
+      } else if (((String) row[0]).contains("robot1")) {
+        assert (1 == ((int) (row[1]) % 10));
+        assert (0.5 == ((double) (row[2]) % 1));
+      } else {
+        Assert.assertTrue(false);
+      }
+      i++;
+    }
+    Assert.assertEquals(i, 2);
+    reader3.close();
+
+    CarbonReader reader4 = CarbonReader
+        .builder(path, "_temp")
+        .projection(new String[]{"name", "age", "doubleField"})
+        .filter("name", "robot7")
+        .build();
+
+    i = 0;
+    while (reader4.hasNext()) {
+      Object[] row = (Object[]) reader4.readNextRow();
+      if (((String) row[0]).contains("robot7")) {
+        assert (7 == ((int) (row[1]) % 10));
+        assert (0.5 == ((double) (row[2]) % 1));
+      } else {
+        Assert.assertTrue(false);
+      }
+      i++;
+    }
+    Assert.assertEquals(i, 20);
+    reader4.close();
+
+    FileUtils.deleteDirectory(new File(path));
+  }
+
+  @Test
   public void testReadWithFilterOfNonTransactionalGreaterThan() throws IOException, InterruptedException {
     String path = "./testWriteFiles";
     FileUtils.deleteDirectory(new File(path));
