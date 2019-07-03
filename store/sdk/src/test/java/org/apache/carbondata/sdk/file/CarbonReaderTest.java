@@ -44,6 +44,9 @@ import junit.framework.TestCase;
 import org.apache.commons.io.FileUtils;
 import org.junit.*;
 
+import static org.apache.carbondata.core.scan.expression.conditional.FilterUtil.prepareEqualToExpression;
+import static org.apache.carbondata.core.scan.expression.conditional.FilterUtil.prepareEqualToExpressionSet;
+
 public class CarbonReaderTest extends TestCase {
 
   @Before
@@ -389,14 +392,14 @@ public class CarbonReaderTest extends TestCase {
 
     TestUtil.writeFilesAndVerify(200, new Schema(fields), path);
 
-    List<String> values = new ArrayList<>();
+    List<Object> values = new ArrayList<>();
     values.add("robot7");
     values.add("robot1");
 
     CarbonReader reader = CarbonReader
         .builder(path, "_temp")
         .projection(new String[]{"name", "age", "doubleField"})
-        .filter("name", values)
+        .filter(prepareEqualToExpressionSet("name", "String", values))
         .build();
 
     int i = 0;
@@ -424,7 +427,7 @@ public class CarbonReaderTest extends TestCase {
     CarbonReader reader2 = CarbonReader
         .builder(path, "_temp")
         .projection(new String[]{"name", "age", "doubleField"})
-        .filter("age", "int", values2)
+        .filter(prepareEqualToExpressionSet("age", "int", values2))
         .build();
 
     i = 0;
@@ -451,7 +454,7 @@ public class CarbonReaderTest extends TestCase {
     CarbonReader reader3 = CarbonReader
         .builder(path, "_temp")
         .projection(new String[]{"name", "age", "doubleField"})
-        .filter("doubleField", "double", values3)
+        .filter(prepareEqualToExpressionSet("doubleField", "double", values3))
         .build();
 
     i = 0;
@@ -474,7 +477,7 @@ public class CarbonReaderTest extends TestCase {
     CarbonReader reader4 = CarbonReader
         .builder(path, "_temp")
         .projection(new String[]{"name", "age", "doubleField"})
-        .filter("name", "robot7")
+        .filter(prepareEqualToExpression("name", "string", "robot7"))
         .build();
 
     i = 0;

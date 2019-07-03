@@ -29,14 +29,8 @@ import org.apache.carbondata.common.annotations.InterfaceStability;
 import org.apache.carbondata.core.constants.CarbonCommonConstants;
 import org.apache.carbondata.core.datamap.DataMapStoreManager;
 import org.apache.carbondata.core.datastore.impl.FileFactory;
-import org.apache.carbondata.core.metadata.datatype.DataType;
-import org.apache.carbondata.core.metadata.datatype.DataTypes;
 import org.apache.carbondata.core.metadata.schema.table.CarbonTable;
-import org.apache.carbondata.core.scan.expression.ColumnExpression;
 import org.apache.carbondata.core.scan.expression.Expression;
-import org.apache.carbondata.core.scan.expression.LiteralExpression;
-import org.apache.carbondata.core.scan.expression.conditional.EqualToExpression;
-import org.apache.carbondata.core.scan.expression.logical.OrExpression;
 import org.apache.carbondata.core.scan.model.ProjectionDimension;
 import org.apache.carbondata.core.scan.model.QueryModel;
 import org.apache.carbondata.core.util.CarbonProperties;
@@ -174,75 +168,6 @@ public class CarbonReaderBuilder {
     Objects.requireNonNull(filterExpression);
     this.filterExpression = filterExpression;
     return this;
-  }
-
-  public CarbonReaderBuilder filter(String columnName, String value) {
-    EqualToExpression equalToExpression = new EqualToExpression(
-        new ColumnExpression(columnName, DataTypes.STRING),
-        new LiteralExpression(value, DataTypes.STRING));
-    this.filterExpression = equalToExpression;
-    return this;
-  }
-
-  public CarbonReaderBuilder filter(String columnName, List<String> values) {
-    Expression expression = null;
-    if (0 == values.size()) {
-      expression = new EqualToExpression(
-          new ColumnExpression(columnName, DataTypes.STRING),
-          new LiteralExpression(null, DataTypes.STRING));
-    } else {
-      expression = new EqualToExpression(
-          new ColumnExpression(columnName, DataTypes.STRING),
-          new LiteralExpression(values.get(0), DataTypes.STRING));
-    }
-    for (int i = 1; i < values.size(); i++) {
-      Expression expression2 = new EqualToExpression(
-          new ColumnExpression(columnName, DataTypes.STRING),
-          new LiteralExpression(values.get(i), DataTypes.STRING));
-      expression = new OrExpression(expression, expression2);
-    }
-    this.filterExpression = expression;
-    return this;
-  }
-
-  private CarbonReaderBuilder filter(String columnName, DataType dataType,
-                                     List<Object> values) {
-    Expression expression = null;
-    if (0 == values.size()) {
-      expression = new EqualToExpression(
-          new ColumnExpression(columnName, dataType),
-          new LiteralExpression(null, dataType));
-    } else {
-      expression = new EqualToExpression(
-          new ColumnExpression(columnName, dataType),
-          new LiteralExpression(values.get(0), dataType));
-    }
-    for (int i = 1; i < values.size(); i++) {
-      Expression expression2 = new EqualToExpression(
-          new ColumnExpression(columnName, dataType),
-          new LiteralExpression(values.get(i), dataType));
-      expression = new OrExpression(expression, expression2);
-    }
-    this.filterExpression = expression;
-    return this;
-  }
-
-  public CarbonReaderBuilder filter(String columnName, String dataType, List<Object> values) {
-    if (DataTypes.STRING.getName().equalsIgnoreCase(dataType)) {
-      return filter(columnName, DataTypes.STRING, values);
-    } else if (DataTypes.INT.getName().equalsIgnoreCase(dataType)) {
-      return filter(columnName, DataTypes.INT, values);
-    } else if (DataTypes.DOUBLE.getName().equalsIgnoreCase(dataType)) {
-      return filter(columnName, DataTypes.DOUBLE, values);
-    } else if (DataTypes.FLOAT.getName().equalsIgnoreCase(dataType)) {
-      return filter(columnName, DataTypes.FLOAT, values);
-    } else if (DataTypes.SHORT.getName().equalsIgnoreCase(dataType)) {
-      return filter(columnName, DataTypes.SHORT, values);
-    } else if (DataTypes.BINARY.getName().equalsIgnoreCase(dataType)) {
-      return filter(columnName, DataTypes.BINARY, values);
-    } else {
-      throw new IllegalArgumentException("Unsupported data type: " + dataType);
-    }
   }
 
   /**
