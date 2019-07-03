@@ -86,7 +86,8 @@ public class FilterUtil {
       expression = prepareEqualToExpression(columnName, dataType.getName(), values.get(0));
     }
     for (int i = 1; i < values.size(); i++) {
-      Expression expression2 = prepareEqualToExpression(columnName, dataType.getName(), values.get(i));
+      Expression expression2 = prepareEqualToExpression(columnName,
+          dataType.getName(), values.get(i));
       expression = new OrExpression(expression, expression2);
     }
     return expression;

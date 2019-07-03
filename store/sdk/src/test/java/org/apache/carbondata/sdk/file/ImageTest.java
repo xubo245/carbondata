@@ -442,6 +442,21 @@ public class ImageTest extends TestCase {
     assert (1 == i);
     System.out.println("\nFinished");
     reader3.close();
+
+
+    CarbonReader reader4 = CarbonReader
+        .builder(path, "_temp")
+        .filter(prepareEqualToExpression("image", "binary", "hello"))
+        .build();
+
+    System.out.println("\nData:");
+    i = 0;
+    while (i < 20 && reader4.hasNext()) {
+      Object[] row = (Object[]) reader4.readNextRow();
+      assert (null == row[1]);
+    }
+    System.out.println("\nFinished");
+    reader4.close();
     try {
       FileUtils.deleteDirectory(new File(path));
     } catch (IOException e) {
