@@ -77,7 +77,18 @@ public class FilterUtil {
     }
   }
 
-  public static Expression prepareEqualToExpressionSet(String columnName, DataType dataType,
+  public static Expression prepareOrExpression(List<Expression> expressions) {
+    if (expressions.size() < 2) {
+      throw new RuntimeException("Please input at least two expressions");
+    }
+    Expression expression = expressions.get(0);
+    for (int i = 1; i < expressions.size(); i++) {
+      expression = new OrExpression(expression, expressions.get(i));
+    }
+    return expression;
+  }
+
+  private static Expression prepareEqualToExpressionSet(String columnName, DataType dataType,
       List<Object> values) {
     Expression expression = null;
     if (0 == values.size()) {

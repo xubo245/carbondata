@@ -23,6 +23,7 @@ import java.sql.Timestamp;
 import java.util.*;
 
 import org.apache.avro.generic.GenericData;
+import org.apache.carbondata.core.scan.expression.Expression;
 import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.log4j.Logger;
 
@@ -46,6 +47,7 @@ import org.junit.*;
 
 import static org.apache.carbondata.core.scan.expression.conditional.FilterUtil.prepareEqualToExpression;
 import static org.apache.carbondata.core.scan.expression.conditional.FilterUtil.prepareEqualToExpressionSet;
+import static org.apache.carbondata.core.scan.expression.conditional.FilterUtil.prepareOrExpression;
 
 public class CarbonReaderTest extends TestCase {
 
@@ -493,6 +495,39 @@ public class CarbonReaderTest extends TestCase {
     }
     Assert.assertEquals(i, 20);
     reader4.close();
+
+    List<Expression> expressions = new ArrayList<>();
+    expressions.add(prepareEqualToExpression("name", "String", "robot1"));
+    expressions.add(prepareEqualToExpression("name", "String", "robot7"));
+    expressions.add(prepareEqualToExpression("age", "int", "2"));
+
+    CarbonReader reader5 = CarbonReader
+        .builder(path, "_temp")
+        .projection(new String[]{"name", "age", "doubleField"})
+        .filter(prepareOrExpression(expressions))
+        .build();
+
+    i = 0;
+    while (reader5.hasNext()) {
+      Object[] row = (Object[]) reader5.readNextRow();
+      if (((String) row[0]).contains("robot7")) {
+        assert (7 == ((int) (row[1]) % 10));
+        assert (0.5 == ((double) (row[2]) % 1));
+      } else if (((String) row[0]).contains("robot1")) {
+        assert (1 == ((int) (row[1]) % 10));
+        assert (0.5 == ((double) (row[2]) % 1));
+      } else if (((String) row[0]).contains("robot2")) {
+        assert (2 == ((int) (row[1]) % 10));
+        assert (0 == ((double) (row[2]) % 1));
+      } else {
+        Assert.assertTrue(false);
+      }
+      i++;
+    }
+    Assert.assertEquals(i, 41);
+
+    reader5.close();
+
 
     FileUtils.deleteDirectory(new File(path));
   }
