@@ -49,7 +49,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.apache.carbondata.core.scan.expression.conditional.FilterUtil.prepareEqualToExpression;
+import static org.apache.carbondata.core.scan.filter.FilterUtil.prepareEqualToExpression;
 import static org.apache.carbondata.sdk.file.utils.SDKUtil.listFiles;
 
 public class ImageTest extends TestCase {

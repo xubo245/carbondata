@@ -45,9 +45,9 @@ import junit.framework.TestCase;
 import org.apache.commons.io.FileUtils;
 import org.junit.*;
 
-import static org.apache.carbondata.core.scan.expression.conditional.FilterUtil.prepareEqualToExpression;
-import static org.apache.carbondata.core.scan.expression.conditional.FilterUtil.prepareEqualToExpressionSet;
-import static org.apache.carbondata.core.scan.expression.conditional.FilterUtil.prepareOrExpression;
+import static org.apache.carbondata.core.scan.filter.FilterUtil.prepareEqualToExpression;
+import static org.apache.carbondata.core.scan.filter.FilterUtil.prepareEqualToExpressionSet;
+import static org.apache.carbondata.core.scan.filter.FilterUtil.prepareOrExpression;
 
 public class CarbonReaderTest extends TestCase {
 
