@@ -332,6 +332,39 @@ public class AvroCarbonWriterTest {
     }
   }
 
+  private void WriteAvroComplexDataWithSort(String mySchema, String json)
+      throws IOException, InvalidLoadOptionException, InterruptedException {
+
+    // conversion to GenericData.Record
+    Schema nn = new Schema.Parser().parse(mySchema);
+    GenericData.Record record = TestUtil.jsonToAvro(json, mySchema);
+    try {
+      CarbonWriter writer =
+          CarbonWriter.builder().outputPath(path).withAvroInput(mySchema).writtenBy("AvroCarbonWriterTest").build();
+      for (int i = 0; i < 100; i++) {
+        writer.write(record);
+      }
+      writer.close();
+      String[] projection = new String[nn.getFields().size()];
+      for (int i = 0; i < nn.getFields().size(); i++) {
+        projection[i] = nn.getFields().get(i).name();
+      }
+      CarbonReader carbonReader = CarbonReader.builder().projection(projection).withFolder(path).build();
+      while (carbonReader.hasNext()) {
+        Object[] row = (Object[]) carbonReader.readNextRow();
+        Assert.assertTrue(row.length == 3);
+        Object[] aa1 = (Object[]) row[2];
+        Assert.assertTrue(aa1.length == 2);
+        Object[] aa2 = (Object[]) aa1[1];
+        Assert.assertTrue(aa2.length == 4);
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw e;
+    }
+  }
+
+
 
   @Test
   public void testWriteComplexRecord() throws IOException, InvalidLoadOptionException {
@@ -422,6 +455,44 @@ public class AvroCarbonWriterTest {
       Assert.fail();
     } catch (Exception e) {
       Assert.assertTrue(true);
+    }
+    FileUtils.deleteDirectory(new File(path));
+  }
+
+  @Test
+  public void testWriteArrayArrayFloat() throws IOException {
+    FileUtils.deleteDirectory(new File(path));
+
+    String mySchema =
+        "{" +
+            "  \"name\": \"address\", " +
+            "   \"type\": \"record\", " +
+            "    \"fields\": [  " +
+            "  { \"name\": \"fileName\", \"type\": \"string\"}, " +
+            "  { \"name\": \"id\", \"type\": \"int\"}, " +
+            "  {\"name\" :\"aa1\", " +
+            "   \"type\" : { " +
+            "   \"type\" :\"array\", " +
+            "   \"items\":{ " +
+            "   \"name\" :\"aa2\", " +
+            "   \"type\" :\"array\", " +
+            "   \"items\":{ " +
+            "   \"name\" :\"f\", " +
+            "   \"type\" : \"float\", " +
+            "   \"default\":-1} " +
+            "  }} " +
+            "  }] " +
+            "}";
+
+    String json = "{\"fileName\":\"bob\", \"id\":10, "
+        + "   \"aa1\" : [[1.1,2.2,3,4],[8.1,8.2,8.3,8.4]]}";
+
+    try {
+      WriteAvroComplexDataWithSort(mySchema, json);
+      Assert.assertTrue(true);
+    } catch (Exception e) {
+      e.printStackTrace();
+      Assert.fail();
     }
     FileUtils.deleteDirectory(new File(path));
   }

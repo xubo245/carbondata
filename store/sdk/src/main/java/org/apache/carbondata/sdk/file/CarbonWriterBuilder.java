@@ -512,6 +512,19 @@ public class CarbonWriterBuilder {
   }
 
   /**
+   * to build a {@link CarbonWriter}, which accepts Avro object
+   *
+   * @param schema avro Schema object {org.apache.avro.Schema}
+   * @return CarbonWriterBuilder
+   */
+  public CarbonWriterBuilder withAvroInput(String schema) {
+    org.apache.avro.Schema avroSchema = new org.apache.avro.Schema.Parser().parse(schema);
+    Objects.requireNonNull(avroSchema, "Avro schema should not be null");
+    this.schema = AvroCarbonWriter.getCarbonSchemaFromAvroSchema(avroSchema);
+    this.writerType = WRITER_TYPE.AVRO;
+    return this;
+  }
+  /**
    * to build a {@link CarbonWriter}, which accepts Json object
    *
    * @param carbonSchema carbon Schema object
