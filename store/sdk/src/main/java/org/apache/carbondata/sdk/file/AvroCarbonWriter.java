@@ -17,26 +17,18 @@
 
 package org.apache.carbondata.sdk.file;
 
-import java.io.IOException;
+
+import java.io.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 import org.apache.carbondata.common.annotations.InterfaceAudience;
 import org.apache.carbondata.common.logging.LogServiceFactory;
+import org.apache.carbondata.core.constants.CarbonCommonConstants;
 import org.apache.carbondata.core.keygenerator.directdictionary.timestamp.DateDirectDictionaryGenerator;
-import org.apache.carbondata.core.metadata.datatype.DataType;
-import org.apache.carbondata.core.metadata.datatype.DataTypes;
-import org.apache.carbondata.core.metadata.datatype.MapType;
-import org.apache.carbondata.core.metadata.datatype.StructField;
-import org.apache.carbondata.core.metadata.datatype.StructType;
+import org.apache.carbondata.core.metadata.datatype.*;
 import org.apache.carbondata.core.metadata.schema.table.CarbonTable;
 import org.apache.carbondata.hadoop.api.CarbonTableOutputFormat;
 import org.apache.carbondata.hadoop.internal.ObjectArrayWritable;
@@ -48,18 +40,19 @@ import org.apache.carbondata.processing.loading.model.CarbonLoadModel;
 import org.apache.avro.LogicalType;
 import org.apache.avro.LogicalTypes;
 import org.apache.avro.Schema;
+import org.apache.avro.file.DataFileWriter;
 import org.apache.avro.generic.GenericData;
+import org.apache.avro.generic.GenericDatumReader;
+import org.apache.avro.generic.GenericDatumWriter;
+import org.apache.avro.io.DecoderFactory;
+import org.apache.avro.io.JsonDecoder;
 import org.apache.avro.util.Utf8;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.NullWritable;
-import org.apache.hadoop.mapreduce.JobID;
-import org.apache.hadoop.mapreduce.RecordWriter;
-import org.apache.hadoop.mapreduce.TaskAttemptContext;
-import org.apache.hadoop.mapreduce.TaskAttemptID;
-import org.apache.hadoop.mapreduce.TaskID;
-import org.apache.hadoop.mapreduce.TaskType;
+import org.apache.hadoop.mapreduce.*;
 import org.apache.hadoop.mapreduce.task.TaskAttemptContextImpl;
 import org.apache.log4j.Logger;
+
 
 /**
  * Writer Implementation to write Avro Record to carbondata file.
@@ -85,6 +78,13 @@ public class AvroCarbonWriter extends CarbonWriter {
     this.recordWriter = format.getRecordWriter(context);
     this.context = context;
     this.writable = new ObjectArrayWritable();
+  }
+
+
+  AvroCarbonWriter(CarbonLoadModel loadModel, Configuration hadoopConf,
+      Schema avroSchema) throws IOException {
+    this(loadModel, hadoopConf);
+    this.avroSchema = avroSchema;
   }
 
   private Object[] avroToCsv(GenericData.Record avroRecord) {
@@ -762,7 +762,36 @@ public class AvroCarbonWriter extends CarbonWriter {
   @Override
   public void write(Object object) throws IOException {
     try {
-      GenericData.Record record = (GenericData.Record) object;
+      GenericData.Record record = null;
+      if (object instanceof GenericData.Record) {
+        record = (GenericData.Record) object;
+      } else if (object instanceof String) {
+        String json = (String) object;
+        InputStream input = null;
+        DataFileWriter writer = null;
+        ByteArrayOutputStream output = null;
+        try {
+          GenericDatumReader reader = new GenericDatumReader(this.avroSchema);
+          input = new ByteArrayInputStream(json.getBytes(CarbonCommonConstants.DEFAULT_CHARSET));
+          output = new ByteArrayOutputStream();
+          DataInputStream din = new DataInputStream(input);
+          writer = new DataFileWriter(new GenericDatumWriter());
+          writer.create(this.avroSchema, output);
+          JsonDecoder decoder = DecoderFactory.get().jsonDecoder(this.avroSchema, din);
+          record = (GenericData.Record) reader.read(null, decoder);
+        } finally {
+          if (input != null) {
+            input.close();
+          }
+          if (writer != null) {
+            writer.close();
+          }
+        }
+      } else {
+        throw new UnsupportedOperationException(
+            "carbon not support " + object + ", only support GenericData.Record " +
+                "and String for " + this.getClass().getName());
+      }
 
       // convert Avro record to CSV String[]
       Object[] csvRecord = avroToCsv(record);

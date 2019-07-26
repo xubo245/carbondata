@@ -337,12 +337,11 @@ public class AvroCarbonWriterTest {
 
     // conversion to GenericData.Record
     Schema nn = new Schema.Parser().parse(mySchema);
-    GenericData.Record record = TestUtil.jsonToAvro(json, mySchema);
     try {
       CarbonWriter writer =
           CarbonWriter.builder().outputPath(path).withAvroInput(mySchema).writtenBy("AvroCarbonWriterTest").build();
       for (int i = 0; i < 100; i++) {
-        writer.write(record);
+        writer.write(json);
       }
       writer.close();
       String[] projection = new String[nn.getFields().size()];
@@ -485,7 +484,7 @@ public class AvroCarbonWriterTest {
             "}";
 
     String json = "{\"fileName\":\"bob\", \"id\":10, "
-        + "   \"aa1\" : [[1.1,2.2,3,4],[8.1,8.2,8.3,8.4]]}";
+        + "   \"aa1\" : [[1.1234567,2.2,3,4],[8.1,8.2,8.3,8.4]]}";
 
     try {
       WriteAvroComplexDataWithSort(mySchema, json);
@@ -498,7 +497,7 @@ public class AvroCarbonWriterTest {
   }
 
   @Test
-  public void testExceptionForDuplicateColumns() throws IOException, InvalidLoadOptionException {
+  public void testExceptionForDuplicateColumns() throws IOException {
     Field[] field = new Field[2];
     field[0] = new Field("name", DataTypes.STRING);
     field[1] = new Field("name", DataTypes.STRING);
