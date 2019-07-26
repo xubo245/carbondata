@@ -332,31 +332,66 @@ public class AvroCarbonWriterTest {
     }
   }
 
-  private void WriteAvroComplexDataWithSort(String mySchema, String json)
+  private void WriteAvroComplexDataAndRead(String mySchema)
       throws IOException, InvalidLoadOptionException, InterruptedException {
 
     // conversion to GenericData.Record
     Schema nn = new Schema.Parser().parse(mySchema);
     try {
       CarbonWriter writer =
-          CarbonWriter.builder().outputPath(path).withAvroInput(mySchema).writtenBy("AvroCarbonWriterTest").build();
-      for (int i = 0; i < 100; i++) {
+          CarbonWriter.builder()
+              .outputPath(path)
+              .withAvroInput(mySchema)
+              .writtenBy("AvroCarbonWriterTest")
+              .build();
+      int numOfRows = 100000/100;
+      int numOfWrite = 20000;
+      int arrayLength = 300;
+      for (int i = 0; i < numOfRows; i++) {
+        StringBuffer aa1 = new StringBuffer();
+        StringBuffer bb1 = new StringBuffer();
+        StringBuffer cc1 = new StringBuffer();
+        aa1.append("[0.1234567,0.2,-0.3,0.4]");
+        bb1.append("[0.2123456]");
+        cc1.append("[0.3123456]");
+        for (int j = 1; j < arrayLength; j++) {
+          aa1.append(",[1" + i + "" + j + ".1234567,1" + i + "" + j + ".2,-1" + i + "" + j + ".3,1" + i + "" + j + ".4]");
+          bb1.append(",[2" + i + "" + j + ".2123456,-2" + i + "" + j + ".2]");
+          cc1.append(",[3" + i + "" + j + ".3123456]");
+        }
+        String json = "{\"fileName\":\"bob\", \"id\":10, "
+            + "   \"aa1\" : [" + aa1 + "], "
+            + "\"bb1\" : [" + bb1 + "], " +
+            "\"cc1\" : [" + cc1 + "]}";
+
         writer.write(json);
+        if (i > 0 && i % numOfWrite == 0) {
+          writer.close();
+          writer =
+              CarbonWriter.builder()
+                  .outputPath(path)
+                  .withAvroInput(mySchema)
+                  .writtenBy("AvroCarbonWriterTest")
+                  .build();
+        }
       }
       writer.close();
       String[] projection = new String[nn.getFields().size()];
-      for (int i = 0; i < nn.getFields().size(); i++) {
-        projection[i] = nn.getFields().get(i).name();
+      for (int j = 0; j < nn.getFields().size(); j++) {
+        projection[j] = nn.getFields().get(j).name();
       }
       CarbonReader carbonReader = CarbonReader.builder().projection(projection).withFolder(path).build();
+      int sum = 0;
       while (carbonReader.hasNext()) {
+        sum++;
         Object[] row = (Object[]) carbonReader.readNextRow();
-        Assert.assertTrue(row.length == 3);
+        Assert.assertTrue(row.length == 5);
         Object[] aa1 = (Object[]) row[2];
-        Assert.assertTrue(aa1.length == 2);
+        Assert.assertTrue(aa1.length == arrayLength);
         Object[] aa2 = (Object[]) aa1[1];
-        Assert.assertTrue(aa2.length == 4);
+        Assert.assertTrue(aa2.length == 4 || aa2.length == 2 || aa2.length == 1);
       }
+      Assert.assertTrue(sum == numOfRows);
     } catch (Exception e) {
       e.printStackTrace();
       throw e;
@@ -476,18 +511,34 @@ public class AvroCarbonWriterTest {
             "   \"name\" :\"aa2\", " +
             "   \"type\" :\"array\", " +
             "   \"items\":{ " +
-            "   \"name\" :\"f\", " +
+            "   \"name\" :\"f1\", " +
             "   \"type\" : \"float\", " +
-            "   \"default\":-1} " +
-            "  }} " +
-            "  }] " +
+            "   \"default\":-1}}}}," +
+            "  {\"name\" :\"bb1\", " +
+            "   \"type\" : { " +
+            "   \"type\" :\"array\", " +
+            "   \"items\":{ " +
+            "   \"name\" :\"bb2\", " +
+            "   \"type\" :\"array\", " +
+            "   \"items\":{ " +
+            "   \"name\" :\"f2\", " +
+            "   \"type\" : \"float\", " +
+            "   \"default\":-1}}}}," +
+            "  {\"name\" :\"cc1\", " +
+            "   \"type\" : { " +
+            "   \"type\" :\"array\", " +
+            "   \"items\":{ " +
+            "   \"name\" :\"cc2\", " +
+            "   \"type\" :\"array\", " +
+            "   \"items\":{ " +
+            "   \"name\" :\"f3\", " +
+            "   \"type\" : \"float\", " +
+            "   \"default\":-1}}}}" +
+            "] " +
             "}";
 
-    String json = "{\"fileName\":\"bob\", \"id\":10, "
-        + "   \"aa1\" : [[1.1234567,2.2,3,4],[8.1,8.2,8.3,8.4]]}";
-
     try {
-      WriteAvroComplexDataWithSort(mySchema, json);
+      WriteAvroComplexDataAndRead(mySchema);
       Assert.assertTrue(true);
     } catch (Exception e) {
       e.printStackTrace();
