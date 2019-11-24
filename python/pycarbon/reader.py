@@ -199,7 +199,3 @@ def make_tensor(reader, shuffling_queue_capacity=0, min_after_dequeue=0):
   """
   tensorflow = TensorFlow()
   return tensorflow.make_tensor(reader, shuffling_queue_capacity, min_after_dequeue)
-
-
-def make_data_loader(reader, batch_size=1, collate_fn=decimal_friendly_collate):
-  return DataLoader(reader, batch_size=batch_size, collate_fn=collate_fn)
