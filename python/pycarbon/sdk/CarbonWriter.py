@@ -12,6 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import jnius_config
 
 
 class CarbonWriter(object):
@@ -24,6 +25,7 @@ class CarbonWriter(object):
   5. call close() to write data to local/HDFS/S3
   """
   def __init__(self):
+    # jnius_config.set_classpath("../lib/carbondata-sdk.jar")
     from jnius import autoclass
     self.writerClass = autoclass('org.apache.carbondata.sdk.file.CarbonWriter')
 

@@ -21,7 +21,7 @@ import re
 import setuptools
 from setuptools import setup
 
-PACKAGE_NAME = 'pycarbon'
+PACKAGE_NAME = 'pycarbon-sdk'
 
 with open('README.md') as f:
     long_description = f.read()
@@ -32,23 +32,8 @@ with io.open('__init__.py', 'rt', encoding='utf8') as f:
         raise ImportError('Could not find __version__ in __init__.py')
 
 REQUIRED_PACKAGES = [
-    'petastorm==0.7.2',
-    'dill>=0.2.1',
-    'diskcache>=3.0.0',
-    'numpy>=1.13.3',
-    'pandas>=0.19.0',
-    'psutil>=4.0.0',
-    'pyspark==2.3.2',
-    'pyzmq>=14.0.0',
-    'pyarrow==0.11.1',
-    'six>=1.5.0',
-    'torchvision>=0.2.1',
-    'tensorflow>=1.4.0',
     'jnius>=1.1.0',
     'pyjnius>=1.2.0',
-    'huaweicloud-sdk-python-modelarts-dataset>=0.1.1',
-    'future==0.17.1',
-    'futures>=2.0; python_version == "2.7"',
 ]
 
 EXTRA_REQUIRE = {
@@ -59,9 +44,6 @@ EXTRA_REQUIRE = {
         'sphinx==1.2.2',
         'alabaster==0.7.11'
     ],
-    'opencv': ['opencv-python>=3.2.0.6'],
-    'tf': ['tensorflow>=1.4.0'],
-    'tf_gpu': ['tensorflow-gpu>=1.4.0'],
     'test': [
         'Pillow>=3.0',
         'codecov>=2.0.15',

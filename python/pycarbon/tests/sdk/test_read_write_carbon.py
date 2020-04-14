@@ -25,8 +25,8 @@ import shutil
 import os
 import jnius_config
 
-jnius_config.set_classpath("../../../sdk/sdk/target/carbondata-sdk.jar")
-IMAGE_DATA_PATH = "./resources"
+jnius_config.set_classpath("../../lib/carbondata-sdk.jar")
+IMAGE_DATA_PATH = "../resources"
 
 def test_run_write_carbon():
   jsonSchema = "[{stringField:string},{shortField:short},{intField:int}]"
